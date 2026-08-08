@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
         $settings = app(SettingsService::class);
 
         if (! $settings->has('app_name')) {
-            $settings->set('app_name', config('app.name', 'Vibe'));
+            $settings->set('app_name', config('app.name', 'Fleet'));
         }
     }
 }

@@ -12,6 +12,9 @@
 
         <title>@yield('title', $appName)</title>
 
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
 
@@ -62,7 +65,7 @@
                 </main>
 
                 <footer class="border-t border-border bg-surface">
-                    <div class="px-4 py-4 text-sm text-muted-foreground sm:px-6">
+                    <div class="px-4 py-4 text-sm text-muted-foreground sm:px-6 text-center">
                         © {{ date('Y') }} {{ $appName }}. جميع الحقوق محفوظة.
                     </div>
                 </footer>

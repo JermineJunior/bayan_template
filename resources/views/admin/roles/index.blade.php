@@ -61,6 +61,7 @@
                                     @endcan
 
                                     @can('delete', $role)
+                                    @if (!auth()->user()->hasRole($role)) <!-- prevent deleting role if user has it (admin) -->
                                         <form
                                             method="POST"
                                             action="{{ route('admin.roles.destroy', $role) }}"
@@ -75,6 +76,7 @@
                                                 حذف
                                             </button>
                                         </form>
+                                    @endif
                                     @endcan
                                 </div>
                             </td>

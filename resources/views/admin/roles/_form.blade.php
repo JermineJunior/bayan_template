@@ -1,7 +1,7 @@
 @php
     $isEdit = filled($role);
 @endphp
-
+<!-- one form for both create and edit , changes with alpine -->
 <form
     method="POST"
     action="{{ $isEdit ? route('admin.roles.update', $role) : route('admin.roles.store') }}"

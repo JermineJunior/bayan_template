@@ -30,7 +30,6 @@ class UpdateUserRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                'regex:/^[a-zA-Z0-9_.-]+$/',
                 Rule::unique('users', 'username')->ignore($user?->id),
             ],
             'email' => ['nullable', 'email', 'max:255'],

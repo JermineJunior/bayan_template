@@ -24,32 +24,84 @@ A plain **Laravel + Blade + Tailwind CSS + Alpine.js** web application scaffold.
 
 ## Run Locally
 
-```bash
-# 1. Install PHP dependencies
-composer install
+### From a clone
 
-# 2. Copy the environment file and generate an app key
-cp .env.example .env
-php artisan key:generate
+1. **Prerequisites** — PHP >= 8.3 with `pdo_mysql`, Composer, Node.js >= 20, npm, and
+   MySQL 8+ / MariaDB. Create the two databases once (names/config in `.env.example`
+   and `phpunit.xml`):
 
-# 3. Install frontend dependencies
-npm install
+   ```bash
+   CREATE DATABASE starter CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE DATABASE starter_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
 
-# 4. Run the database migrations and seed the initial admin user
-#    (create the `starter` database first, e.g. `CREATE DATABASE starter;`)
-php artisan migrate --seed
+2. **One-shot setup** (installs PHP + npm deps, copies `.env`, generates a key,
+   migrates and seeds, links storage, and builds assets):
 
-# 5. Start the dev servers
-composer dev        # runs `php artisan serve` + `npm run dev` together
-# or, in two separate terminals:
-php artisan serve
-npm run dev
-```
+   ```bash
+   composer setup
+   ```
 
-Visit http://localhost:8000. For a production build of assets, run `npm run build`.
+   …or do it manually:
+
+   ```bash
+   composer install
+   cp .env.example .env
+   php artisan key:generate
+   npm install
+   php artisan migrate --seed      # seeds permissions, roles, admin user, settings
+   php artisan storage:link        # serves uploaded logos (public/storage -> storage/app/public)
+   npm run build                   # or use `npm run dev` below for hot reload
+   ```
+
+   The seed creates the initial admin user (see
+   [Seeded default credentials](#seeded-default-credentials)).
+
+3. **Start the dev servers** — `composer dev` runs everything at once via
+   `concurrently` (artisan serve, queue worker, `pail` log tail, and the Vite dev
+   server). Alternatively run them in separate terminals:
+
+   ```bash
+   php artisan serve
+   npm run dev
+   ```
+
+   Visit http://localhost:8000.
+
+4. **Run the tests** — feature tests run against the `starter_test` database
+   (`RefreshDatabase` migrates it and isolates every test):
+
+   ```bash
+   composer test
+   ```
 
 > The application is **Arabic-only**: UI text is hardcoded Arabic and the locale is
 > fixed to `ar` in `config/app.php`. See [Arabic-only UI & RTL](#arabic-only-ui--rtl).
+
+### Required `.env` keys
+
+`.env.example` is the template. The only key you must generate yourself is
+`APP_KEY` (`php artisan key:generate`); everything else works out of the box with
+the local defaults. The keys the app actually reads:
+
+| key                | value in `.env.example`  | purpose |
+|--------------------|--------------------------|---------|
+| `APP_KEY`          | *(empty)*                | App encryption key — generate with `php artisan key:generate` |
+| `APP_URL`          | `http://localhost`       | Base URL; dev servers on another port override it when starting (`php artisan serve --port=8088`) |
+| `DB_*`             | `starter` / `root` / `root` | MySQL connection (`DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`) |
+| `SESSION_DRIVER`   | `file`                   | Session store — `file` for local, `database`/`redis` in production |
+| `CACHE_STORE`      | `file`                   | Cache store — `file` for local, `redis` in production |
+| `FILESYSTEM_DISK`  | `local`                  | Default filesystem disk; the logo upload always uses the `public` disk (see [Settings & Preferences](#settings--preferences)) |
+| `QUEUE_CONNECTION` | `sync`                   | Queue driver — `database`/`redis` in production |
+| `MAIL_MAILER`      | `log`                    | Mail driver — `log` writes to `storage/logs` instead of sending (the app has no email flow yet) |
+| `APP_FAKER_LOCALE` | `en_US`                  | Faker locale for generated test data |
+
+The locale is **not** env-driven — it is fixed to `ar` in `config/app.php` (see
+[Arabic-only UI & RTL](#arabic-only-ui--rtl)), so there is no `APP_LOCALE` key.
+
+For tests, `phpunit.xml` overrides the database to `starter_test` and forces
+in-memory stores (`CACHE_STORE=array`, `SESSION_DRIVER=array`, `MAIL_MAILER=array`)
+so test runs never touch your real session/cache/mail files.
 
 ## Folder Structure
 
@@ -58,40 +110,62 @@ app/
 ├── Http/
 │   ├── Controllers/
 │   │   ├── Account/           # Per-user preferences controller
-│   │   ├── Admin/            # Admin-only controllers (roles, users, settings)
-│   │   ├── Auth/             # Authentication controllers
+│   │   ├── Admin/             # Admin-only controllers (roles, users, settings)
+│   │   ├── Auth/              # Authentication controllers
 │   │   └── Controller.php
+│   ├── Middleware/            # EnsureUserIsActive (force-logout on deactivation)
 │   └── Requests/
 │       ├── Account/           # Preferences form request
-│       ├── Admin/            # Admin form requests (users, settings)
-│       ├── Auth/             # Auth form requests (LoginRequest)
-│       └── ...               # All form validation (Form Requests)
-├── Models/                   # Eloquent models (User, Setting)
-├── Policies/                 # Authorization policies (UserPolicy)
-├── Providers/
-└── Services/                 # Business logic (UserService, SettingsService)
+│       ├── Admin/             # Admin form requests (users, roles, settings)
+│       ├── Auth/              # Auth form requests (LoginRequest)
+│       └── ...                # All form validation (Form Requests)
+├── Models/                    # Eloquent models (User, Setting)
+├── Policies/                  # Authorization policies (UserPolicy, RolePolicy)
+├── Providers/                 # AppServiceProvider (theme, settings composers, RolePolicy registration)
+└── Services/                  # Business logic (UserService, SettingsService)
+bootstrap/app.php              # Laravel 12 application config (middleware, routes)
+config/                        # Laravel config + permissions.php + themes.php
 resources/
-├── css/app.css               # Tailwind + theme CSS variables + font-size scale
-├── js/                       # Alpine.js entry point + components (sidebar, theme-switcher)
+├── css/app.css                # Tailwind + theme CSS variables + font-size scale
+├── js/
+│   ├── app.js                 # Alpine entry point (registers components)
+│   └── components/            # sidebar.js, theme-switcher.js
 └── views/
-    ├── layouts/              # Base layouts: app (sidebar shell), guest
-    ├── components/           # Reusable Blade components (sidebar, sidebar-link, theme-switcher, card)
-    ├── auth/                 # Auth screens (login)
-    ├── account/              # Account preferences screen
-    ├── admin/roles/          # Role management screens
-    ├── admin/users/          # User management screens
-    ├── admin/settings/       # App settings screen
-    └── dashboard.blade.php   # Authenticated landing page (placeholder)
-config/                       # Laravel config + permissions.php (permission catalogue)
+    ├── layouts/               # Base layouts: app (sidebar shell), guest
+    ├── components/            # Reusable Blade components (sidebar, sidebar-link, theme-switcher, user-status-toggle, card)
+    ├── auth/                  # Auth screens (login)
+    ├── account/               # Account preferences screen
+    ├── admin/roles/           # Role management screens (+ _form partial)
+    ├── admin/users/           # User management screens
+    ├── admin/settings/        # App settings screen
+    └── dashboard.blade.php    # Authenticated landing page (placeholder)
 routes/
-├── web.php                   # Route definitions only
-└── auth.php                  # Login/logout routes
+├── web.php                    # Admin + account route definitions only
+└── auth.php                   # Login/logout routes (mounted with web middleware)
 database/
+├── factories/                 # UserFactory (defines is_active default)
+├── migrations/
 └── seeders/
-    ├── DatabaseSeeder.php    # Permissions → roles → admin user
-    ├── PermissionSeeder.php  # Syncs config/permissions.php into the DB
-    └── RoleSeeder.php        # Example roles (Admin, Viewer)
+    ├── DatabaseSeeder.php     # Permissions → roles → admin user → default settings
+    ├── PermissionSeeder.php   # Syncs config/permissions.php into the DB
+    └── RoleSeeder.php         # Example roles (Admin, Viewer)
+tests/Feature/                 # Feature tests per area (Auth, Admin/*, Account)
 ```
+
+**How the layers fit together:**
+
+- **HTTP → Form Request → Controller → Service → Model.** A request is validated by a
+  Form Request, authorized by a Policy (via `$this->authorize()`), then orchestrated
+  by a thin controller that delegates domain logic to a **Service** (`UserService`,
+  `SettingsService`) and returns a `View` or `RedirectResponse`.
+- **Policies** sit next to the controllers they protect. `UserPolicy` guards user
+  management, `RolePolicy` guards role management; both are invoked from the
+  controller (`$this->authorize(...)`) and from views (`@can`). `RolePolicy` is
+  registered explicitly in `AppServiceProvider` because Spatie's `Role` model lives
+  outside `App\Models`.
+- **Frontend is server-rendered Blade + Alpine.** Interactive state (sidebar collapse,
+  theme switching, inline confirm dialogs) is handled by small Alpine components under
+  `resources/js/components/`, each registered in `resources/js/app.js`.
 
 ## Arabic-only UI & RTL
 
@@ -128,7 +202,9 @@ component changes.
 3. Add a `[data-theme="sepia"] { ... }` block in `resources/css/app.css` overriding
    the `--app-*` variables.
 
-The theme switcher dropdown, Alpine component, and cookie persistence pick it up
+The theme switcher — a floating toggle button rendered in both layouts by
+`resources/views/components/theme-switcher.blade.php` with its Alpine logic in
+`resources/js/components/theme-switcher.js` — and the cookie persistence pick it up
 automatically — no other changes needed.
 
 ### Persistence
@@ -181,16 +257,20 @@ Authentication is a hand-rolled Laravel **session guard** flow — no Breeze/For
   `layouts.guest`, so it inherits the RTL direction and theme from step 1. The
   logout button in the `layouts.app` top bar only renders for authenticated users.
 
-### Initial admin user
+### Seeded default credentials
 
-`DatabaseSeeder` creates one admin user so the app is usable immediately and
-assigns it the **Admin** role (all permissions):
+`DatabaseSeeder` creates one admin user so the app is usable immediately and assigns
+it the **Admin** role (all permissions):
 
 | field      | value      |
 |------------|------------|
 | username   | `admin`    |
 | password   | `password` |
 | role       | `Admin`    |
+
+There is **no seeded Viewer user** — `RoleSeeder` only creates the `Viewer` role (see
+[Roles & Permissions](#roles--permissions)); viewer accounts are created by an admin
+from the [User Management](#user-management) screen.
 
 > **Change this placeholder password after the first login.** An admin can reset any
 > user's password (including their own) from the [User Management](#user-management)
@@ -407,17 +487,33 @@ The authenticated area (`layouts.app`) is a sidebar + top-bar shell:
 ## Conventions
 
 - **Validation** — All validation lives in dedicated **Form Request** classes under
-  `app/Http/Requests/`. No inline `$request->validate()` calls inside controllers.
+  `app/Http/Requests/`, including the hardcoded Arabic messages. No inline
+  `$request->validate()` calls inside controllers.
 - **Authorization** — All authorization checks go through **Policies** in
   `app/Policies/`, used with `$this->authorize()` / `Gate::` / `@can`. Never inline
-  ad-hoc checks in controllers or views.
-- **Views** — No logic in views. Views are for presentation only (loops, conditionals,
-  output). Business logic belongs in models, services, or actions.
+  ad-hoc checks in controllers or views. Route-level `can:` middleware is added for
+  defense-in-depth alongside the controller `authorize()`.
+- **Controllers are thin (orchestration only)** — they validate via the Form
+  Request, authorize via the Policy, delegate domain logic to a **Service**
+  (`UserService`, `SettingsService`), and return a `View` or `RedirectResponse`.
+  Business rules (one-role-per-user, password reset, settings caching) live in
+  services, not controllers.
+- **Views** — No logic in views. Views are for presentation only (loops,
+  conditionals, output). Repeated UI is extracted into Blade components under
+  `resources/views/components/` (`card`, `sidebar`, `sidebar-link`,
+  `theme-switcher`, `user-status-toggle`); small interactive behaviors live in
+  `resources/js/components/` and are registered in `resources/js/app.js`.
 - **Routes** — `routes/web.php` contains route definitions only. No business logic
-  in route files; use controllers. Admin routes go under the `admin.*` name prefix.
-- **Controllers** — Admin-only controllers live under `app/Http/Controllers/Admin/`
-  and only handle admin-facing screens.
-- **Code style** — Run `composer format` (Laravel Pint) before committing.
+  in route files; use controllers. Admin routes go under the `admin.*` name prefix
+  and are protected with the `can:` middleware.
+- **Arabic-only** — UI strings and validation messages are hardcoded Arabic; there
+  is no translation layer (`__()` / `trans()`), so new text is written in Arabic
+  directly.
+- **Permissions** — New permissions are declared in `config/permissions.php` (the
+  single source of truth) and synced with `PermissionSeeder`; reference them through
+  the config key in `@can`, `can:`, and policies — never invent keys inline.
+- **Code style** — Run `composer format` (Laravel Pint) and `composer test` before
+  committing.
 
 ## Formatting
 

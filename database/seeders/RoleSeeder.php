@@ -29,13 +29,5 @@ class RoleSeeder extends Seeder
             'guard_name' => $this->guard,
         ]);
         $admin->syncPermissions(Permission::all());
-
-        $viewer = Role::firstOrCreate([
-            'name' => 'Viewer',
-            'guard_name' => $this->guard,
-        ]);
-        $viewer->syncPermissions(
-            Permission::where('name', 'like', '%.view')->get(),
-        );
     }
 }
