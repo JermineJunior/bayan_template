@@ -11,25 +11,26 @@ class Driver extends Model
 {
     /** @use HasFactory<DriverFactory> */
     use HasFactory;
+
     protected $fillable = [
-        'driver_number',
         'full_name',
         'national_id',
-        'phone',
+        'phone_number',
         'department_id',
         'hire_date',
         'license_type',
-        'license_expiry',
+        'license_expiry_date',
         'status',
     ];
+
     protected $casts = [
         'hire_date' => 'date',
-        'license_expiry' => 'date',
+        'license_expiry_date' => 'date',
     ];
 
     public function department(): BelongsTo
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsTo(Department::class, 'department_id');
     }
 
     /** كل المركبات التي تم إسنادها لهذا السائق (تاريخي) */

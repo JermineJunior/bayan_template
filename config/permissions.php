@@ -41,11 +41,34 @@ return [
         'settings.edit',
     ],
 
-    'basic-data' => [
-        'basic-data.view',
-        'basic-data.create',
-        'basic-data.edit',
-        'basic-data.delete',
+    'managements' => [
+        'managements.view',
+        'managements.create',
+        'managements.edit',
+        'managements.delete',
+    ],
+
+    'departments' => [
+        'departments.view',
+        'departments.create',
+        'departments.edit',
+        'departments.delete',
+    ],
+
+    'vehicles' => [
+        'vehicles.view',
+        'vehicles.create',
+        'vehicles.edit',
+        'vehicles.delete',
+        'vehicles.assign',
+        'vehicles.end-assignment',
+    ],
+
+    'drivers' => [
+        'drivers.view',
+        'drivers.create',
+        'drivers.edit',
+        'drivers.delete',
     ],
 
 ];

@@ -63,7 +63,7 @@ class SettingsTest extends TestCase
             'app_name' => 'MyApp',
         ])
             ->assertRedirect(route('settings.edit'))
-            ->assertSessionHas('status');
+            ->assertSessionHas('flasher::envelopes');
 
         $this->assertSame('MyApp', app(SettingsService::class)->get('app_name'));
 
@@ -119,7 +119,7 @@ class SettingsTest extends TestCase
             'logo' => UploadedFile::fake()->image('logo.png', 100, 100),
         ])
             ->assertRedirect(route('settings.edit'))
-            ->assertSessionHas('status');
+            ->assertSessionHas('flasher::envelopes');
 
         $logoPath = app(SettingsService::class)->get('logo_path');
 

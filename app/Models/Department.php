@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Database\Factories\DepartmentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Department extends Model
 {
-    /** @use HasFactory<\Database\Factories\DepartmentFactory> */
+    /** @use HasFactory<DepartmentFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -27,6 +28,6 @@ class Department extends Model
 
     public function drivers()
     {
-        return $this->hasMany(Driver::class);
+        return $this->hasMany(Driver::class, 'department_id');
     }
 }

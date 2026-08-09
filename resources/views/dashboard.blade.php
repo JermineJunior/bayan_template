@@ -15,19 +15,19 @@
 
         <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div class="flex min-h-24 flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-surface p-4 text-center">
-                <div class="text-3xl font-semibold text-primary">42</div>
+                <div class="text-3xl font-semibold text-primary">{{ number_format($totalVehicles) }}</div>
                 <div class="mt-2 text-sm text-muted-foreground">إجمالي المركبات</div>
             </div>
             <div class="flex min-h-24 flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-surface p-4 text-center">
-                <div class="text-3xl font-semibold text-primary">36</div>
+                <div class="text-3xl font-semibold text-primary">{{ number_format($activeVehicles) }}</div>
                 <div class="mt-2 text-sm text-muted-foreground">مركبات نشطة</div>
             </div>
             <div class="flex min-h-24 flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-surface p-4 text-center">
-                <div class="text-3xl font-semibold text-primary">4</div>
+                <div class="text-3xl font-semibold text-primary">{{ number_format($maintenanceVehicles) }}</div>
                 <div class="mt-2 text-sm text-muted-foreground">تحت الصيانة</div>
             </div>
             <div class="flex min-h-24 flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-surface p-4 text-center">
-                <div class="text-3xl font-semibold text-primary">3</div>
+                <div class="text-3xl font-semibold text-primary">{{ number_format($licensesExpiringSoon) }}</div>
                 <div class="mt-2 text-sm text-muted-foreground">رخص سائقين قريبة الانتهاء</div>
             </div>
         </div>

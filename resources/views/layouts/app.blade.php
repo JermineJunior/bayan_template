@@ -19,12 +19,33 @@
     </head>
 
     <body class="bg-background text-foreground antialiased">
-        <div class="flex min-h-screen">
+        <div x-data="sidebar" class="flex min-h-screen">
+            {{-- Mobile drawer backdrop --}}
+            <div
+                x-show="mobileOpen"
+                x-cloak
+                @click="mobileOpen = false"
+                class="fixed inset-0 z-30 bg-black/40 lg:hidden"
+            ></div>
+
             <x-sidebar />
 
             <div class="flex min-w-0 flex-1 flex-col">
-                <header class="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border bg-surface px-4 sm:px-6">
-                    <div class="min-w-0">
+                <header class="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border bg-surface px-4 sm:px-6">
+                    <div class="flex min-w-0 items-center gap-3">
+                        <button
+                            type="button"
+                            @click="mobileOpen = !mobileOpen"
+                            aria-label="فتح القائمة"
+                            class="rounded-md border border-border p-2 text-muted-foreground transition-colors hover:bg-muted lg:hidden"
+                        >
+                            <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M4 6h16"></path>
+                                <path d="M4 12h16"></path>
+                                <path d="M4 18h16"></path>
+                            </svg>
+                        </button>
+
                         <h1 class="truncate text-lg font-semibold text-foreground">
                             @yield('title', $appName)
                         </h1>

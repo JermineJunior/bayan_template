@@ -38,8 +38,9 @@ class SettingsController extends Controller
             $settings->set('logo_path', $path);
         }
 
+        flash()->success('تم تحديث الإعدادات.');
+
         return redirect()
-            ->route('settings.edit')
-            ->with('status', 'تم تحديث الإعدادات.');
+            ->route('settings.edit');
     }
 }

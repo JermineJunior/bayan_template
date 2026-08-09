@@ -109,7 +109,7 @@ class UserManagementTest extends TestCase
             'role_id' => $role->id,
         ])
             ->assertRedirect(route('users.index'))
-            ->assertSessionHas('status');
+            ->assertSessionHas('flasher::envelopes');
 
         $user = User::where('username', 'jane')->first();
 
@@ -250,7 +250,7 @@ class UserManagementTest extends TestCase
             'password' => 'newpass456',
         ])
             ->assertRedirect(route('users.edit', $user))
-            ->assertSessionHas('status');
+            ->assertSessionHas('flasher::envelopes');
 
         $this->assertTrue(Hash::check('newpass456', $user->fresh()->password));
     }
@@ -267,7 +267,7 @@ class UserManagementTest extends TestCase
         ], 'Viewer');
 
         $this->post(route('users.reset-password', $user), [
-            'password' => 'short',
+            'password' => 'abc',
         ])->assertSessionHasErrors('password');
 
         $this->assertTrue(Hash::check('oldpass123', $user->fresh()->password));
@@ -397,7 +397,7 @@ class UserManagementTest extends TestCase
 
         $this->post(route('users.deactivate', $user))
             ->assertRedirect(route('users.index'))
-            ->assertSessionHas('status');
+            ->assertSessionHas('flasher::envelopes');
 
         $this->assertFalse($user->fresh()->is_active);
     }
@@ -410,7 +410,7 @@ class UserManagementTest extends TestCase
 
         $this->post(route('users.activate', $user))
             ->assertRedirect(route('users.index'))
-            ->assertSessionHas('status');
+            ->assertSessionHas('flasher::envelopes');
 
         $this->assertTrue($user->fresh()->is_active);
     }

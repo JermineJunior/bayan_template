@@ -19,13 +19,7 @@
             @endcan
         </div>
 
-        @if (session('status'))
-            <div class="mb-6 rounded-md border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-                {{ session('status') }}
-            </div>
-        @endif
-
-        <div class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
+        <div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-sm">
             <table class="min-w-full divide-y divide-border text-sm">
                 <thead>
                     <tr class="text-xs uppercase tracking-wide text-muted-foreground">

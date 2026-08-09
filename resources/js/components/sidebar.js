@@ -8,6 +8,8 @@ export default function () {
             }
         })(),
 
+        mobileOpen: false,
+
         toggle() {
             this.collapsed = !this.collapsed;
 
@@ -16,6 +18,10 @@ export default function () {
             } catch {
                 // Storage unavailable — the collapse still applies for this session.
             }
+        },
+
+        close() {
+            this.mobileOpen = false;
         },
     };
 }

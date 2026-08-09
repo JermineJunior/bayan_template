@@ -28,8 +28,9 @@ class PreferencesController extends Controller
             'font_size' => $request->string('font_size')->toString(),
         ]);
 
+        flash()->success('تم تحديث التفضيلات.');
+
         return redirect()
-            ->route('account.preferences.edit')
-            ->with('status', 'تم تحديث التفضيلات.');
+            ->route('account.preferences.edit');
     }
 }

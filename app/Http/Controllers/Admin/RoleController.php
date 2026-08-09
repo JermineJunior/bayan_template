@@ -50,9 +50,10 @@ class RoleController extends Controller
 
         $role->syncPermissions($request->input('permissions', []));
 
+        flash()->success('تم إنشاء الدور.');
+
         return redirect()
-            ->route('roles.index')
-            ->with('status', 'تم إنشاء الدور.');
+            ->route('roles.index');
     }
 
     /**
@@ -82,9 +83,10 @@ class RoleController extends Controller
 
         $role->syncPermissions($request->input('permissions', []));
 
+        flash()->success('تم تحديث الدور.');
+
         return redirect()
-            ->route('roles.index')
-            ->with('status', 'تم تحديث الدور.');
+            ->route('roles.index');
     }
 
     /**
@@ -96,9 +98,10 @@ class RoleController extends Controller
 
         $role->delete();
 
+        flash()->success('تم حذف الدور.');
+
         return redirect()
-            ->route('roles.index')
-            ->with('status', 'تم حذف الدور.');
+            ->route('roles.index');
     }
 
     /**

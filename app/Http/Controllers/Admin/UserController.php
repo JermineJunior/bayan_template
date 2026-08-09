@@ -66,9 +66,10 @@ class UserController extends Controller
             ? 'تم إنشاء المستخدم.'
             : "تم إنشاء المستخدم. كلمة المرور المولدة: {$password}";
 
+        flash()->success($message);
+
         return redirect()
-            ->route('users.index')
-            ->with('status', $message);
+            ->route('users.index');
     }
 
     /**
@@ -99,9 +100,10 @@ class UserController extends Controller
             'email' => $request->filled('email') ? $request->string('email')->toString() : null,
         ], $role);
 
+        flash()->success('تم تحديث المستخدم.');
+
         return redirect()
-            ->route('users.index')
-            ->with('status', 'تم تحديث المستخدم.');
+            ->route('users.index');
     }
 
     /**
@@ -113,9 +115,10 @@ class UserController extends Controller
 
         $user->delete();
 
+        flash()->success('تم حذف المستخدم.');
+
         return redirect()
-            ->route('users.index')
-            ->with('status', 'تم حذف المستخدم.');
+            ->route('users.index');
     }
 
     /**
@@ -127,9 +130,10 @@ class UserController extends Controller
 
         app(UserService::class)->resetPassword($user, $request->string('password')->toString());
 
+        flash()->success('تم تعيين كلمة المرور الجديدة.');
+
         return redirect()
-            ->route('users.edit', $user)
-            ->with('status', 'تم تعيين كلمة المرور الجديدة.');
+            ->route('users.edit', $user);
     }
 
     /**
@@ -144,9 +148,10 @@ class UserController extends Controller
 
         $user->update(['is_active' => false]);
 
+        flash()->success("تم تعطيل حساب {$user->name}.");
+
         return redirect()
-            ->route('users.index')
-            ->with('status', "تم تعطيل حساب {$user->name}.");
+            ->route('users.index');
     }
 
     /**
@@ -158,9 +163,10 @@ class UserController extends Controller
 
         $user->update(['is_active' => true]);
 
+        flash()->success("تم تفعيل حساب {$user->name}.");
+
         return redirect()
-            ->route('users.index')
-            ->with('status', "تم تفعيل حساب {$user->name}.");
+            ->route('users.index');
     }
 
     /**

@@ -1,14 +1,14 @@
 <aside
-    x-data="sidebar"
     aria-label="القائمة الجانبية"
-    class="sticky top-0 flex h-screen shrink-0 flex-col border-e border-border bg-surface transition-[width] duration-200"
-    :class="collapsed ? 'w-16' : 'w-64'"
+    class="fixed inset-y-0 start-0 z-40 flex h-screen w-64 shrink-0 flex-col border-e border-border bg-surface transition-all duration-200 lg:static lg:translate-x-0"
+    :class="[collapsed ? 'lg:w-16' : 'lg:w-64', mobileOpen ? 'translate-x-0' : 'translate-x-full']"
 >
     {{-- Brand --}}
     <a
         href="{{ route('home') }}"
         class="flex h-16 shrink-0 items-center gap-2 border-b border-border px-4"
         :class="collapsed ? 'justify-center' : 'justify-start'"
+        @click="close()"
     >
         @if ($logoUrl)
             <img
@@ -22,9 +22,22 @@
         </span>
     </a>
 
+    {{-- Close button (mobile only) --}}
+    <button
+        type="button"
+        @click="mobileOpen = false"
+        aria-label="إغلاق القائمة"
+        class="absolute end-3 top-3 rounded-md border border-border p-1.5 text-muted-foreground transition-colors hover:bg-muted lg:hidden"
+    >
+        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+        </svg>
+    </button>
+
     {{-- Navigation: each item declares the permission it requires and is
          removed from the DOM entirely when the user lacks it. --}}
-    <nav class="flex-1 space-y-1 overflow-y-auto p-3">
+    <nav @click="close()" class="flex-1 space-y-1 overflow-y-auto p-3">
         <x-sidebar-link
             href="{{ route('home') }}"
             :active="request()->routeIs('home')"
@@ -32,14 +45,14 @@
             icon="dashboard"
         />
 
-        @can('basic-data.view')
-            <div x-data="{ open: {{ request()->routeIs('managements.*') || request()->routeIs('departments.*') ? 'true' : 'true' }} }">
+        @canany(['managements.view', 'departments.view', 'drivers.view', 'vehicles.view'])
+            <div x-data="{ open: {{ request()->routeIs('managements.*') || request()->routeIs('departments.*') || request()->routeIs('drivers.*') || request()->routeIs('vehicles.*') ? 'true' : 'true' }} }">
                 <button
                     type="button"
-                    @click="open = !open"
+                    @click.stop="open = !open"
                     :class="collapsed ? 'w-full justify-center' : 'w-full justify-start'"
                     :aria-expanded="open ? 'true' : 'false'"
-                    class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('managements.*') || request()->routeIs('departments.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
+                    class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('managements.*') || request()->routeIs('departments.*') || request()->routeIs('drivers.*') || request()->routeIs('vehicles.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
                 >
                     <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
@@ -69,21 +82,41 @@
                 </button>
 
                 <div x-show="open && !collapsed" x-cloak class="mt-1 space-y-1">
-                    <a
-                        href="{{ route('managements.index') }}"
-                        class="flex items-center gap-3 rounded-md ps-10 pe-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('managements.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
-                    >
-                        الإدارات
-                    </a>
-                    <a
-                        href="{{ route('departments.index') }}"
-                        class="flex items-center gap-3 rounded-md ps-10 pe-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('departments.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
-                    >
-                        الأقسام
-                    </a>
+                    @can('managements.view')
+                        <a
+                            href="{{ route('managements.index') }}"
+                            class="flex items-center gap-3 rounded-md ps-10 pe-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('managements.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
+                        >
+                            الإدارات
+                        </a>
+                    @endcan
+                    @can('departments.view')
+                        <a
+                            href="{{ route('departments.index') }}"
+                            class="flex items-center gap-3 rounded-md ps-10 pe-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('departments.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
+                        >
+                            الأقسام
+                        </a>
+                    @endcan
+                    @can('drivers.view')
+                        <a
+                            href="{{ route('drivers.index') }}"
+                            class="flex items-center gap-3 rounded-md ps-10 pe-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('drivers.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
+                        >
+                            السائقون
+                        </a>
+                    @endcan
+                    @can('vehicles.view')
+                        <a
+                            href="{{ route('vehicles.index') }}"
+                            class="flex items-center gap-3 rounded-md ps-10 pe-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('vehicles.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
+                        >
+                            المركبات
+                        </a>
+                    @endcan
                 </div>
             </div>
-        @endcan
+        @endcanany
 
         @can('users.view')
             <x-sidebar-link
@@ -113,12 +146,12 @@
         @endcan
     </nav>
 
-    {{-- Collapse toggle --}}
+    {{-- Collapse toggle (desktop only) --}}
     <button
         type="button"
         @click="toggle"
         :aria-label="collapsed ? 'توسيع القائمة الجانبية' : 'طيّ القائمة الجانبية'"
-        class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        class="hidden items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:flex"
         :class="collapsed ? 'mx-3 mb-3 justify-center' : 'mx-3 mb-3 justify-start'"
     >
         <svg x-show="!collapsed" class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

@@ -5,12 +5,16 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\BasicData\DepartmentController;
+use App\Http\Controllers\BasicData\DriverController;
 use App\Http\Controllers\BasicData\ManagementController;
+use App\Http\Controllers\BasicData\VehicleController;
+use App\Http\Controllers\BasicData\VehicleDriverController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('home');
+Route::get('/', [DashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('home');
 
 Route::middleware('auth')->group(function () {
     // Read-only pages share the roles.view permission.
@@ -77,40 +81,88 @@ Route::middleware('auth')->prefix('account')->name('account.')->group(function (
     Route::put('preferences', [PreferencesController::class, 'update'])->name('preferences.update');
 });
 
-// Basic data (managements / departments).
+// Basic data (managements / departments / drivers / vehicles).
 Route::middleware('auth')->group(function () {
-    // Read-only pages share the basic-data.view permission.
-    Route::middleware('can:basic-data.view')->group(function () {
+    // Read-only pages share the module's .view permission.
+    Route::middleware('can:managements.view')->group(function () {
         Route::get('managements', [ManagementController::class, 'index'])->name('managements.index');
         Route::get('managements/create', [ManagementController::class, 'create'])->name('managements.create');
         Route::get('managements/{management}', [ManagementController::class, 'edit'])->name('managements.edit');
+    });
 
+    Route::middleware('can:departments.view')->group(function () {
         Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
         Route::get('departments/create', [DepartmentController::class, 'create'])->name('departments.create');
         Route::get('departments/{department}', [DepartmentController::class, 'edit'])->name('departments.edit');
     });
 
+    Route::middleware('can:drivers.view')->group(function () {
+        Route::get('drivers', [DriverController::class, 'index'])->name('drivers.index');
+        Route::get('drivers/create', [DriverController::class, 'create'])->name('drivers.create');
+        Route::get('drivers/{driver}', [DriverController::class, 'show'])->name('drivers.show');
+        Route::get('drivers/{driver}/edit', [DriverController::class, 'edit'])->name('drivers.edit');
+    });
+
+    Route::middleware('can:vehicles.view')->group(function () {
+        Route::get('vehicles', [VehicleController::class, 'index'])->name('vehicles.index');
+        Route::get('vehicles/create', [VehicleController::class, 'create'])->name('vehicles.create');
+        Route::get('vehicles/{vehicle}', [VehicleController::class, 'show'])->name('vehicles.show');
+        Route::get('vehicles/{vehicle}/edit', [VehicleController::class, 'edit'])->name('vehicles.edit');
+    });
+
     Route::post('managements', [ManagementController::class, 'store'])
-        ->middleware('can:basic-data.create')
+        ->middleware('can:managements.create')
         ->name('managements.store');
 
     Route::put('managements/{management}', [ManagementController::class, 'update'])
-        ->middleware('can:basic-data.edit')
+        ->middleware('can:managements.edit')
         ->name('managements.update');
 
     Route::delete('managements/{management}', [ManagementController::class, 'destroy'])
-        ->middleware('can:basic-data.delete')
+        ->middleware('can:managements.delete')
         ->name('managements.destroy');
 
     Route::post('departments', [DepartmentController::class, 'store'])
-        ->middleware('can:basic-data.create')
+        ->middleware('can:departments.create')
         ->name('departments.store');
 
     Route::put('departments/{department}', [DepartmentController::class, 'update'])
-        ->middleware('can:basic-data.edit')
+        ->middleware('can:departments.edit')
         ->name('departments.update');
 
     Route::delete('departments/{department}', [DepartmentController::class, 'destroy'])
-        ->middleware('can:basic-data.delete')
+        ->middleware('can:departments.delete')
         ->name('departments.destroy');
+
+    Route::post('drivers', [DriverController::class, 'store'])
+        ->middleware('can:drivers.create')
+        ->name('drivers.store');
+
+    Route::put('drivers/{driver}', [DriverController::class, 'update'])
+        ->middleware('can:drivers.edit')
+        ->name('drivers.update');
+
+    Route::delete('drivers/{driver}', [DriverController::class, 'destroy'])
+        ->middleware('can:drivers.delete')
+        ->name('drivers.destroy');
+
+    Route::post('vehicles', [VehicleController::class, 'store'])
+        ->middleware('can:vehicles.create')
+        ->name('vehicles.store');
+
+    Route::put('vehicles/{vehicle}', [VehicleController::class, 'update'])
+        ->middleware('can:vehicles.edit')
+        ->name('vehicles.update');
+
+    Route::delete('vehicles/{vehicle}', [VehicleController::class, 'destroy'])
+        ->middleware('can:vehicles.delete')
+        ->name('vehicles.destroy');
+
+    Route::post('vehicles/{vehicle}/assign-driver', [VehicleDriverController::class, 'store'])
+        ->middleware('can:vehicles.assign')
+        ->name('vehicles.assign-driver');
+
+    Route::delete('assignments/{assignment}', [VehicleDriverController::class, 'destroy'])
+        ->middleware('can:vehicles.end-assignment')
+        ->name('assignments.destroy');
 });

@@ -18,6 +18,18 @@ return new class extends Migration
             $table->date('assignment_date');
             $table->boolean('is_current')->default(true);
             $table->foreignId('assigned_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('ended_at')->nullable();
+
+            // Generated columns enforcing a single current assignment per vehicle
+            // and per driver: the column holds the related id only while the row
+            // is current, so the UNIQUE index allows many NULLs (ended rows) but
+            // rejects a second "current" row for the same vehicle/driver.
+            $table->unsignedBigInteger('current_vehicle_id')
+                ->storedAs('CASE WHEN is_current = 1 THEN vehicle_id ELSE NULL END')
+                ->unique();
+            $table->unsignedBigInteger('current_driver_id')
+                ->storedAs('CASE WHEN is_current = 1 THEN driver_id ELSE NULL END')
+                ->unique();
 
             $table->index(['vehicle_id', 'is_current']);
             $table->index(['driver_id', 'is_current']);

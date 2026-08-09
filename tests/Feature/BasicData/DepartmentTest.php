@@ -48,7 +48,7 @@ class DepartmentTest extends TestCase
     {
         $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
         Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
-        $this->actingUser(['basic-data.view']);
+        $this->actingUser(['departments.view']);
 
         $this->get(route('departments.index'))
             ->assertOk()
@@ -59,7 +59,7 @@ class DepartmentTest extends TestCase
     public function test_user_with_basic_data_create_can_create_a_department(): void
     {
         $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        $this->actingUser(['basic-data.view', 'basic-data.create']);
+        $this->actingUser(['departments.view', 'departments.create']);
 
         $this->post(route('departments.store'), [
             'number' => 1,
@@ -78,7 +78,7 @@ class DepartmentTest extends TestCase
     {
         $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
         Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
-        $this->actingUser(['basic-data.view', 'basic-data.create']);
+        $this->actingUser(['departments.view', 'departments.create']);
 
         $this->post(route('departments.store'), [
             'number' => '',
@@ -98,7 +98,7 @@ class DepartmentTest extends TestCase
     public function test_department_name_is_required(): void
     {
         $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        $this->actingUser(['basic-data.view', 'basic-data.create']);
+        $this->actingUser(['departments.view', 'departments.create']);
 
         $this->post(route('departments.store'), [
             'number' => 1,
@@ -111,7 +111,7 @@ class DepartmentTest extends TestCase
 
     public function test_department_management_is_required_and_must_exist(): void
     {
-        $this->actingUser(['basic-data.view', 'basic-data.create']);
+        $this->actingUser(['departments.view', 'departments.create']);
 
         $this->post(route('departments.store'), [
             'number' => 1,
@@ -127,7 +127,7 @@ class DepartmentTest extends TestCase
         $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
         $other = Management::create(['number' => 2, 'name' => 'إدارة الصيانة']);
         $department = Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
-        $this->actingUser(['basic-data.view', 'basic-data.edit']);
+        $this->actingUser(['departments.view', 'departments.edit']);
 
         $this->put(route('departments.update', $department), [
             'number' => 1,
@@ -146,7 +146,7 @@ class DepartmentTest extends TestCase
     {
         $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
         $department = Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
-        $this->actingUser(['basic-data.view', 'basic-data.edit']);
+        $this->actingUser(['departments.view', 'departments.edit']);
 
         $this->put(route('departments.update', $department), [
             'number' => 1,
@@ -159,7 +159,7 @@ class DepartmentTest extends TestCase
     {
         $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
         $department = Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
-        $this->actingUser(['basic-data.view', 'basic-data.delete']);
+        $this->actingUser(['departments.view', 'departments.delete']);
 
         $this->delete(route('departments.destroy', $department))
             ->assertRedirect(route('departments.index'));
@@ -169,7 +169,7 @@ class DepartmentTest extends TestCase
 
     public function test_user_without_basic_data_create_cannot_store_a_department(): void
     {
-        $this->actingUser(['basic-data.view']);
+        $this->actingUser(['departments.view']);
 
         $this->post(route('departments.store'), [
             'number' => 1,

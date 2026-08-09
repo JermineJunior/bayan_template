@@ -11,7 +11,7 @@
                 الأقسام
             </h1>
 
-            @can('basic-data.create')
+            @can('departments.create')
                 <a
                     href="{{ route('departments.create') }}"
                     class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
@@ -21,7 +21,7 @@
             @endcan
         </div>
 
-        <div class="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
+        <div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-sm">
             <table class="min-w-full divide-y divide-border text-sm">
                 <thead>
                     <tr class="text-xs uppercase tracking-wide text-muted-foreground">
@@ -57,7 +57,7 @@
                                 {{ $department->drivers_count }} سائق
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-end gap-2">
-                                    @can('basic-data.edit')
+                                    @can('departments.edit')
                                         <a
                                             href="{{ route('departments.edit', $department) }}"
                                             class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
@@ -66,7 +66,7 @@
                                         </a>
                                     @endcan
 
-                                    @can('basic-data.delete')
+                                    @can('departments.delete')
                                         <form
                                             method="POST"
                                             action="{{ route('departments.destroy', $department) }}"
@@ -89,7 +89,7 @@
                         <tr>
                             <td colspan="4" class="px-4 py-8 text-center text-muted-foreground">
                                 لا توجد أقسام بعد.
-                                @can('basic-data.create')
+                                @can('departments.create')
                                     <a href="{{ route('departments.create') }}" class="text-primary hover:underline">
                                         أضف أول قسم
                                     </a>

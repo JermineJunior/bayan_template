@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Vehicle extends Model
 {
@@ -14,23 +15,38 @@ class Vehicle extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name',
-        'license_plate',
+        'internal_number',
+        'plate_number',
+        'type',
+        'category',
         'model',
-        'year',
+        'manufacture_year',
+        'color',
+        'chassis_number',
+        'engine_number',
         'fuel_type',
         'engine_capacity',
         'management_id',
-        'current_driver_id',
         'status',
         'current_mileage',
         'operating_hours',
         'image_path',
     ];
 
+    protected $casts = [
+        'manufacture_year' => 'integer',
+        'current_mileage' => 'decimal:2',
+        'operating_hours' => 'decimal:2',
+    ];
+
     public function management()
     {
         return $this->belongsTo(Management::class);
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image_path ? Storage::disk('public')->url($this->image_path) : null;
     }
 
     /** كل سجلات الإسناد التاريخية لهذي المركبة */

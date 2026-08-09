@@ -45,9 +45,10 @@ class ManagementController extends Controller
 
         Management::create($validated);
 
+        flash()->success('تم إنشاء الإدارة.');
+
         return redirect()
-            ->route('managements.index')
-            ->with('success', 'تم إنشاء الإدارة.');
+            ->route('managements.index');
     }
 
     /**
@@ -72,9 +73,10 @@ class ManagementController extends Controller
 
         $management->update($validated);
 
+        flash()->success('تم تحديث الإدارة.');
+
         return redirect()
-            ->route('managements.index')
-            ->with('success', 'تم تحديث الإدارة.');
+            ->route('managements.index');
     }
 
     /**
@@ -83,15 +85,17 @@ class ManagementController extends Controller
     public function destroy(Management $management): RedirectResponse
     {
         if ($management->departments()->exists() || $management->vehicles()->exists()) {
+            flash()->error('لا يمكن حذف هذه الإدارة لوجود أقسام أو مركبات مرتبطة بها.');
+
             return redirect()
-                ->route('managements.index')
-                ->with('error', 'لا يمكن حذف هذه الإدارة لوجود أقسام أو مركبات مرتبطة بها.');
+                ->route('managements.index');
         }
 
         $management->delete();
 
+        flash()->success('تم حذف الإدارة.');
+
         return redirect()
-            ->route('managements.index')
-            ->with('success', 'تم حذف الإدارة.');
+            ->route('managements.index');
     }
 }

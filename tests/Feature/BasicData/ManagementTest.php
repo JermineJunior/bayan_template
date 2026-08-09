@@ -48,7 +48,7 @@ class ManagementTest extends TestCase
     public function test_user_with_basic_data_view_can_view_the_management_index(): void
     {
         Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        $this->actingUser(['basic-data.view']);
+        $this->actingUser(['managements.view']);
 
         $this->get(route('managements.index'))
             ->assertOk()
@@ -57,7 +57,7 @@ class ManagementTest extends TestCase
 
     public function test_user_with_basic_data_create_can_create_a_management(): void
     {
-        $this->actingUser(['basic-data.view', 'basic-data.create']);
+        $this->actingUser(['managements.view', 'managements.create']);
 
         $this->post(route('managements.store'), [
             'number' => 1,
@@ -70,7 +70,7 @@ class ManagementTest extends TestCase
     public function test_management_number_is_required_and_unique(): void
     {
         Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        $this->actingUser(['basic-data.view', 'basic-data.create']);
+        $this->actingUser(['managements.view', 'managements.create']);
 
         $this->post(route('managements.store'), [
             'number' => '',
@@ -87,7 +87,7 @@ class ManagementTest extends TestCase
 
     public function test_management_name_is_required(): void
     {
-        $this->actingUser(['basic-data.view', 'basic-data.create']);
+        $this->actingUser(['managements.view', 'managements.create']);
 
         $this->post(route('managements.store'), [
             'number' => 1,
@@ -100,7 +100,7 @@ class ManagementTest extends TestCase
     public function test_user_with_basic_data_edit_can_update_a_management(): void
     {
         $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        $this->actingUser(['basic-data.view', 'basic-data.edit']);
+        $this->actingUser(['managements.view', 'managements.edit']);
 
         $this->put(route('managements.update', $management), [
             'number' => 1,
@@ -113,7 +113,7 @@ class ManagementTest extends TestCase
     public function test_management_number_can_stay_the_same_when_updating(): void
     {
         $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        $this->actingUser(['basic-data.view', 'basic-data.edit']);
+        $this->actingUser(['managements.view', 'managements.edit']);
 
         $this->put(route('managements.update', $management), [
             'number' => 1,
@@ -124,7 +124,7 @@ class ManagementTest extends TestCase
     public function test_user_with_basic_data_delete_can_delete_a_management(): void
     {
         $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        $this->actingUser(['basic-data.view', 'basic-data.delete']);
+        $this->actingUser(['managements.view', 'managements.delete']);
 
         $this->delete(route('managements.destroy', $management))
             ->assertRedirect(route('managements.index'));
@@ -136,11 +136,11 @@ class ManagementTest extends TestCase
     {
         $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
         Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
-        $this->actingUser(['basic-data.view', 'basic-data.delete']);
+        $this->actingUser(['managements.view', 'managements.delete']);
 
         $this->delete(route('managements.destroy', $management))
             ->assertRedirect(route('managements.index'))
-            ->assertSessionHas('error');
+            ->assertSessionHas('flasher::envelopes');
 
         $this->assertDatabaseHas('management', ['id' => $management->id]);
     }
@@ -153,18 +153,18 @@ class ManagementTest extends TestCase
             'plate_number' => 'ABC 123',
             'management_id' => $management->id,
         ]);
-        $this->actingUser(['basic-data.view', 'basic-data.delete']);
+        $this->actingUser(['managements.view', 'managements.delete']);
 
         $this->delete(route('managements.destroy', $management))
             ->assertRedirect(route('managements.index'))
-            ->assertSessionHas('error');
+            ->assertSessionHas('flasher::envelopes');
 
         $this->assertDatabaseHas('management', ['id' => $management->id]);
     }
 
     public function test_user_without_basic_data_create_cannot_store_a_management(): void
     {
-        $this->actingUser(['basic-data.view']);
+        $this->actingUser(['managements.view']);
 
         $this->post(route('managements.store'), [
             'number' => 1,

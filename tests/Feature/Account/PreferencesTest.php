@@ -43,7 +43,7 @@ class PreferencesTest extends TestCase
             'font_size' => 'large',
         ])
             ->assertRedirect(route('account.preferences.edit'))
-            ->assertSessionHas('status');
+            ->assertSessionHas('flasher::envelopes');
 
         $this->assertSame('large', $user->fresh()->font_size);
 

@@ -49,9 +49,10 @@ class DepartmentController extends Controller
 
         Department::create($validated);
 
+        flash()->success('تم إنشاء القسم.');
+
         return redirect()
-            ->route('departments.index')
-            ->with('success', 'تم إنشاء القسم.');
+            ->route('departments.index');
     }
 
     /**
@@ -78,9 +79,10 @@ class DepartmentController extends Controller
 
         $department->update($validated);
 
+        flash()->success('تم تحديث القسم.');
+
         return redirect()
-            ->route('departments.index')
-            ->with('success', 'تم تحديث القسم.');
+            ->route('departments.index');
     }
 
     /**
@@ -88,13 +90,18 @@ class DepartmentController extends Controller
      */
     public function destroy(Department $department): RedirectResponse
     {
-        // TODO: block deletion with a clear error message once a
-        // Department::drivers() relation exists in the project, so drivers
-        // referencing this department are never silently cascade-deleted.
+        if ($department->drivers()->exists()) {
+            flash()->error('لا يمكن حذف هذا القسم لوجود سائقين مرتبطين به.');
+
+            return redirect()
+                ->route('departments.index');
+        }
+
         $department->delete();
 
+        flash()->success('تم حذف القسم.');
+
         return redirect()
-            ->route('departments.index')
-            ->with('success', 'تم حذف القسم.');
+            ->route('departments.index');
     }
 }
