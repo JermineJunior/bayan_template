@@ -34,7 +34,7 @@
 
         <form
             method="POST"
-            action="{{ $user->is_active ? route('admin.users.deactivate', $user) : route('admin.users.activate', $user) }}"
+            action="{{ $user->is_active ? route('users.deactivate', $user) : route('users.activate', $user) }}"
             class="inline"
         >
             @csrf

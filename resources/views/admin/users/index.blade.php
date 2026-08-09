@@ -11,7 +11,7 @@
 
             @can('create', App\Models\User::class)
                 <a
-                    href="{{ route('admin.users.create') }}"
+                    href="{{ route('users.create') }}"
                     class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 >
                     إنشاء مستخدم
@@ -69,7 +69,7 @@
                                 <div class="flex flex-wrap items-center justify-end gap-2">
                                     @can('update', $user)
                                         <a
-                                            href="{{ route('admin.users.edit', $user) }}"
+                                            href="{{ route('users.edit', $user) }}"
                                             class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
                                         >
                                             تعديل
@@ -81,7 +81,7 @@
                                     @can('delete', $user)
                                         <form
                                             method="POST"
-                                            action="{{ route('admin.users.destroy', $user) }}"
+                                            action="{{ route('users.destroy', $user) }}"
                                             onsubmit="return confirm('هل تريد حذف هذا المستخدم؟')"
                                         >
                                             @csrf

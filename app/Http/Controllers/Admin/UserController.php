@@ -67,7 +67,7 @@ class UserController extends Controller
             : "تم إنشاء المستخدم. كلمة المرور المولدة: {$password}";
 
         return redirect()
-            ->route('admin.users.index')
+            ->route('users.index')
             ->with('status', $message);
     }
 
@@ -100,7 +100,7 @@ class UserController extends Controller
         ], $role);
 
         return redirect()
-            ->route('admin.users.index')
+            ->route('users.index')
             ->with('status', 'تم تحديث المستخدم.');
     }
 
@@ -114,7 +114,7 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()
-            ->route('admin.users.index')
+            ->route('users.index')
             ->with('status', 'تم حذف المستخدم.');
     }
 
@@ -128,7 +128,7 @@ class UserController extends Controller
         app(UserService::class)->resetPassword($user, $request->string('password')->toString());
 
         return redirect()
-            ->route('admin.users.edit', $user)
+            ->route('users.edit', $user)
             ->with('status', 'تم تعيين كلمة المرور الجديدة.');
     }
 
@@ -145,7 +145,7 @@ class UserController extends Controller
         $user->update(['is_active' => false]);
 
         return redirect()
-            ->route('admin.users.index')
+            ->route('users.index')
             ->with('status', "تم تعطيل حساب {$user->name}.");
     }
 
@@ -159,7 +159,7 @@ class UserController extends Controller
         $user->update(['is_active' => true]);
 
         return redirect()
-            ->route('admin.users.index')
+            ->route('users.index')
             ->with('status', "تم تفعيل حساب {$user->name}.");
     }
 

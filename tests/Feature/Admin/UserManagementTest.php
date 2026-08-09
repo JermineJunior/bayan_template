@@ -46,7 +46,7 @@ class UserManagementTest extends TestCase
 
     public function test_guest_is_redirected_to_login_when_accessing_user_management(): void
     {
-        $this->get(route('admin.users.index'))
+        $this->get(route('users.index'))
             ->assertRedirect(route('login'));
     }
 
@@ -54,7 +54,7 @@ class UserManagementTest extends TestCase
     {
         $this->actingUser();
 
-        $this->get(route('admin.users.index'))->assertForbidden();
+        $this->get(route('users.index'))->assertForbidden();
     }
 
     public function test_user_with_users_view_can_view_the_user_index(): void
@@ -69,7 +69,7 @@ class UserManagementTest extends TestCase
             'password' => 'secret123',
         ], $role);
 
-        $this->get(route('admin.users.index'))
+        $this->get(route('users.index'))
             ->assertOk()
             ->assertSee('Jane Doe')
             ->assertSee('jane')
@@ -81,13 +81,13 @@ class UserManagementTest extends TestCase
         $role = $this->viewerRole();
         $this->actingUser(['users.view', 'users.create']);
 
-        $this->post(route('admin.users.store'), [
+        $this->post(route('users.store'), [
             'name' => 'Jane Doe',
             'username' => 'jane',
             'email' => 'jane@example.com',
             'password' => 'secret123',
             'role_id' => $role->id,
-        ])->assertRedirect(route('admin.users.index'));
+        ])->assertRedirect(route('users.index'));
 
         $user = User::where('username', 'jane')->first();
 
@@ -103,12 +103,12 @@ class UserManagementTest extends TestCase
         $role = $this->viewerRole();
         $this->actingUser(['users.view', 'users.create']);
 
-        $this->post(route('admin.users.store'), [
+        $this->post(route('users.store'), [
             'name' => 'Jane Doe',
             'username' => 'jane',
             'role_id' => $role->id,
         ])
-            ->assertRedirect(route('admin.users.index'))
+            ->assertRedirect(route('users.index'))
             ->assertSessionHas('status');
 
         $user = User::where('username', 'jane')->first();
@@ -123,7 +123,7 @@ class UserManagementTest extends TestCase
         $role = $this->viewerRole();
         $this->actingUser(['users.view', 'users.create']);
 
-        $this->post(route('admin.users.store'), [
+        $this->post(route('users.store'), [
             'name' => 'Jane Doe',
             'username' => '',
             'role_id' => $role->id,
@@ -138,7 +138,7 @@ class UserManagementTest extends TestCase
         $role = $this->viewerRole();
         $this->actingUser(['users.view', 'users.create']);
 
-        $this->post(route('admin.users.store'), [
+        $this->post(route('users.store'), [
             'name' => 'Jane Doe',
             'username' => 'taken',
             'role_id' => $role->id,
@@ -150,7 +150,7 @@ class UserManagementTest extends TestCase
         $role = $this->viewerRole();
         $this->actingUser(['users.view', 'users.create']);
 
-        $this->post(route('admin.users.store'), [
+        $this->post(route('users.store'), [
             'name' => 'Jane Doe',
             'username' => 'jane',
             'email' => 'not-an-email',
@@ -163,7 +163,7 @@ class UserManagementTest extends TestCase
         $this->viewerRole();
         $this->actingUser(['users.view', 'users.create']);
 
-        $this->post(route('admin.users.store'), [
+        $this->post(route('users.store'), [
             'name' => 'Jane Doe',
             'username' => 'jane',
         ])->assertSessionHasErrors('role_id');
@@ -174,7 +174,7 @@ class UserManagementTest extends TestCase
         $this->viewerRole();
         $this->actingUser(['users.view', 'users.create']);
 
-        $this->post(route('admin.users.store'), [
+        $this->post(route('users.store'), [
             'name' => 'Jane Doe',
             'username' => 'jane',
             'role_id' => 9999,
@@ -194,12 +194,12 @@ class UserManagementTest extends TestCase
         $newRole = Role::where('name', 'Admin')->firstOrFail();
         $this->actingUser(['users.view', 'users.edit']);
 
-        $this->put(route('admin.users.update', $user), [
+        $this->put(route('users.update', $user), [
             'name' => 'Jane Smith',
             'username' => 'jane',
             'email' => 'jane@example.com',
             'role_id' => $newRole->id,
-        ])->assertRedirect(route('admin.users.index'));
+        ])->assertRedirect(route('users.index'));
 
         $user->refresh();
 
@@ -219,8 +219,8 @@ class UserManagementTest extends TestCase
             'password' => 'secret123',
         ], 'Viewer');
 
-        $this->delete(route('admin.users.destroy', $user))
-            ->assertRedirect(route('admin.users.index'));
+        $this->delete(route('users.destroy', $user))
+            ->assertRedirect(route('users.index'));
 
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
         $this->assertDatabaseHas('users', ['id' => $admin->id]);
@@ -230,7 +230,7 @@ class UserManagementTest extends TestCase
     {
         $admin = $this->actingUser(['users.view', 'users.delete']);
 
-        $this->delete(route('admin.users.destroy', $admin))->assertForbidden();
+        $this->delete(route('users.destroy', $admin))->assertForbidden();
 
         $this->assertDatabaseHas('users', ['id' => $admin->id]);
     }
@@ -246,10 +246,10 @@ class UserManagementTest extends TestCase
             'password' => 'oldpass123',
         ], 'Viewer');
 
-        $this->post(route('admin.users.reset-password', $user), [
+        $this->post(route('users.reset-password', $user), [
             'password' => 'newpass456',
         ])
-            ->assertRedirect(route('admin.users.edit', $user))
+            ->assertRedirect(route('users.edit', $user))
             ->assertSessionHas('status');
 
         $this->assertTrue(Hash::check('newpass456', $user->fresh()->password));
@@ -266,7 +266,7 @@ class UserManagementTest extends TestCase
             'password' => 'oldpass123',
         ], 'Viewer');
 
-        $this->post(route('admin.users.reset-password', $user), [
+        $this->post(route('users.reset-password', $user), [
             'password' => 'short',
         ])->assertSessionHasErrors('password');
 
@@ -278,7 +278,7 @@ class UserManagementTest extends TestCase
         $role = $this->viewerRole();
         $this->actingUser(['users.view']);
 
-        $this->post(route('admin.users.store'), [
+        $this->post(route('users.store'), [
             'name' => 'Jane Doe',
             'username' => 'jane',
             'role_id' => $role->id,
@@ -298,13 +298,13 @@ class UserManagementTest extends TestCase
             'password' => 'oldpass123',
         ], 'Viewer');
 
-        $this->put(route('admin.users.update', $user), [
+        $this->put(route('users.update', $user), [
             'name' => 'Jane Smith',
             'username' => 'jane',
             'role_id' => $user->roles->first()->id,
         ])->assertForbidden();
 
-        $this->post(route('admin.users.reset-password', $user), [
+        $this->post(route('users.reset-password', $user), [
             'password' => 'newpass456',
         ])->assertForbidden();
 
@@ -322,7 +322,7 @@ class UserManagementTest extends TestCase
             'password' => 'secret123',
         ], 'Viewer');
 
-        $this->delete(route('admin.users.destroy', $user))->assertForbidden();
+        $this->delete(route('users.destroy', $user))->assertForbidden();
 
         $this->assertDatabaseHas('users', ['id' => $user->id]);
     }
@@ -332,12 +332,12 @@ class UserManagementTest extends TestCase
         $role = $this->viewerRole();
         $this->actingUser(['users.view', 'users.create']);
 
-        $this->post(route('admin.users.store'), [
+        $this->post(route('users.store'), [
             'name' => 'Jane Doe',
             'username' => 'jane',
             'password' => 'secret123',
             'role_id' => $role->id,
-        ])->assertRedirect(route('admin.users.index'));
+        ])->assertRedirect(route('users.index'));
 
         $user = User::where('username', 'jane')->firstOrFail();
 
@@ -362,9 +362,9 @@ class UserManagementTest extends TestCase
             'password' => 'oldpass123',
         ], 'Viewer');
 
-        $this->post(route('admin.users.reset-password', $user), [
+        $this->post(route('users.reset-password', $user), [
             'password' => 'newpass456',
-        ])->assertRedirect(route('admin.users.edit', $user));
+        ])->assertRedirect(route('users.edit', $user));
 
         Auth::logout();
 
@@ -383,7 +383,7 @@ class UserManagementTest extends TestCase
         User::factory()->create(['name' => 'Active User', 'username' => 'activeuser']);
         User::factory()->create(['name' => 'Inactive User', 'username' => 'inactiveuser', 'is_active' => false]);
 
-        $this->get(route('admin.users.index'))
+        $this->get(route('users.index'))
             ->assertOk()
             ->assertSee('نشط')
             ->assertSee('معطل');
@@ -395,8 +395,8 @@ class UserManagementTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post(route('admin.users.deactivate', $user))
-            ->assertRedirect(route('admin.users.index'))
+        $this->post(route('users.deactivate', $user))
+            ->assertRedirect(route('users.index'))
             ->assertSessionHas('status');
 
         $this->assertFalse($user->fresh()->is_active);
@@ -408,8 +408,8 @@ class UserManagementTest extends TestCase
 
         $user = User::factory()->create(['is_active' => false]);
 
-        $this->post(route('admin.users.activate', $user))
-            ->assertRedirect(route('admin.users.index'))
+        $this->post(route('users.activate', $user))
+            ->assertRedirect(route('users.index'))
             ->assertSessionHas('status');
 
         $this->assertTrue($user->fresh()->is_active);
@@ -421,10 +421,10 @@ class UserManagementTest extends TestCase
 
         $user = User::factory()->create(['is_active' => true]);
 
-        $this->post(route('admin.users.deactivate', $user))->assertForbidden();
+        $this->post(route('users.deactivate', $user))->assertForbidden();
         $this->assertTrue($user->fresh()->is_active);
 
-        $this->post(route('admin.users.activate', $user))->assertForbidden();
+        $this->post(route('users.activate', $user))->assertForbidden();
         $this->assertTrue($user->fresh()->is_active);
     }
 
@@ -432,7 +432,7 @@ class UserManagementTest extends TestCase
     {
         $admin = $this->actingUser(['users.view', 'users.edit']);
 
-        $this->post(route('admin.users.deactivate', $admin))->assertForbidden();
+        $this->post(route('users.deactivate', $admin))->assertForbidden();
 
         $this->assertTrue($admin->fresh()->is_active);
     }
@@ -448,7 +448,7 @@ class UserManagementTest extends TestCase
             'password' => 'secret123',
         ], 'Viewer');
 
-        $this->post(route('admin.users.deactivate', $user))->assertRedirect(route('admin.users.index'));
+        $this->post(route('users.deactivate', $user))->assertRedirect(route('users.index'));
 
         Auth::logout();
 
@@ -471,7 +471,7 @@ class UserManagementTest extends TestCase
             'password' => 'secret123',
         ], 'Viewer');
 
-        $this->post(route('admin.users.deactivate', $user))->assertRedirect(route('admin.users.index'));
+        $this->post(route('users.deactivate', $user))->assertRedirect(route('users.index'));
 
         Auth::logout();
 
@@ -495,8 +495,8 @@ class UserManagementTest extends TestCase
             'password' => 'secret123',
         ], 'Viewer');
 
-        $this->post(route('admin.users.deactivate', $user))->assertRedirect(route('admin.users.index'));
-        $this->post(route('admin.users.activate', $user))->assertRedirect(route('admin.users.index'));
+        $this->post(route('users.deactivate', $user))->assertRedirect(route('users.index'));
+        $this->post(route('users.activate', $user))->assertRedirect(route('users.index'));
 
         Auth::logout();
 
@@ -520,7 +520,7 @@ class UserManagementTest extends TestCase
         ], 'Viewer');
 
         // The admin deactivates jane while she still holds an authenticated session.
-        $this->post(route('admin.users.deactivate', $user))->assertRedirect(route('admin.users.index'));
+        $this->post(route('users.deactivate', $user))->assertRedirect(route('users.index'));
 
         // Jane's next request (her open session) is rejected and logged out.
         Auth::login($user);

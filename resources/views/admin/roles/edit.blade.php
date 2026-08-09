@@ -6,7 +6,7 @@
     <div class="mx-auto max-w-7xl px-4 py-8">
         <div class="mb-6">
             <a
-                href="{{ route('admin.roles.index') }}"
+                href="{{ route('roles.index') }}"
                 class="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
                 &larr; العودة إلى الأدوار

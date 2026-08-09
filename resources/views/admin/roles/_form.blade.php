@@ -4,7 +4,7 @@
 <!-- one form for both create and edit , changes with alpine -->
 <form
     method="POST"
-    action="{{ $isEdit ? route('admin.roles.update', $role) : route('admin.roles.store') }}"
+    action="{{ $isEdit ? route('roles.update', $role) : route('roles.store') }}"
     class="max-w-3xl space-y-6"
 >
     @csrf
@@ -73,7 +73,7 @@
         </button>
 
         <a
-            href="{{ route('admin.roles.index') }}"
+            href="{{ route('roles.index') }}"
             class="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
         >
             إلغاء

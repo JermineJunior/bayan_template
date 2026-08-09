@@ -34,7 +34,7 @@ class SettingsTest extends TestCase
 
     public function test_guest_is_redirected_to_login_when_accessing_settings(): void
     {
-        $this->get(route('admin.settings.edit'))
+        $this->get(route('settings.edit'))
             ->assertRedirect(route('login'));
     }
 
@@ -42,14 +42,14 @@ class SettingsTest extends TestCase
     {
         $this->actingUser();
 
-        $this->get(route('admin.settings.edit'))->assertForbidden();
+        $this->get(route('settings.edit'))->assertForbidden();
     }
 
     public function test_user_with_settings_edit_can_view_the_settings_screen(): void
     {
         $this->actingUser(['settings.edit']);
 
-        $this->get(route('admin.settings.edit'))
+        $this->get(route('settings.edit'))
             ->assertOk()
             ->assertSee('إعدادات التطبيق')
             ->assertSee('Vibe');
@@ -59,10 +59,10 @@ class SettingsTest extends TestCase
     {
         $this->actingUser(['settings.edit']);
 
-        $this->put(route('admin.settings.update'), [
+        $this->put(route('settings.update'), [
             'app_name' => 'MyApp',
         ])
-            ->assertRedirect(route('admin.settings.edit'))
+            ->assertRedirect(route('settings.edit'))
             ->assertSessionHas('status');
 
         $this->assertSame('MyApp', app(SettingsService::class)->get('app_name'));
@@ -76,9 +76,9 @@ class SettingsTest extends TestCase
     {
         $this->actingUser(['settings.edit']);
 
-        $this->put(route('admin.settings.update'), [
+        $this->put(route('settings.update'), [
             'app_name' => 'SharedName',
-        ])->assertRedirect(route('admin.settings.edit'));
+        ])->assertRedirect(route('settings.edit'));
 
         $other = User::factory()->create();
 
@@ -93,7 +93,7 @@ class SettingsTest extends TestCase
     {
         $this->actingUser(['settings.edit']);
 
-        $this->put(route('admin.settings.update'), [
+        $this->put(route('settings.update'), [
             'app_name' => '',
         ])->assertSessionHasErrors('app_name');
     }
@@ -102,7 +102,7 @@ class SettingsTest extends TestCase
     {
         $this->actingUser();
 
-        $this->put(route('admin.settings.update'), [
+        $this->put(route('settings.update'), [
             'app_name' => 'MyApp',
         ])->assertForbidden();
 
@@ -114,11 +114,11 @@ class SettingsTest extends TestCase
         Storage::fake('public');
         $this->actingUser(['settings.edit']);
 
-        $this->put(route('admin.settings.update'), [
+        $this->put(route('settings.update'), [
             'app_name' => 'Vibe',
             'logo' => UploadedFile::fake()->image('logo.png', 100, 100),
         ])
-            ->assertRedirect(route('admin.settings.edit'))
+            ->assertRedirect(route('settings.edit'))
             ->assertSessionHas('status');
 
         $logoPath = app(SettingsService::class)->get('logo_path');
@@ -136,7 +136,7 @@ class SettingsTest extends TestCase
     {
         $this->actingUser(['settings.edit']);
 
-        $this->put(route('admin.settings.update'), [
+        $this->put(route('settings.update'), [
             'app_name' => 'Vibe',
             'logo' => UploadedFile::fake()->create('notes.txt', 10),
         ])->assertSessionHasErrors('logo');

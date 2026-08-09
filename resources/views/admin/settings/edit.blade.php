@@ -21,7 +21,7 @@
 
         <form
             method="POST"
-            action="{{ route('admin.settings.update') }}"
+            action="{{ route('settings.update') }}"
             enctype="multipart/form-data"
             class="max-w-3xl space-y-6"
         >

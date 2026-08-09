@@ -32,7 +32,7 @@ class RoleManagementTest extends TestCase
 
     public function test_guest_is_redirected_to_login_when_accessing_role_management(): void
     {
-        $this->get(route('admin.roles.index'))
+        $this->get(route('roles.index'))
             ->assertRedirect(route('login'));
     }
 
@@ -40,7 +40,7 @@ class RoleManagementTest extends TestCase
     {
         $this->actingUser();
 
-        $this->get(route('admin.roles.index'))->assertForbidden();
+        $this->get(route('roles.index'))->assertForbidden();
     }
 
     public function test_user_with_roles_view_can_view_the_role_index(): void
@@ -48,7 +48,7 @@ class RoleManagementTest extends TestCase
         Role::create(['name' => 'Admin', 'guard_name' => 'web']);
         $this->actingUser(['roles.view']);
 
-        $this->get(route('admin.roles.index'))
+        $this->get(route('roles.index'))
             ->assertOk()
             ->assertSee('Admin');
     }
@@ -57,11 +57,11 @@ class RoleManagementTest extends TestCase
     {
         $this->actingUser(['roles.view', 'roles.create']);
 
-        $this->post(route('admin.roles.store'), [
+        $this->post(route('roles.store'), [
             'name' => 'Editor',
             'permissions' => ['users.view', 'users.edit'],
         ])
-            ->assertRedirect(route('admin.roles.index'));
+            ->assertRedirect(route('roles.index'));
 
         $role = Role::where('name', 'Editor')->first();
 
@@ -76,9 +76,9 @@ class RoleManagementTest extends TestCase
     {
         $this->actingUser(['roles.view', 'roles.create']);
 
-        $this->post(route('admin.roles.store'), [
+        $this->post(route('roles.store'), [
             'name' => 'Empty',
-        ])->assertRedirect(route('admin.roles.index'));
+        ])->assertRedirect(route('roles.index'));
 
         $this->assertSame(0, Role::where('name', 'Empty')->first()->permissions->count());
     }
@@ -87,7 +87,7 @@ class RoleManagementTest extends TestCase
     {
         $this->actingUser(['roles.view', 'roles.create']);
 
-        $this->post(route('admin.roles.store'), [
+        $this->post(route('roles.store'), [
             'name' => '',
         ])->assertSessionHasErrors('name');
 
@@ -99,7 +99,7 @@ class RoleManagementTest extends TestCase
         Role::create(['name' => 'Admin', 'guard_name' => 'web']);
         $this->actingUser(['roles.view', 'roles.create']);
 
-        $this->post(route('admin.roles.store'), [
+        $this->post(route('roles.store'), [
             'name' => 'Admin',
         ])->assertSessionHasErrors('name');
     }
@@ -108,7 +108,7 @@ class RoleManagementTest extends TestCase
     {
         $this->actingUser(['roles.view', 'roles.create']);
 
-        $this->post(route('admin.roles.store'), [
+        $this->post(route('roles.store'), [
             'name' => 'Hacker',
             'permissions' => ['does.not.exist'],
         ])->assertSessionHasErrors('permissions.0');
@@ -123,11 +123,11 @@ class RoleManagementTest extends TestCase
         $role = Role::create(['name' => 'Editor', 'guard_name' => 'web']);
         $role->givePermissionTo('users.view');
 
-        $this->put(route('admin.roles.update', $role), [
+        $this->put(route('roles.update', $role), [
             'name' => 'Senior Editor',
             'permissions' => ['users.view', 'users.edit', 'users.delete'],
         ])
-            ->assertRedirect(route('admin.roles.index'));
+            ->assertRedirect(route('roles.index'));
 
         $role->refresh();
 
@@ -141,8 +141,8 @@ class RoleManagementTest extends TestCase
         $role = Role::create(['name' => 'Temp', 'guard_name' => 'web']);
         $this->actingUser(['roles.view', 'roles.delete']);
 
-        $this->delete(route('admin.roles.destroy', $role))
-            ->assertRedirect(route('admin.roles.index'));
+        $this->delete(route('roles.destroy', $role))
+            ->assertRedirect(route('roles.index'));
 
         $this->assertDatabaseMissing('roles', ['id' => $role->id]);
     }
@@ -151,7 +151,7 @@ class RoleManagementTest extends TestCase
     {
         $this->actingUser(['roles.view']);
 
-        $this->post(route('admin.roles.store'), [
+        $this->post(route('roles.store'), [
             'name' => 'Sneaky',
         ])->assertForbidden();
     }
@@ -161,7 +161,7 @@ class RoleManagementTest extends TestCase
         $role = Role::create(['name' => 'Temp', 'guard_name' => 'web']);
         $this->actingUser(['roles.view']);
 
-        $this->delete(route('admin.roles.destroy', $role))->assertForbidden();
+        $this->delete(route('roles.destroy', $role))->assertForbidden();
 
         $this->assertDatabaseHas('roles', ['id' => $role->id]);
     }
@@ -171,7 +171,7 @@ class RoleManagementTest extends TestCase
         $role = Role::create(['name' => 'Editor', 'guard_name' => 'web']);
         $this->actingUser(['roles.view']);
 
-        $this->put(route('admin.roles.update', $role), [
+        $this->put(route('roles.update', $role), [
             'name' => 'Hacker',
         ])->assertForbidden();
 

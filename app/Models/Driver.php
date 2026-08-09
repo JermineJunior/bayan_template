@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Models;
+
+use Database\Factories\DriverFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Driver extends Model
+{
+    /** @use HasFactory<DriverFactory> */
+    use HasFactory;
+    protected $fillable = [
+        'driver_number',
+        'full_name',
+        'national_id',
+        'phone',
+        'department_id',
+        'hire_date',
+        'license_type',
+        'license_expiry',
+        'status',
+    ];
+    protected $casts = [
+        'hire_date' => 'date',
+        'license_expiry' => 'date',
+    ];
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    /** كل المركبات التي تم إسنادها لهذا السائق (تاريخي) */
+    public function vehicleAssignments()
+    {
+        return $this->hasMany(VehicleDriver::class);
+    }
+
+    /** المركبة الحالية فقط (قد يكون null لو السائق بلا مركبة حالياً) */
+    public function currentAssignment()
+    {
+        return $this->hasOne(VehicleDriver::class)->where('is_current', true);
+    }
+
+    // سجل المركبة الحالية فقط (قد يكون null لو السائق بلا مركبة حالياً)
+
+    public function currentVehicle(): ?Vehicle // could be null if the driver is not currently assigned to any vehicle
+    {
+        return $this->currentAssignment?->vehicle;
+    }
+}

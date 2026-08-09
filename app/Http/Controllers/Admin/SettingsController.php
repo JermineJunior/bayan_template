@@ -39,7 +39,7 @@ class SettingsController extends Controller
         }
 
         return redirect()
-            ->route('admin.settings.edit')
+            ->route('settings.edit')
             ->with('status', 'تم تحديث الإعدادات.');
     }
 }

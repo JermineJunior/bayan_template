@@ -6,7 +6,7 @@
     <div class="mx-auto max-w-7xl px-4 py-8">
         <div class="mb-6">
             <a
-                href="{{ route('admin.users.index') }}"
+                href="{{ route('users.index') }}"
                 class="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
                 &larr; العودة إلى المستخدمين
@@ -54,7 +54,7 @@
 
             <form
                 method="POST"
-                action="{{ route('admin.users.reset-password', $user) }}"
+                action="{{ route('users.reset-password', $user) }}"
                 x-data="{}"
                 class="mt-4"
             >

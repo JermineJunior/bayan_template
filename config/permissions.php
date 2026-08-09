@@ -41,4 +41,11 @@ return [
         'settings.edit',
     ],
 
+    'basic-data' => [
+        'basic-data.view',
+        'basic-data.create',
+        'basic-data.edit',
+        'basic-data.delete',
+    ],
+
 ];

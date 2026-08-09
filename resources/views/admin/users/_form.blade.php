@@ -5,7 +5,7 @@
 
 <form
     method="POST"
-    action="{{ $isEdit ? route('admin.users.update', $user) : route('admin.users.store') }}"
+    action="{{ $isEdit ? route('users.update', $user) : route('users.store') }}"
     class="max-w-3xl space-y-6"
 >
     @csrf
@@ -118,7 +118,7 @@
         </button>
 
         <a
-            href="{{ route('admin.users.index') }}"
+            href="{{ route('users.index') }}"
             class="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
         >
             إلغاء
