@@ -46,8 +46,8 @@ class DepartmentTest extends TestCase
 
     public function test_user_with_basic_data_view_can_view_the_department_index(): void
     {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
+        $management = Management::create(['name' => 'إدارة النقل']);
+        Department::create(['name' => 'قسم النقل', 'management_id' => $management->id]);
         $this->actingUser(['departments.view']);
 
         $this->get(route('departments.index'))
@@ -58,51 +58,50 @@ class DepartmentTest extends TestCase
 
     public function test_user_with_basic_data_create_can_create_a_department(): void
     {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
+        $management = Management::create(['name' => 'إدارة النقل']);
         $this->actingUser(['departments.view', 'departments.create']);
 
         $this->post(route('departments.store'), [
-            'number' => 1,
             'name' => 'قسم النقل',
+            'status' => 'active',
             'management_id' => $management->id,
         ])->assertRedirect(route('departments.index'));
 
         $this->assertDatabaseHas('departments', [
-            'number' => 1,
             'name' => 'قسم النقل',
+            'status' => 'active',
             'management_id' => $management->id,
         ]);
     }
 
-    public function test_department_number_is_required_and_unique(): void
+    public function test_department_status_is_required_and_must_be_valid(): void
     {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
+        $management = Management::create(['name' => 'إدارة النقل']);
         $this->actingUser(['departments.view', 'departments.create']);
 
         $this->post(route('departments.store'), [
-            'number' => '',
             'name' => 'قسم جديد',
+            'status' => '',
             'management_id' => $management->id,
-        ])->assertSessionHasErrors('number');
+        ])->assertSessionHasErrors('status');
 
         $this->post(route('departments.store'), [
-            'number' => 1,
             'name' => 'قسم جديد',
+            'status' => 'bogus',
             'management_id' => $management->id,
-        ])->assertSessionHasErrors('number');
+        ])->assertSessionHasErrors('status');
 
-        $this->assertSame(1, Department::count());
+        $this->assertSame(0, Department::count());
     }
 
     public function test_department_name_is_required(): void
     {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
+        $management = Management::create(['name' => 'إدارة النقل']);
         $this->actingUser(['departments.view', 'departments.create']);
 
         $this->post(route('departments.store'), [
-            'number' => 1,
             'name' => '',
+            'status' => 'active',
             'management_id' => $management->id,
         ])->assertSessionHasErrors('name');
 
@@ -114,51 +113,48 @@ class DepartmentTest extends TestCase
         $this->actingUser(['departments.view', 'departments.create']);
 
         $this->post(route('departments.store'), [
-            'number' => 1,
             'name' => 'قسم النقل',
+            'status' => 'active',
             'management_id' => 999,
         ])->assertSessionHasErrors('management_id');
 
         $this->assertSame(0, Department::count());
     }
 
+    public function test_department_status_defaults_to_active(): void
+    {
+        $management = Management::create(['name' => 'إدارة النقل']);
+        $department = Department::create(['name' => 'قسم النقل', 'management_id' => $management->id]);
+
+        $this->assertDatabaseHas('departments', ['name' => 'قسم النقل', 'status' => 'active']);
+        $this->assertSame('active', $department->fresh()->status);
+    }
+
     public function test_user_with_basic_data_edit_can_update_a_department(): void
     {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        $other = Management::create(['number' => 2, 'name' => 'إدارة الصيانة']);
-        $department = Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
+        $management = Management::create(['name' => 'إدارة النقل']);
+        $other = Management::create(['name' => 'إدارة الصيانة']);
+        $department = Department::create(['name' => 'قسم النقل', 'management_id' => $management->id]);
         $this->actingUser(['departments.view', 'departments.edit']);
 
         $this->put(route('departments.update', $department), [
-            'number' => 1,
             'name' => 'قسم الصيانة',
+            'status' => 'inactive',
             'management_id' => $other->id,
         ])->assertRedirect(route('departments.index'));
 
         $this->assertDatabaseHas('departments', [
             'id' => $department->id,
             'name' => 'قسم الصيانة',
+            'status' => 'inactive',
             'management_id' => $other->id,
         ]);
     }
 
-    public function test_department_number_can_stay_the_same_when_updating(): void
-    {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        $department = Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
-        $this->actingUser(['departments.view', 'departments.edit']);
-
-        $this->put(route('departments.update', $department), [
-            'number' => 1,
-            'name' => 'قسم النقل',
-            'management_id' => $management->id,
-        ])->assertRedirect(route('departments.index'));
-    }
-
     public function test_user_with_basic_data_delete_can_delete_a_department(): void
     {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        $department = Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
+        $management = Management::create(['name' => 'إدارة النقل']);
+        $department = Department::create(['name' => 'قسم النقل', 'management_id' => $management->id]);
         $this->actingUser(['departments.view', 'departments.delete']);
 
         $this->delete(route('departments.destroy', $department))
@@ -172,8 +168,8 @@ class DepartmentTest extends TestCase
         $this->actingUser(['departments.view']);
 
         $this->post(route('departments.store'), [
-            'number' => 1,
             'name' => 'Sneaky',
+            'status' => 'active',
             'management_id' => 1,
         ])->assertForbidden();
     }

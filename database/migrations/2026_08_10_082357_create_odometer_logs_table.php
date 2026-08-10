@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('odometer_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('vehicle_id')->constrained('vehicles');
-            $table->decimal('reading', 10, 2); //قراءة العداد بالكيلومتر (أو الميل) مع خانتين عشريتين
+            $table->decimal('reading', 10, 2); // قراءة العداد بالكيلومتر (أو الميل) مع خانتين عشريتين
             $table->dateTime('recorded_at');
             $table->foreignId('recorded_by')->constrained('users');
             $table->boolean('is_correction')->default(false);

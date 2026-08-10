@@ -39,8 +39,8 @@ class ManagementController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'number' => ['required', 'integer', Rule::unique('management')],
             'name' => ['required', 'string', 'max:100'],
+            'status' => ['required', Rule::in(['active', 'inactive'])],
         ]);
 
         Management::create($validated);
@@ -67,8 +67,8 @@ class ManagementController extends Controller
     public function update(Request $request, Management $management): RedirectResponse
     {
         $validated = $request->validate([
-            'number' => ['required', 'integer', Rule::unique('management')->ignore($management->id)],
             'name' => ['required', 'string', 'max:100'],
+            'status' => ['required', Rule::in(['active', 'inactive'])],
         ]);
 
         $management->update($validated);

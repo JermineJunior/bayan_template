@@ -47,7 +47,7 @@ class ManagementTest extends TestCase
 
     public function test_user_with_basic_data_view_can_view_the_management_index(): void
     {
-        Management::create(['number' => 1, 'name' => 'إدارة النقل']);
+        Management::create(['name' => 'إدارة النقل']);
         $this->actingUser(['managements.view']);
 
         $this->get(route('managements.index'))
@@ -60,29 +60,28 @@ class ManagementTest extends TestCase
         $this->actingUser(['managements.view', 'managements.create']);
 
         $this->post(route('managements.store'), [
-            'number' => 1,
             'name' => 'إدارة النقل',
+            'status' => 'active',
         ])->assertRedirect(route('managements.index'));
 
-        $this->assertDatabaseHas('management', ['number' => 1, 'name' => 'إدارة النقل']);
+        $this->assertDatabaseHas('management', ['name' => 'إدارة النقل', 'status' => 'active']);
     }
 
-    public function test_management_number_is_required_and_unique(): void
+    public function test_management_status_is_required_and_must_be_valid(): void
     {
-        Management::create(['number' => 1, 'name' => 'إدارة النقل']);
         $this->actingUser(['managements.view', 'managements.create']);
 
         $this->post(route('managements.store'), [
-            'number' => '',
-            'name' => 'إدارة جديدة',
-        ])->assertSessionHasErrors('number');
+            'name' => 'إدارة النقل',
+            'status' => '',
+        ])->assertSessionHasErrors('status');
 
         $this->post(route('managements.store'), [
-            'number' => 1,
-            'name' => 'إدارة جديدة',
-        ])->assertSessionHasErrors('number');
+            'name' => 'إدارة النقل',
+            'status' => 'bogus',
+        ])->assertSessionHasErrors('status');
 
-        $this->assertSame(1, Management::count());
+        $this->assertSame(0, Management::count());
     }
 
     public function test_management_name_is_required(): void
@@ -90,40 +89,41 @@ class ManagementTest extends TestCase
         $this->actingUser(['managements.view', 'managements.create']);
 
         $this->post(route('managements.store'), [
-            'number' => 1,
             'name' => '',
+            'status' => 'active',
         ])->assertSessionHasErrors('name');
 
         $this->assertSame(0, Management::count());
     }
 
-    public function test_user_with_basic_data_edit_can_update_a_management(): void
+    public function test_management_status_defaults_to_active(): void
     {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        $this->actingUser(['managements.view', 'managements.edit']);
+        $management = Management::create(['name' => 'إدارة النقل']);
 
-        $this->put(route('managements.update', $management), [
-            'number' => 1,
-            'name' => 'إدارة الصيانة',
-        ])->assertRedirect(route('managements.index'));
-
-        $this->assertDatabaseHas('management', ['id' => $management->id, 'name' => 'إدارة الصيانة']);
+        $this->assertDatabaseHas('management', ['name' => 'إدارة النقل', 'status' => 'active']);
+        $this->assertSame('active', $management->fresh()->status);
     }
 
-    public function test_management_number_can_stay_the_same_when_updating(): void
+    public function test_user_with_basic_data_edit_can_update_a_management(): void
     {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
+        $management = Management::create(['name' => 'إدارة النقل']);
         $this->actingUser(['managements.view', 'managements.edit']);
 
         $this->put(route('managements.update', $management), [
-            'number' => 1,
-            'name' => 'إدارة النقل',
+            'name' => 'إدارة الصيانة',
+            'status' => 'inactive',
         ])->assertRedirect(route('managements.index'));
+
+        $this->assertDatabaseHas('management', [
+            'id' => $management->id,
+            'name' => 'إدارة الصيانة',
+            'status' => 'inactive',
+        ]);
     }
 
     public function test_user_with_basic_data_delete_can_delete_a_management(): void
     {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
+        $management = Management::create(['name' => 'إدارة النقل']);
         $this->actingUser(['managements.view', 'managements.delete']);
 
         $this->delete(route('managements.destroy', $management))
@@ -134,8 +134,8 @@ class ManagementTest extends TestCase
 
     public function test_management_with_departments_cannot_be_deleted(): void
     {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
-        Department::create(['number' => 1, 'name' => 'قسم النقل', 'management_id' => $management->id]);
+        $management = Management::create(['name' => 'إدارة النقل']);
+        Department::create(['name' => 'قسم النقل', 'management_id' => $management->id]);
         $this->actingUser(['managements.view', 'managements.delete']);
 
         $this->delete(route('managements.destroy', $management))
@@ -147,7 +147,7 @@ class ManagementTest extends TestCase
 
     public function test_management_with_vehicles_cannot_be_deleted(): void
     {
-        $management = Management::create(['number' => 1, 'name' => 'إدارة النقل']);
+        $management = Management::create(['name' => 'إدارة النقل']);
         Vehicle::forceCreate([
             'internal_number' => 'V-001',
             'plate_number' => 'ABC 123',
@@ -167,8 +167,8 @@ class ManagementTest extends TestCase
         $this->actingUser(['managements.view']);
 
         $this->post(route('managements.store'), [
-            'number' => 1,
             'name' => 'Sneaky',
+            'status' => 'active',
         ])->assertForbidden();
     }
 }

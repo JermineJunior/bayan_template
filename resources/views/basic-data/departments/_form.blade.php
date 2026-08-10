@@ -13,23 +13,6 @@
     @endif
 
     <div>
-        <label for="number" class="mb-1 block text-sm font-medium text-foreground">
-            الرقم
-        </label>
-        <input
-            id="number"
-            name="number"
-            type="number"
-            value="{{ old('number', $department?->number) }}"
-            required
-            class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-        >
-        @error('number')
-            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-        @enderror
-    </div>
-
-    <div>
         <label for="name" class="mb-1 block text-sm font-medium text-foreground">
             الاسم
         </label>
@@ -42,6 +25,24 @@
             class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         >
         @error('name')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="status" class="mb-1 block text-sm font-medium text-foreground">
+            الحالة
+        </label>
+        <select
+            id="status"
+            name="status"
+            required
+            class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        >
+            <option value="active" @selected(old('status', $department?->status) === 'active')>نشط</option>
+            <option value="inactive" @selected(old('status', $department?->status) === 'inactive')>غير نشط</option>
+        </select>
+        @error('status')
             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
         @enderror
     </div>

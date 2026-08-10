@@ -42,8 +42,8 @@ class DepartmentController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'number' => ['required', 'integer', Rule::unique('departments')],
             'name' => ['required', 'string', 'max:100'],
+            'status' => ['required', Rule::in(['active', 'inactive'])],
             'management_id' => ['required', 'integer', Rule::exists('management', 'id')],
         ]);
 
@@ -72,8 +72,8 @@ class DepartmentController extends Controller
     public function update(Request $request, Department $department): RedirectResponse
     {
         $validated = $request->validate([
-            'number' => ['required', 'integer', Rule::unique('departments')->ignore($department->id)],
             'name' => ['required', 'string', 'max:100'],
+            'status' => ['required', Rule::in(['active', 'inactive'])],
             'management_id' => ['required', 'integer', Rule::exists('management', 'id')],
         ]);
 

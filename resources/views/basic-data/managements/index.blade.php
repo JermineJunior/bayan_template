@@ -26,10 +26,10 @@
                 <thead>
                     <tr class="text-xs uppercase tracking-wide text-muted-foreground">
                         <th class="bg-muted/50 px-4 py-3 text-start font-medium">
-                            الرقم
+                            الاسم
                         </th>
                         <th class="bg-muted/50 px-4 py-3 text-start font-medium">
-                            الاسم
+                            الحالة
                         </th>
                         <th class="bg-muted/50 px-4 py-3 text-start font-medium">
                             الأقسام
@@ -45,11 +45,19 @@
                 <tbody class="divide-y divide-border">
                     @forelse ($managements as $management)
                         <tr>
-                            <td class="px-4 py-3 text-muted-foreground">
-                                {{ $management->number }}
-                            </td>
                             <td class="px-4 py-3 font-medium text-foreground">
                                 {{ $management->name }}
+                            </td>
+                            <td class="px-4 py-3">
+                                @if ($management->status === 'active')
+                                    <span class="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                                        نشط
+                                    </span>
+                                @else
+                                    <span class="inline-flex rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700">
+                                        غير نشط
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-4 py-3 text-muted-foreground">
                                 {{ $management->departments_count }} قسم

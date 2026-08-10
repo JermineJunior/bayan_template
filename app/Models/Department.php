@@ -12,13 +12,9 @@ class Department extends Model
     use HasFactory;
 
     protected $fillable = [
-        'number',
         'name',
+        'status',
         'management_id',
-    ];
-
-    protected $casts = [
-        'number' => 'integer',
     ];
 
     public function management()

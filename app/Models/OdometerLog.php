@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OdometerLog extends Model
 {
-     protected $fillable = [
+    protected $fillable = [
         'vehicle_id',
         'reading',
         'recorded_at',

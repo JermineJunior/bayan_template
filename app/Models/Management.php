@@ -12,12 +12,8 @@ class Management extends Model
     use HasFactory;
 
     protected $fillable = [
-        'number',
         'name',
-    ];
-
-    protected $casts = [
-        'number' => 'integer',
+        'status',
     ];
 
     public function vehicles()
