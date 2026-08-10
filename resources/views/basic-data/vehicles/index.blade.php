@@ -127,6 +127,10 @@
                             الإدارة
                         </th>
                         <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                            السائق الحالي
+                        </th>
+
+                        <th class="bg-muted/50 px-4 py-3 text-start font-medium">
                             الحالة
                         </th>
                         <th class="bg-muted/50 px-4 py-3 text-end font-medium">
@@ -146,8 +150,11 @@
                             <td class="px-4 py-3 text-muted-foreground">
                                 {{ $vehicle->type ?: '—' }}
                             </td>
+                            <td class="px-4 py-3 text-muted-foreground {{ $vehicle->management ? 'bg-border': 'bg-muted'}}">
+                                {{ $vehicle->management?->name ?? 'مركبة عامة' }}
+                            </td>
                             <td class="px-4 py-3 text-muted-foreground">
-                                {{ $vehicle->management?->name ?? '—' }}
+                                {{ $vehicle->currentDriver()?->full_name ?? 'لا يوجد' }}
                             </td>
                             <td class="px-4 py-3">
                                 @php
@@ -199,12 +206,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-4 py-8 text-center text-muted-foreground">
-                                لا توجد مركبات بعد.
-                                @can('vehicles.create')
-                                    <a href="{{ route('vehicles.create') }}" class="text-primary hover:underline">
-                                        أضف أول مركبة
-                                    </a>
-                                @endcan
+                                لا توجد مركبات .
                             </td>
                         </tr>
                     @endforelse

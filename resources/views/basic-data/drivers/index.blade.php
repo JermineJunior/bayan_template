@@ -125,7 +125,7 @@
                                 {{ $driver->national_id }}
                             </td>
                             <td class="px-4 py-3 text-muted-foreground">
-                                {{ $driver->department?->name ?? '—' }}
+                                {{ $driver->department?->name ?? 'سائق عام' }}
                             </td>
                             <td class="px-4 py-3">
                                 @if ($driver->license_type)
@@ -199,12 +199,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-4 py-8 text-center text-muted-foreground">
-                                لا يوجد سائقون بعد.
-                                @can('drivers.create')
-                                    <a href="{{ route('drivers.create') }}" class="text-primary hover:underline">
-                                        أضف أول سائق
-                                    </a>
-                                @endcan
+                                لا يوجد سائقون .
                             </td>
                         </tr>
                     @endforelse

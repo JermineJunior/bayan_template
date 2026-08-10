@@ -1,5 +1,6 @@
 @php
     $isEdit = filled($role);
+    $permissionLabels = config('permissions_labels.permissions');
 @endphp
 <!-- one form for both create and edit , changes with alpine -->
 <form
@@ -51,7 +52,7 @@
                                     @checked(in_array($permission, old('permissions', $rolePermissions), true))
                                     class="size-4 rounded border-border text-primary focus:ring-primary"
                                 >
-                                <code class="text-xs">{{ $permission }}</code>
+                                <code class="text-xs">{{ $permissionLabels[$permission] ?? $permission }}</code>
                             </label>
                         @endforeach
                     </div>

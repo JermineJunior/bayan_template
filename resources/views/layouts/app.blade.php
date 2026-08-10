@@ -60,7 +60,7 @@
                                 <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
                                     {{ mb_substr(auth()->user()->name, 0, 1) }}
                                 </span>
-                                <span class="hidden sm:inline">{{ auth()->user()->username }}</span>
+                                <span class="hidden sm:inline">{{ auth()->user()->getRoleNames()->first() }}</span>
                             </a>
 
                             <form method="POST" action="{{ route('logout') }}">

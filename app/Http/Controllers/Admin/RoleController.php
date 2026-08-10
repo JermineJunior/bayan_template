@@ -20,7 +20,7 @@ class RoleController extends Controller
         $this->authorize('viewAny', Role::class);
 
         return view('admin.roles.index', [
-            'roles' => Role::orderBy('name')->withCount('permissions')->get(),
+            'roles' => Role::orderBy('created_at', 'desc')->withCount('permissions')->get(),
         ]);
     }
 
@@ -112,9 +112,10 @@ class RoleController extends Controller
     protected function permissionGroups(): array
     {
         $groups = [];
+        $groupLabels = config('permissions_labels.groups');
 
         foreach (config('permissions') as $area => $permissions) {
-            $groups[Str::title($area)] = $permissions;
+            $groups[$groupLabels[$area] ?? Str::title($area)] = $permissions;
         }
 
         return $groups;

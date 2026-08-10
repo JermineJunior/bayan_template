@@ -24,13 +24,14 @@ class OdometerService
         bool $isCorrection = false,
         ?string $note = null,
     ): OdometerLog {
+        // التحقق من صحة القراءة الجديدة
         if (! $isCorrection && $reading < $vehicle->current_odometer) {
             throw new InvalidOdometerReadingException(
                 "القراءة ({$reading}) أقل من آخر قراءة مسجّلة ({$vehicle->current_odometer}). "
                 .'لو هذا تصحيح مقصود لخطأ سابق، استخدم خيار التصحيح.'
             );
         }
-
+        // التحقق من وجود سبب للتصحيح إذا كانت القراءة أقل من الحالية
         if ($isCorrection && empty($note)) {
             throw new InvalidOdometerReadingException(
                 'لازم تذكر سبب التصحيح عند إدخال قراءة أقل من القراءة الحالية.'
