@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\BasicData;
 
+use App\Exceptions\InvalidOdometerReadingException;
 use App\Http\Controllers\Controller;
 use App\Models\Driver;
 use App\Models\Management;
 use App\Models\Vehicle;
+use App\Services\OdometerService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -79,9 +81,27 @@ class VehicleController extends Controller
             $validated['image_path'] = $request->file('image')->storePublicly('vehicles', 'public');
         }
 
-        unset($validated['image']);
+        $initialOdometer = $validated['initial_odometer'] ?? null;
+        unset($validated['image'], $validated['initial_odometer']);
 
-        Vehicle::create($validated);
+        $vehicle = Vehicle::create($validated);
+
+        try {
+            // أول قراءة عداد تُسجَّل كسجل تاريخي بدل الكتابة المباشرة على العمود.
+            app(OdometerService::class)->record(
+                $vehicle,
+                (float) $initialOdometer,
+                $request->user(),
+                false,
+                'القراءة الأولية عند إنشاء المركبة' // هذا السجل يُنشأ تلقائيًا عند إنشاء المركبة، ما يحتاج إدخال ملاحظة من المستخدم
+            );
+        } catch (InvalidOdometerReadingException $e) {
+            $vehicle->delete();
+
+            return back()
+                ->withInput()
+                ->withErrors(['initial_odometer' => $e->getMessage()]);
+        }
 
         flash()->success('تم إنشاء المركبة.');
 
@@ -94,13 +114,13 @@ class VehicleController extends Controller
      */
     public function show(Vehicle $vehicle): View
     {
-        $vehicle->load(['management', 'currentAssignment.driver']);
+        $vehicle->load(['management', 'currentAssignment.driver', 'odometerLogs.recordedBy']);
 
         return view('basic-data.vehicles.show', [
             'vehicle' => $vehicle,
             'drivers' => Driver::query()
                 ->with('currentAssignment.vehicle')
-                ->where('status', 'active')
+                ->where('status', 'active') // لا يمكن اسناد مركبة لسائق متوقف أو موقوف
                 ->orderBy('full_name')
                 ->get(),
         ]);
@@ -187,7 +207,7 @@ class VehicleController extends Controller
             'engine_capacity' => ['nullable', 'string', 'max:100'],
             'management_id' => ['nullable', 'integer', Rule::exists('management', 'id')],
             'status' => ['required', Rule::in(['active', 'maintenance', 'stopped', 'sold', 'out_of_service'])],
-            'current_mileage' => ['nullable', 'numeric', 'min:0'],
+            'initial_odometer' => ['nullable', 'numeric', 'min:0'],
             'operating_hours' => ['nullable', 'numeric', 'min:0'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
         ];

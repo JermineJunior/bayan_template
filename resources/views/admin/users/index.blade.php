@@ -76,7 +76,7 @@
                                         <form
                                             method="POST"
                                             action="{{ route('users.destroy', $user) }}"
-                                            onsubmit="return confirm('هل تريد حذف هذا المستخدم؟')"
+                                            onsubmit="return confirmForm(this, 'هل تريد حذف هذا المستخدم؟', 'نعم، احذف')"
                                         >
                                             @csrf
                                             @method('DELETE')

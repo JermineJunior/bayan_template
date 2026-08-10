@@ -72,7 +72,7 @@
                                         <form
                                             method="POST"
                                             action="{{ route('managements.destroy', $management) }}"
-                                            onsubmit="return confirm('هل تريد حذف هذه الإدارة؟')"
+                                            onsubmit="return confirmForm(this, 'هل تريد حذف هذه الإدارة؟', 'نعم، احذف')"
                                         >
                                             @csrf
                                             @method('DELETE')

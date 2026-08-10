@@ -181,7 +181,7 @@
                                         <form
                                             method="POST"
                                             action="{{ route('vehicles.destroy', $vehicle) }}"
-                                            onsubmit="return confirm('هل تريد حذف هذه المركبة؟')"
+                                            onsubmit="return confirmForm(this, 'هل تريد حذف هذه المركبة؟', 'نعم، احذف')"
                                         >
                                             @csrf
                                             @method('DELETE')

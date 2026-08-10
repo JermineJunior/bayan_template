@@ -71,4 +71,9 @@ return [
         'drivers.delete',
     ],
 
+    'odometer' => [
+        'odometer.update',
+        'odometer.correct',
+    ],
+
 ];

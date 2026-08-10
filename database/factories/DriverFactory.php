@@ -19,7 +19,7 @@ class DriverFactory extends Factory
     {
         return [
             'full_name' => fake()->name(),
-            'national_id' => (string) fake()->unique()->numberBetween(100000000, 999999999),
+            'national_id' => (string) fake()->unique()->numerify('##-##########-#'),
             'phone_number' => fake()->numerify('09########'),
             'department_id' => null,
             'hire_date' => fake()->date(),

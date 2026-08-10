@@ -240,23 +240,25 @@
             @enderror
         </div>
 
-        <div>
-            <label for="current_mileage" class="mb-1 block text-sm font-medium text-foreground">
-                العداد الحالي
-            </label>
-            <input
-                id="current_mileage"
-                name="current_mileage"
-                type="number"
-                step="0.01"
-                min="0"
-                value="{{ old('current_mileage', $vehicle?->current_mileage) }}"
-                class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-            @error('current_mileage')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
+        @unless ($isEdit)
+            <div>
+                <label for="initial_odometer" class="mb-1 block text-sm font-medium text-foreground">
+                    القراءة الحالية عند الإضافة
+                </label>
+                <input
+                    id="initial_odometer"
+                    name="initial_odometer"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value="{{ old('initial_odometer') }}"
+                    class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                @error('initial_odometer')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+        @endunless
 
         <div>
             <label for="operating_hours" class="mb-1 block text-sm font-medium text-foreground">

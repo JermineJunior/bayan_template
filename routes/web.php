@@ -10,6 +10,7 @@ use App\Http\Controllers\BasicData\ManagementController;
 use App\Http\Controllers\BasicData\VehicleController;
 use App\Http\Controllers\BasicData\VehicleDriverController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\OdometerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index'])
@@ -157,7 +158,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('vehicles/{vehicle}', [VehicleController::class, 'destroy'])
         ->middleware('can:vehicles.delete')
         ->name('vehicles.destroy');
-
+    // assigning drivers to vehicles is a separate permission, since it is a different model (VehicleDriver) and has its own rules.
     Route::post('vehicles/{vehicle}/assign-driver', [VehicleDriverController::class, 'store'])
         ->middleware('can:vehicles.assign')
         ->name('vehicles.assign-driver');
@@ -165,4 +166,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('assignments/{assignment}', [VehicleDriverController::class, 'destroy'])
         ->middleware('can:vehicles.end-assignment')
         ->name('assignments.destroy');
+
+    // recording an odometer reading reuses the vehicle-edit gate: anyone who
+    // manages a vehicle's data may log a normal reading. Corrections are
+    // further gated by the odometer.correct permission inside OdometerService.
+    Route::post('vehicles/{vehicle}/odometer-readings', [OdometerController::class, 'store'])
+        ->middleware('can:vehicles.edit')
+        ->name('vehicles.odometer.store');
 });

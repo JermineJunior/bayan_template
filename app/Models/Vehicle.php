@@ -28,14 +28,14 @@ class Vehicle extends Model
         'engine_capacity',
         'management_id',
         'status',
-        'current_mileage',
+        'current_odometer',
         'operating_hours',
         'image_path',
     ];
 
     protected $casts = [
         'manufacture_year' => 'integer',
-        'current_mileage' => 'decimal:2',
+        'current_odometer' => 'decimal:2',
         'operating_hours' => 'decimal:2',
     ];
 
@@ -53,6 +53,12 @@ class Vehicle extends Model
     public function driverAssignments(): HasMany
     {
         return $this->hasMany(VehicleDriver::class);
+    }
+
+    /** كل سجلات قراءة العداد التاريخية لهذي المركبة (الأحدث أولًا) */
+    public function odometerLogs(): HasMany
+    {
+        return $this->hasMany(OdometerLog::class)->latest('recorded_at');
     }
 
     /** الإسناد الحالي فقط (قد يكون null لو المركبة عامة بلا سائق) */

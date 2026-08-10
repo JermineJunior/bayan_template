@@ -70,7 +70,7 @@
                                         <form
                                             method="POST"
                                             action="{{ route('departments.destroy', $department) }}"
-                                            onsubmit="return confirm('هل تريد حذف هذا القسم؟')"
+                                            onsubmit="return confirmForm(this, 'هل تريد حذف هذا القسم؟', 'نعم، احذف')"
                                         >
                                             @csrf
                                             @method('DELETE')

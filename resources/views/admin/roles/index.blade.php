@@ -59,7 +59,7 @@
                                         <form
                                             method="POST"
                                             action="{{ route('roles.destroy', $role) }}"
-                                            onsubmit="return confirm('هل تريد حذف هذا الدور؟')"
+                                            onsubmit="return confirmForm(this, 'هل تريد حذف هذا الدور؟', 'نعم، احذف')"
                                         >
                                             @csrf
                                             @method('DELETE')

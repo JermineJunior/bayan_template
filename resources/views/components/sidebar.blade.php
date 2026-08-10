@@ -49,7 +49,7 @@
             <div x-data="{ open: {{ request()->routeIs('managements.*') || request()->routeIs('departments.*') || request()->routeIs('drivers.*') || request()->routeIs('vehicles.*') ? 'true' : 'true' }} }">
                 <button
                     type="button"
-                    @click.stop="open = !open"
+                    @click.stop="open = !open; collapsed = false"
                     :class="collapsed ? 'w-full justify-center' : 'w-full justify-start'"
                     :aria-expanded="open ? 'true' : 'false'"
                     class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('managements.*') || request()->routeIs('departments.*') || request()->routeIs('drivers.*') || request()->routeIs('vehicles.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"

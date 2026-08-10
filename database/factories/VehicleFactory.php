@@ -31,7 +31,7 @@ class VehicleFactory extends Factory
             'engine_capacity' => fake()->randomElement(['1000cc', '2000cc', '4000cc']),
             'management_id' => null,
             'status' => fake()->randomElement(['active', 'maintenance', 'stopped', 'sold', 'out_of_service']),
-            'current_mileage' => fake()->randomFloat(2, 0, 500000),
+            'current_odometer' => fake()->randomFloat(2, 0, 500000),
             'operating_hours' => fake()->randomFloat(2, 0, 20000),
         ];
     }

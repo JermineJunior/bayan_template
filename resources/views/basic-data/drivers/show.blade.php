@@ -44,7 +44,7 @@
                         <form
                             method="POST"
                             action="{{ route('drivers.destroy', $driver) }}"
-                            onsubmit="return confirm('هل تريد حذف هذا السائق؟')"
+                            onsubmit="return confirmForm(this, 'هل تريد حذف هذا السائق؟', 'نعم، احذف')"
                         >
                             @csrf
                             @method('DELETE')
@@ -144,7 +144,7 @@
                                 </div>
                                 <div class="flex items-center justify-between gap-4 border-b border-border pb-2">
                                     <dt class="text-muted-foreground">القسم</dt>
-                                    <dd class="font-medium text-foreground">{{ $driver->department?->name ?? '—' }}</dd>
+                                    <dd class="font-medium text-foreground">{{ $driver->department?->name ?? 'سائق عام' }}</dd>
                                 </div>
                                 <div class="flex items-center justify-between gap-4 border-b border-border pb-2">
                                     <dt class="text-muted-foreground">تاريخ التعيين</dt>
@@ -194,11 +194,11 @@
                                 <div class="min-w-0">
                                     <p class="text-sm font-medium text-foreground">
                                         <a href="{{ route('vehicles.show', $currentVehicle) }}" class="text-primary hover:underline">
-                                            {{ $currentVehicle->internal_number }}
+                                          النوع -   {{ $currentVehicle->type }}
                                         </a>
                                     </p>
                                     <p class="mt-0.5 text-sm text-muted-foreground">
-                                        {{ $currentVehicle->plate_number }}
+                                        رقم اللوحة -  {{ $currentVehicle->plate_number }}
                                     </p>
                                 </div>
                             @else
