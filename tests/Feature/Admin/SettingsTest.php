@@ -52,7 +52,7 @@ class SettingsTest extends TestCase
         $this->get(route('settings.edit'))
             ->assertOk()
             ->assertSee('إعدادات التطبيق')
-            ->assertSee('Vibe');
+            ->assertSee('Fleet');
     }
 
     public function test_user_with_settings_edit_can_update_the_app_name(): void

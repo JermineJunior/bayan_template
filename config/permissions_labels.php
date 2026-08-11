@@ -26,6 +26,7 @@ return [
         'vehicles' => 'المركبات',
         'drivers' => 'السائقون',
         'odometer' => 'العداد',
+        'fuel' => 'الوقود',
     ],
 
     'permissions' => [
@@ -65,6 +66,10 @@ return [
 
         'odometer.update' => 'تحديث قراءة العداد',
         'odometer.correct' => 'تصحيح قراءة العداد',
+
+        'fuel.view' => 'عرض عمليات التعبئة',
+        'fuel.create' => 'إضافة عملية تعبئة',
+        'fuel.delete' => 'حذف عملية تعبئة',
     ],
 
 ];

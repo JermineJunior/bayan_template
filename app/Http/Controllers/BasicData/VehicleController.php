@@ -114,7 +114,12 @@ class VehicleController extends Controller
      */
     public function show(Vehicle $vehicle): View
     {
-        $vehicle->load(['management', 'currentAssignment.driver', 'odometerLogs.recordedBy']);
+        $vehicle->load([
+            'management',
+            'currentAssignment.driver',
+            'odometerLogs.recordedBy',
+            'fuelLogs.driver',
+        ]);
 
         return view('basic-data.vehicles.show', [
             'vehicle' => $vehicle,

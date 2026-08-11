@@ -76,4 +76,10 @@ return [
         'odometer.correct',
     ],
 
+    'fuel' => [
+        'fuel.view',
+        'fuel.create',
+        'fuel.delete',
+    ],
+
 ];

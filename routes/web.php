@@ -10,6 +10,7 @@ use App\Http\Controllers\BasicData\ManagementController;
 use App\Http\Controllers\BasicData\VehicleController;
 use App\Http\Controllers\BasicData\VehicleDriverController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FuelLogController;
 use App\Http\Controllers\OdometerController;
 use Illuminate\Support\Facades\Route;
 
@@ -173,4 +174,18 @@ Route::middleware('auth')->group(function () {
     Route::post('vehicles/{vehicle}/odometer-readings', [OdometerController::class, 'store'])
         ->middleware('can:vehicles.edit')
         ->name('vehicles.odometer.store');
+
+    // Fuel logs: fuel entries are always created from a vehicle's context.
+    Route::middleware('can:fuel.view')->group(function () {
+        Route::get('fuel-logs', [FuelLogController::class, 'index'])->name('fuel-logs.index');
+        Route::get('vehicles/{vehicle}/fuel-logs/create', [FuelLogController::class, 'create'])->name('vehicles.fuel-logs.create');
+    });
+
+    Route::post('vehicles/{vehicle}/fuel-logs', [FuelLogController::class, 'store'])
+        ->middleware('can:fuel.create')
+        ->name('vehicles.fuel-logs.store');
+
+    Route::delete('fuel-logs/{fuelLog}', [FuelLogController::class, 'destroy'])
+        ->middleware('can:fuel.delete')
+        ->name('fuel-logs.destroy');
 });

@@ -61,6 +61,12 @@ class Vehicle extends Model
         return $this->hasMany(OdometerLog::class)->latest('recorded_at');
     }
 
+    /** كل عمليات تعبئة الوقود لهذي المركبة (الأحدث أولًا) */
+    public function fuelLogs(): HasMany
+    {
+        return $this->hasMany(FuelLog::class)->latest('filled_at');
+    }
+
     /** الإسناد الحالي فقط (قد يكون null لو المركبة عامة بلا سائق) */
     public function currentAssignment(): HasOne
     {
@@ -70,6 +76,41 @@ class Vehicle extends Model
     public function currentDriver(): ?Driver
     {
         return $this->currentAssignment?->driver;
+    }
+
+    /** التكلفة لكل كيلومتر بناءً على سجلات التعبئة (null لو ما فيه مسافة كافية) */
+    public function fuelCostPerKilometer(): ?float
+    {
+        $logs = $this->fuelLogs;
+
+        if ($logs->count() < 2) {
+            return null;
+        }
+
+        $totalCost = (float) $logs->sum('total_value');
+        $distance = (float) ($logs->first()->odometer_reading - $logs->last()->odometer_reading);
+
+        if ($totalCost <= 0 || $distance <= 0) {
+            return null;
+        }
+
+        return round($totalCost / $distance, 2);
+    }
+
+    /** متوسط استهلاك الوقود شهريًا باللترات (null لو ما فيه سجلات) */
+    public function averageMonthlyFuelConsumption(): ?float
+    {
+        $logs = $this->fuelLogs;
+
+        if ($logs->isEmpty()) {
+            return null;
+        }
+
+        $totalLiters = (float) $logs->sum('liters');
+        $days = (float) $logs->last()->filled_at->diffInDays($logs->first()->filled_at);
+        $months = max(1.0, $days / 30.44);
+
+        return round($totalLiters / $months, 2);
     }
 
     // سجل سائقي المركبة (تاريخي)
