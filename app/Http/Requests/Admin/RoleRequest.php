@@ -4,7 +4,6 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Permission;
 
 class RoleRequest extends FormRequest
 {
@@ -38,7 +37,11 @@ class RoleRequest extends FormRequest
             'permissions.*' => [
                 'required',
                 'string',
-                Rule::in(Permission::pluck('name')->all()),
+                // config/permissions.php is the single source of truth for the
+                // permission catalogue — validating against it (rather than the
+                // permissions table) lets newly-added catalogue permissions be
+                // selected before the seeder has run.
+                Rule::in(collect(config('permissions'))->flatten()->unique()->values()->all()),
             ],
         ];
     }

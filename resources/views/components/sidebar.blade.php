@@ -45,14 +45,14 @@
             icon="dashboard"
         />
 
-        @canany(['managements.view', 'departments.view', 'drivers.view', 'vehicles.view', 'fuel.view'])
-            <div x-data="{ open: {{ request()->routeIs('managements.*') || request()->routeIs('departments.*') || request()->routeIs('drivers.*') || request()->routeIs('vehicles.*') || request()->routeIs('fuel-logs.*') ? 'true' : 'true' }} }">
+        @canany(['managements.view', 'departments.view', 'drivers.view', 'vehicles.view', 'fuel.view', 'oils.view', 'filters.view'])
+            <div x-data="{ open: {{ request()->routeIs('managements.*') || request()->routeIs('departments.*') || request()->routeIs('drivers.*') || request()->routeIs('vehicles.*') || request()->routeIs('fuel-logs.*') || request()->routeIs('oils.*') || request()->routeIs('filters.*') || request()->routeIs('catalog.*') ? 'true' : 'true' }} }">
                 <button
                     type="button"
                     @click.stop="open = !open; collapsed = false"
                     :class="collapsed ? 'w-full justify-center' : 'w-full justify-start'"
                     :aria-expanded="open ? 'true' : 'false'"
-                    class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('managements.*') || request()->routeIs('departments.*') || request()->routeIs('drivers.*') || request()->routeIs('vehicles.*') || request()->routeIs('fuel-logs.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
+                    class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('managements.*') || request()->routeIs('departments.*') || request()->routeIs('drivers.*') || request()->routeIs('vehicles.*') || request()->routeIs('fuel-logs.*') || request()->routeIs('oils.*') || request()->routeIs('filters.*') || request()->routeIs('catalog.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
                 >
                     <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
@@ -122,6 +122,14 @@
                             عمليات التعبئة
                         </a>
                     @endcan
+                    @canany(['oils.view', 'filters.view'])
+                        <a
+                            href="{{ route('catalog.index') }}"
+                            class="flex items-center gap-3 rounded-md ps-10 pe-3 py-2 text-sm font-medium transition-colors {{ request()->routeIs('catalog.*') || request()->routeIs('oils.*') || request()->routeIs('filters.*') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
+                        >
+                            الزيوت والفلاتر
+                        </a>
+                    @endcanany
                 </div>
             </div>
         @endcanany

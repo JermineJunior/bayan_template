@@ -27,6 +27,10 @@ return [
         'drivers' => 'السائقون',
         'odometer' => 'العداد',
         'fuel' => 'الوقود',
+        'oils' => 'الزيوت',
+        'oil-changes' => 'تغيير الزيوت',
+        'filters' => 'الفلاتر',
+        'filter-changes' => 'تغيير الفلاتر',
     ],
 
     'permissions' => [
@@ -70,6 +74,22 @@ return [
         'fuel.view' => 'عرض عمليات التعبئة',
         'fuel.create' => 'إضافة عملية تعبئة',
         'fuel.delete' => 'حذف عملية تعبئة',
+
+        'oils.view' => 'عرض الزيوت',
+        'oils.create' => 'إضافة زيت',
+        'oils.edit' => 'تعديل زيت',
+        'oils.delete' => 'حذف زيت',
+
+        'oil-changes.view' => 'عرض سجل تغيير الزيوت',
+        'oil-changes.create' => 'تسجيل تغيير زيت',
+
+        'filters.view' => 'عرض الفلاتر',
+        'filters.create' => 'إضافة فلتر',
+        'filters.edit' => 'تعديل فلتر',
+        'filters.delete' => 'حذف فلتر',
+
+        'filter-changes.view' => 'عرض سجل تغيير الفلاتر',
+        'filter-changes.create' => 'تسجيل تغيير فلتر',
     ],
 
 ];

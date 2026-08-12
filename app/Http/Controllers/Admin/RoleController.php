@@ -48,7 +48,7 @@ class RoleController extends Controller
             'guard_name' => 'web',
         ]);
 
-        $role->syncPermissions($request->input('permissions', []));
+        $this->syncRolePermissions($role, $request->input('permissions', []));
 
         flash()->success('تم إنشاء الدور.');
 
@@ -81,7 +81,7 @@ class RoleController extends Controller
             'name' => $request->string('name'),
         ]);
 
-        $role->syncPermissions($request->input('permissions', []));
+        $this->syncRolePermissions($role, $request->input('permissions', []));
 
         flash()->success('تم تحديث الدور.');
 
@@ -119,5 +119,28 @@ class RoleController extends Controller
         }
 
         return $groups;
+    }
+
+    /**
+     * Persist every selected permission before syncing.
+     *
+     * The config catalogue is the source of truth for the checkboxes, but
+     * Spatie only syncs permissions that exist in the DB — so a permission
+     * added to config but not yet seeded would otherwise be silently dropped
+     * (or rejected). Creating it first keeps the table in sync with the
+     * catalogue and makes newly-added permissions work immediately.
+     *
+     * @param  array<int, string>  $permissions
+     */
+    protected function syncRolePermissions(Role $role, array $permissions): void
+    {
+        foreach ($permissions as $name) {
+            Permission::firstOrCreate([
+                'name' => $name,
+                'guard_name' => 'web',
+            ]);
+        }
+
+        $role->syncPermissions($permissions);
     }
 }

@@ -31,4 +31,12 @@
             المركبات
         </a>
     @endcan
+    @canany(['oils.view', 'filters.view'])
+        <a
+            href="{{ route('catalog.index') }}"
+            class="flex-1 rounded-lg px-4 py-2 text-center text-sm font-medium transition-colors {{ request()->routeIs('catalog.*') || request()->routeIs('oils.*') || request()->routeIs('filters.*') ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
+        >
+            الزيوت والفلاتر
+        </a>
+    @endcanany
 </div>

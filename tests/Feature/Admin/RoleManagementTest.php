@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\User;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -114,6 +115,29 @@ class RoleManagementTest extends TestCase
         ])->assertSessionHasErrors('permissions.0');
 
         $this->assertSame(0, Role::count());
+    }
+
+    public function test_a_catalogue_permission_not_yet_in_the_db_can_be_selected(): void
+    {
+        $this->actingUser(['roles.view', 'roles.create']);
+
+        // Simulate a freshly-added catalogue permission that hasn't been seeded yet.
+        Permission::where('name', 'filters.view')->delete();
+
+        $this->post(route('roles.store'), [
+            'name' => 'Fleet Manager',
+            'permissions' => ['filters.view', 'filters.create'],
+        ])
+            ->assertRedirect(route('roles.index'))
+            ->assertSessionHas('flasher::envelopes');
+
+        $this->assertDatabaseHas('permissions', ['name' => 'filters.view', 'guard_name' => 'web']);
+        $this->assertDatabaseHas('permissions', ['name' => 'filters.create', 'guard_name' => 'web']);
+
+        $role = Role::where('name', 'Fleet Manager')->first();
+
+        $this->assertTrue($role->hasPermissionTo('filters.view'));
+        $this->assertTrue($role->hasPermissionTo('filters.create'));
     }
 
     public function test_user_with_roles_edit_can_update_a_role(): void

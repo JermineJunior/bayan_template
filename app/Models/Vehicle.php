@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
 class Vehicle extends Model
@@ -65,6 +66,36 @@ class Vehicle extends Model
     public function fuelLogs(): HasMany
     {
         return $this->hasMany(FuelLog::class)->latest('filled_at');
+    }
+
+    /** All oil change records for this vehicle, across all oils used (newest first) */
+    public function oilChanges(): HasMany
+    {
+        return $this->hasMany(VehicleOilChange::class)->latest('last_change');
+    }
+
+    public function currentOilStatus(): Collection
+    {
+        return $this->oilChanges()
+            ->with('oil')
+            ->get()
+            ->unique(fn (VehicleOilChange $change) => $change->oil->oil_type)
+            ->values();
+    }
+
+    /** All filter change records for this vehicle, across all filters used (newest first) */
+    public function filterChanges(): HasMany
+    {
+        return $this->hasMany(VehicleFilterChange::class)->latest('last_change');
+    }
+
+    public function currentFilterStatus(): Collection
+    {
+        return $this->filterChanges()
+            ->with('filter')
+            ->get()
+            ->unique(fn (VehicleFilterChange $change) => $change->filter->filter_type)
+            ->values();
     }
 
     /** الإسناد الحالي فقط (قد يكون null لو المركبة عامة بلا سائق) */

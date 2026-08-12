@@ -17,6 +17,8 @@
         $assignments = $vehicle->driverAssignments()->with('driver')->latest('assignment_date')->get();
         $fuelCostPerKm = $vehicle->fuelCostPerKilometer();
         $avgMonthlyFuelLiters = $vehicle->averageMonthlyFuelConsumption();
+        $oilStatus = $vehicle->currentOilStatus();
+        $filterStatus = $vehicle->currentFilterStatus();
     @endphp
 
     <div class="mx-auto max-w-7xl px-4 py-8">
@@ -116,6 +118,26 @@
                 >
                     الوقود
                 </button>
+                <button
+                    type="button"
+                    role="tab"
+                    @click="tab = 'oil'"
+                    :aria-selected="tab === 'oil'"
+                    :class="tab === 'oil' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'"
+                    class="-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                >
+                    الزيوت
+                </button>
+                <button
+                    type="button"
+                    role="tab"
+                    @click="tab = 'filters'"
+                    :aria-selected="tab === 'filters'"
+                    :class="tab === 'filters' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'"
+                    class="-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                >
+                    الفلاتر
+                </button>
             </div>
 
             @include('basic-data.vehicles.tabs.info', [
@@ -141,6 +163,16 @@
                 'fuelLabels' => $fuelLabels,
                 'fuelCostPerKm' => $fuelCostPerKm,
                 'avgMonthlyFuelLiters' => $avgMonthlyFuelLiters,
+            ])
+
+            @include('basic-data.vehicles.tabs.oil', [
+                'vehicle' => $vehicle,
+                'oilStatus' => $oilStatus,
+            ])
+
+            @include('basic-data.vehicles.tabs.filters', [
+                'vehicle' => $vehicle,
+                'filterStatus' => $filterStatus,
             ])
         </div>
     </div>

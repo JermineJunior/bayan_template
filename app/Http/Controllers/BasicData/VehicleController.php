@@ -119,6 +119,8 @@ class VehicleController extends Controller
             'currentAssignment.driver',
             'odometerLogs.recordedBy',
             'fuelLogs.driver',
+            'oilChanges.oil',
+            'filterChanges.filter',
         ]);
 
         return view('basic-data.vehicles.show', [

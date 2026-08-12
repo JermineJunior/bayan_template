@@ -9,9 +9,14 @@ use App\Http\Controllers\BasicData\DriverController;
 use App\Http\Controllers\BasicData\ManagementController;
 use App\Http\Controllers\BasicData\VehicleController;
 use App\Http\Controllers\BasicData\VehicleDriverController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FuelLogController;
 use App\Http\Controllers\OdometerController;
+use App\Http\Controllers\OilController;
+use App\Http\Controllers\VehicleOilChangeController;
+use App\Http\Controllers\FilterController;
+use App\Http\Controllers\VehicleFilterChangeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index'])
@@ -188,4 +193,64 @@ Route::middleware('auth')->group(function () {
     Route::delete('fuel-logs/{fuelLog}', [FuelLogController::class, 'destroy'])
         ->middleware('can:fuel.delete')
         ->name('fuel-logs.destroy');
+
+    // Combined oils + filters catalog page.
+    Route::get('catalogs', [CatalogController::class, 'index'])
+        ->name('catalog.index');
+
+    // Oil catalog — route names mirror Route::resource('oils', OilController::class).
+    Route::middleware('can:oils.view')->group(function () {
+        Route::get('oils', [OilController::class, 'index'])->name('oils.index');
+        Route::get('oils/create', [OilController::class, 'create'])->name('oils.create');
+        Route::get('oils/{oil}/edit', [OilController::class, 'edit'])->name('oils.edit');
+    });
+
+    Route::post('oils', [OilController::class, 'store'])
+        ->middleware('can:oils.create')
+        ->name('oils.store');
+
+    Route::put('oils/{oil}', [OilController::class, 'update'])
+        ->middleware('can:oils.edit')
+        ->name('oils.update');
+
+    Route::delete('oils/{oil}', [OilController::class, 'destroy'])
+        ->middleware('can:oils.delete')
+        ->name('oils.destroy');
+
+    // Oil changes: always logged from a vehicle's context.
+    Route::get('vehicles/{vehicle}/oil-changes/create', [VehicleOilChangeController::class, 'create'])
+        ->middleware('can:oil-changes.view')
+        ->name('vehicles.oil-changes.create');
+
+    Route::post('vehicles/{vehicle}/oil-changes', [VehicleOilChangeController::class, 'store'])
+        ->middleware('can:oil-changes.create')
+        ->name('vehicles.oil-changes.store');
+
+    // Filter catalog — route names mirror Route::resource('filters', FilterController::class).
+    Route::middleware('can:filters.view')->group(function () {
+        Route::get('filters', [FilterController::class, 'index'])->name('filters.index');
+        Route::get('filters/create', [FilterController::class, 'create'])->name('filters.create');
+        Route::get('filters/{filter}/edit', [FilterController::class, 'edit'])->name('filters.edit');
+    });
+
+    Route::post('filters', [FilterController::class, 'store'])
+        ->middleware('can:filters.create')
+        ->name('filters.store');
+
+    Route::put('filters/{filter}', [FilterController::class, 'update'])
+        ->middleware('can:filters.edit')
+        ->name('filters.update');
+
+    Route::delete('filters/{filter}', [FilterController::class, 'destroy'])
+        ->middleware('can:filters.delete')
+        ->name('filters.destroy');
+
+    // Filter changes: always logged from a vehicle's context.
+    Route::get('vehicles/{vehicle}/filter-changes/create', [VehicleFilterChangeController::class, 'create'])
+        ->middleware('can:filter-changes.view')
+        ->name('vehicles.filter-changes.create');
+
+    Route::post('vehicles/{vehicle}/filter-changes', [VehicleFilterChangeController::class, 'store'])
+        ->middleware('can:filter-changes.create')
+        ->name('vehicles.filter-changes.store');
 });

@@ -176,6 +176,18 @@ return [
         'drivers' => 'السائقون',
         'role' => 'الدور',
         'permissions' => 'الصلاحيات',
+        'oil_id' => 'الزيت',
+        'oil_name' => 'اسم الزيت',
+        'oil_code' => 'كود الزيت',
+        'oil_type' => 'نوع الزيت',
+        'oil_life' => 'العمر الافتراضي',
+        'last_change' => 'تاريخ آخر تغيير',
+        'odometer_when_change' => 'قراءة العداد عند التغيير',
+        'filter_id' => 'الفلتر',
+        'filter_name' => 'اسم الفلتر',
+        'filter_code' => 'كود الفلتر',
+        'filter_type' => 'نوع الفلتر',
+        'filter_life' => 'العمر الافتراضي',
     ],
 
 ];

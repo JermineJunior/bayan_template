@@ -1,6 +1,8 @@
 import Alpine from 'alpinejs';
 import sidebar from './components/sidebar';
 import themeSwitcher from './components/theme-switcher';
+import oilChangeForm from './components/oil-change-form';
+import filterChangeForm from './components/filter-change-form';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
@@ -9,6 +11,8 @@ window.Swal = Swal;
 
 Alpine.data('sidebar', sidebar);
 Alpine.data('themeSwitcher', themeSwitcher);
+Alpine.data('oilChangeForm', oilChangeForm);
+Alpine.data('filterChangeForm', filterChangeForm);
 
 Alpine.start();
 

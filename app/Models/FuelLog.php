@@ -48,7 +48,6 @@ class FuelLog extends Model
         return $this->belongsTo(User::class, 'recorded_by');
     }
 
-    // logic and calculations
     /**
      * آخر تعبئة سابقة لنفس المركبة قبل هذا السجل — أساس حساب الاستهلاك.
      * ملاحظة: تسلسل مستقل عن odometer_logs عمدًا (قرار مبسّط: fuel_logs تقارن بنفسها بس).

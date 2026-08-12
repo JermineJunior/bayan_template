@@ -82,4 +82,28 @@ return [
         'fuel.delete',
     ],
 
+    'oils' => [
+        'oils.view',
+        'oils.create',
+        'oils.edit',
+        'oils.delete',
+    ],
+
+    'oil-changes' => [
+        'oil-changes.view',
+        'oil-changes.create',
+    ],
+
+    'filters' => [
+        'filters.view',
+        'filters.create',
+        'filters.edit',
+        'filters.delete',
+    ],
+
+    'filter-changes' => [
+        'filter-changes.view',
+        'filter-changes.create',
+    ],
+
 ];
