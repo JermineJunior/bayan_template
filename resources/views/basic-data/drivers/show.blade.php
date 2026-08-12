@@ -86,6 +86,16 @@
                 >
                     الإسناد
                 </button>
+                <button
+                    type="button"
+                    role="tab"
+                    @click="tab = 'violations'"
+                    :aria-selected="tab === 'violations'"
+                    :class="tab === 'violations' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'"
+                    class="-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                >
+                    المخالفات
+                </button>
             </div>
 
             <div x-show="tab === 'info'" x-cloak role="tabpanel">
@@ -267,6 +277,87 @@
                                 </p>
                             @endif
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="tab === 'violations'" x-cloak role="tabpanel">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-semibold text-foreground">
+                            سجل المخالفات
+                        </h2>
+
+                        @can('violations.create')
+                            <a
+                                href="{{ route('drivers.violations.create', $driver) }}"
+                                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                            >
+                                + تسجيل مخالفة
+                            </a>
+                        @endcan
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-sm">
+                        <table class="min-w-full divide-y divide-border text-sm">
+                            <thead>
+                                <tr class="text-xs uppercase tracking-wide text-muted-foreground">
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        تاريخ المخالفة
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        الوصف
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        المبلغ
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-end font-medium">
+                                        إجراءات
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border">
+                                @forelse ($driver->violations as $violation)
+                                    <tr>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $violation->violation_date?->format('Y-m-d') ?? '—' }}
+                                        </td>
+                                        <td class="px-4 py-3 font-medium text-foreground">
+                                            {{ $violation->description }}
+                                        </td>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $violation->amount !== null ? number_format((float) $violation->amount, 2) : '—' }}
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center justify-end gap-2">
+                                                @can('violations.delete')
+                                                    <form
+                                                        method="POST"
+                                                        action="{{ route('violations.destroy', $violation) }}"
+                                                        onsubmit="return confirmForm(this, 'هل تريد حذف هذه المخالفة؟', 'نعم، احذف')"
+                                                    >
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button
+                                                            type="submit"
+                                                            class="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
+                                                        >
+                                                            حذف
+                                                        </button>
+                                                    </form>
+                                                @endcan
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-4 py-8 text-center text-muted-foreground">
+                                            لا توجد مخالفات مسجلة لهذا السائق.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

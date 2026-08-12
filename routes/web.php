@@ -11,12 +11,13 @@ use App\Http\Controllers\BasicData\VehicleController;
 use App\Http\Controllers\BasicData\VehicleDriverController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DriverViolationController;
+use App\Http\Controllers\FilterController;
 use App\Http\Controllers\FuelLogController;
 use App\Http\Controllers\OdometerController;
 use App\Http\Controllers\OilController;
-use App\Http\Controllers\VehicleOilChangeController;
-use App\Http\Controllers\FilterController;
 use App\Http\Controllers\VehicleFilterChangeController;
+use App\Http\Controllers\VehicleOilChangeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index'])
@@ -253,4 +254,17 @@ Route::middleware('auth')->group(function () {
     Route::post('vehicles/{vehicle}/filter-changes', [VehicleFilterChangeController::class, 'store'])
         ->middleware('can:filter-changes.create')
         ->name('vehicles.filter-changes.store');
+
+    // Violations: always logged from a driver's context.
+    Route::get('drivers/{driver}/violations/create', [DriverViolationController::class, 'create'])
+        ->middleware('can:violations.view')
+        ->name('drivers.violations.create');
+
+    Route::post('drivers/{driver}/violations', [DriverViolationController::class, 'store'])
+        ->middleware('can:violations.create')
+        ->name('drivers.violations.store');
+
+    Route::delete('violations/{violation}', [DriverViolationController::class, 'destroy'])
+        ->middleware('can:violations.delete')
+        ->name('violations.destroy');
 });

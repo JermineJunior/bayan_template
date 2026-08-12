@@ -6,7 +6,7 @@ use Database\Factories\DriverFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 class Driver extends Model
 {
     /** @use HasFactory<DriverFactory> */
@@ -37,6 +37,12 @@ class Driver extends Model
     public function vehicleAssignments()
     {
         return $this->hasMany(VehicleDriver::class);
+    }
+
+      /** Violation log entries for this driver (newest first) */
+    public function violations(): HasMany
+    {
+        return $this->hasMany(DriverViolation::class)->latest('violation_date');
     }
 
     /** المركبة الحالية فقط (قد يكون null لو السائق بلا مركبة حالياً) */

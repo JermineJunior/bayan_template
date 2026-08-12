@@ -31,6 +31,7 @@ return [
         'oil-changes' => 'تغيير الزيوت',
         'filters' => 'الفلاتر',
         'filter-changes' => 'تغيير الفلاتر',
+        'violations' => 'المخالفات',
     ],
 
     'permissions' => [
@@ -90,6 +91,10 @@ return [
 
         'filter-changes.view' => 'عرض سجل تغيير الفلاتر',
         'filter-changes.create' => 'تسجيل تغيير فلتر',
+
+        'violations.view' => 'عرض المخالفات',
+        'violations.create' => 'تسجيل مخالفة',
+        'violations.delete' => 'حذف مخالفة',
     ],
 
 ];

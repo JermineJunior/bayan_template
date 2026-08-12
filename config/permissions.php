@@ -106,4 +106,10 @@ return [
         'filter-changes.create',
     ],
 
+    'violations' => [
+        'violations.view',
+        'violations.create',
+        'violations.delete',
+    ],
+
 ];
