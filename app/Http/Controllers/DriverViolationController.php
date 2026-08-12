@@ -27,6 +27,7 @@ class DriverViolationController extends Controller
     {
         $validated = $request->validate([
             'violation_date' => ['required', 'date', 'before_or_equal:today'],
+            'ticket_number' => ['nullable', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:255'],
             'amount' => ['nullable', 'numeric', 'min:0'],
         ]);
@@ -34,6 +35,7 @@ class DriverViolationController extends Controller
         DriverViolation::create([
             'driver_id' => $driver->id,
             'violation_date' => $validated['violation_date'],
+            'ticket_number' => $validated['ticket_number'] ?? null,
             'description' => $validated['description'],
             'amount' => $validated['amount'] ?? null,
             'recorded_by' => $request->user()->id,

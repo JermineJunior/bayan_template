@@ -9,6 +9,7 @@ class DriverViolation extends Model
     protected $fillable = [
         'driver_id',
         'violation_date',
+        'ticket_number',
         'description',
         'amount',
         'recorded_by',

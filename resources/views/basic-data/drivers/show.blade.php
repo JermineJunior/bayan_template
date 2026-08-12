@@ -60,7 +60,14 @@
             </div>
         </div>
 
-        <div x-data="{ tab: 'info' }">
+        <div x-data="{
+            tab: localStorage.getItem('driver-tabs-{{ $driver->id }}') || 'info',
+            init() {
+                const valid = ['info', 'assign', 'violations'];
+                if (!valid.includes(this.tab)) this.tab = 'info';
+                this.$watch('tab', value => localStorage.setItem('driver-tabs-{{ $driver->id }}', value));
+            }
+        }">
             <div
                 class="mb-6 flex gap-1 overflow-x-auto border-b border-border"
                 role="tablist"
@@ -306,6 +313,9 @@
                                         تاريخ المخالفة
                                     </th>
                                     <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        رقم التذكرة
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
                                         الوصف
                                     </th>
                                     <th class="bg-muted/50 px-4 py-3 text-start font-medium">
@@ -321,6 +331,9 @@
                                     <tr>
                                         <td class="px-4 py-3 text-muted-foreground">
                                             {{ $violation->violation_date?->format('Y-m-d') ?? '—' }}
+                                        </td>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $violation->ticket_number ?? '—' }}
                                         </td>
                                         <td class="px-4 py-3 font-medium text-foreground">
                                             {{ $violation->description }}
@@ -351,7 +364,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="px-4 py-8 text-center text-muted-foreground">
+                                        <td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
                                             لا توجد مخالفات مسجلة لهذا السائق.
                                         </td>
                                     </tr>

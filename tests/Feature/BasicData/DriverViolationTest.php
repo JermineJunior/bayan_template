@@ -44,6 +44,7 @@ class DriverViolationTest extends TestCase
     {
         return array_merge([
             'violation_date' => '2026-01-15',
+            'ticket_number' => 'TKT-001',
             'description' => 'تجاوز السرعة',
             'amount' => '150.00',
         ], $overrides);
@@ -90,6 +91,7 @@ class DriverViolationTest extends TestCase
         $this->assertDatabaseHas('driver_violations', [
             'driver_id' => $driver->id,
             'violation_date' => '2026-01-15',
+            'ticket_number' => 'TKT-001',
             'description' => 'تجاوز السرعة',
             'amount' => '150.00',
             'recorded_by' => $user->id,
@@ -147,6 +149,19 @@ class DriverViolationTest extends TestCase
         $this->assertDatabaseCount('driver_violations', 0);
     }
 
+    public function test_ticket_number_is_optional_and_stored_as_null_when_empty(): void
+    {
+        $this->actingUser(['violations.view', 'violations.create']);
+        $driver = $this->makeDriver();
+
+        $this->post(route('drivers.violations.store', $driver), $this->violationPayload([
+            'ticket_number' => '',
+        ]))->assertRedirect(route('drivers.show', $driver));
+
+        $violation = DriverViolation::where('driver_id', $driver->id)->firstOrFail();
+        $this->assertNull($violation->ticket_number);
+    }
+
     public function test_user_with_violations_delete_can_delete_a_violation(): void
     {
         $user = $this->actingUser(['violations.view', 'violations.delete']);
@@ -154,6 +169,7 @@ class DriverViolationTest extends TestCase
         $violation = DriverViolation::create([
             'driver_id' => $driver->id,
             'violation_date' => '2026-01-15',
+            'ticket_number' => 'TKT-001',
             'description' => 'تجاوز السرعة',
             'amount' => 150.00,
             'recorded_by' => $user->id,
@@ -173,6 +189,7 @@ class DriverViolationTest extends TestCase
         $violation = DriverViolation::create([
             'driver_id' => $driver->id,
             'violation_date' => '2026-01-15',
+            'ticket_number' => 'TKT-001',
             'description' => 'تجاوز السرعة',
             'amount' => 150.00,
             'recorded_by' => $user->id,
@@ -190,6 +207,7 @@ class DriverViolationTest extends TestCase
         DriverViolation::create([
             'driver_id' => $driver->id,
             'violation_date' => '2026-01-15',
+            'ticket_number' => 'TKT-001',
             'description' => 'تجاوز السرعة',
             'amount' => 150.00,
             'recorded_by' => $user->id,
@@ -198,6 +216,7 @@ class DriverViolationTest extends TestCase
         $this->get(route('drivers.show', $driver))
             ->assertOk()
             ->assertSee('سجل المخالفات')
+            ->assertSee('TKT-001')
             ->assertSee('تجاوز السرعة')
             ->assertSee('150.00')
             ->assertSee('تسجيل مخالفة');

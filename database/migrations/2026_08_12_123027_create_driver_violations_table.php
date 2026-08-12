@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('driver_id')->constrained('drivers');
             $table->date('violation_date');
+            $table->string('ticket_number')->nullable();
             $table->string('description');
             $table->decimal('amount', 10, 2)->nullable();
             $table->foreignId('recorded_by')->constrained('users');

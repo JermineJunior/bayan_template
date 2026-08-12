@@ -72,7 +72,14 @@
             </div>
         </div>
 
-        <div x-data="{ tab: 'info' }">
+        <div x-data="{
+            tab: localStorage.getItem('vehicle-tabs-{{ $vehicle->id }}') || 'info',
+            init() {
+                const valid = ['info', 'assign', 'odometer', 'fuel', 'oil', 'filters'];
+                if (!valid.includes(this.tab)) this.tab = 'info';
+                this.$watch('tab', value => localStorage.setItem('vehicle-tabs-{{ $vehicle->id }}', value));
+            }
+        }">
             <div
                 class="mb-6 flex gap-1 overflow-x-auto border-b border-border"
                 role="tablist"
