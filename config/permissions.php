@@ -106,9 +106,15 @@ return [
         'filter-changes.create',
     ],
 
+    'insurance-policies' => [
+        'insurance-policies.view',
+        'insurance-policies.create',
+    ],
+
     'violations' => [
         'violations.view',
         'violations.create',
+        'violations.edit',
         'violations.delete',
     ],
 

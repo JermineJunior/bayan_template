@@ -14,6 +14,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DriverViolationController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\FuelLogController;
+use App\Http\Controllers\InsurancePolicyController;
 use App\Http\Controllers\OdometerController;
 use App\Http\Controllers\OilController;
 use App\Http\Controllers\VehicleFilterChangeController;
@@ -255,6 +256,15 @@ Route::middleware('auth')->group(function () {
         ->middleware('can:filter-changes.create')
         ->name('vehicles.filter-changes.store');
 
+    // Insurance policies: always logged from a vehicle's context.
+    Route::get('vehicles/{vehicle}/insurance-policies/create', [InsurancePolicyController::class, 'create'])
+        ->middleware('can:insurance-policies.view')
+        ->name('vehicles.insurance-policies.create');
+
+    Route::post('vehicles/{vehicle}/insurance-policies', [InsurancePolicyController::class, 'store'])
+        ->middleware('can:insurance-policies.create')
+        ->name('vehicles.insurance-policies.store');
+
     // Violations: always logged from a driver's context.
     Route::get('drivers/{driver}/violations/create', [DriverViolationController::class, 'create'])
         ->middleware('can:violations.view')
@@ -263,6 +273,14 @@ Route::middleware('auth')->group(function () {
     Route::post('drivers/{driver}/violations', [DriverViolationController::class, 'store'])
         ->middleware('can:violations.create')
         ->name('drivers.violations.store');
+
+    Route::get('drivers/{driver}/violations/{violation}/edit', [DriverViolationController::class, 'edit'])
+        ->middleware('can:violations.edit')
+        ->name('drivers.violations.edit');
+
+    Route::put('drivers/{driver}/violations/{violation}', [DriverViolationController::class, 'update'])
+        ->middleware('can:violations.edit')
+        ->name('drivers.violations.update');
 
     Route::delete('violations/{violation}', [DriverViolationController::class, 'destroy'])
         ->middleware('can:violations.delete')

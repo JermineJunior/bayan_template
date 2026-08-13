@@ -75,7 +75,7 @@
         <div x-data="{
             tab: localStorage.getItem('vehicle-tabs-{{ $vehicle->id }}') || 'info',
             init() {
-                const valid = ['info', 'assign', 'odometer', 'fuel', 'oil', 'filters'];
+                const valid = ['info', 'assign', 'odometer', 'fuel', 'oil', 'filters', 'insurance'];
                 if (!valid.includes(this.tab)) this.tab = 'info';
                 this.$watch('tab', value => localStorage.setItem('vehicle-tabs-{{ $vehicle->id }}', value));
             }
@@ -145,6 +145,16 @@
                 >
                     الفلاتر
                 </button>
+                <button
+                    type="button"
+                    role="tab"
+                    @click="tab = 'insurance'"
+                    :aria-selected="tab === 'insurance'"
+                    :class="tab === 'insurance' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'"
+                    class="-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                >
+                    التأمين
+                </button>
             </div>
 
             @include('basic-data.vehicles.tabs.info', [
@@ -181,6 +191,141 @@
                 'vehicle' => $vehicle,
                 'filterStatus' => $filterStatus,
             ])
+
+            <div x-show="tab === 'insurance'" x-cloak role="tabpanel">
+                <div class="space-y-6">
+                    <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
+                        <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
+                            <h2 class="text-sm font-semibold text-foreground">
+                                الاستمارة الحالية
+                            </h2>
+
+                            @can('insurance-policies.create')
+                                <a
+                                    href="{{ route('vehicles.insurance-policies.create', $vehicle) }}"
+                                    class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                                >
+                                    + تجديد / إضافة استمارة
+                                </a>
+                            @endcan
+                        </div>
+
+                        @if ($vehicle->currentInsurancePolicy)
+                            @php
+                                $policy = $vehicle->currentInsurancePolicy;
+                                $daysLeft = $policy->days_until_expiry;
+                                $isExpired = $policy->is_expired;
+                                $isWarning = !$isExpired && $daysLeft <= 30;
+                            @endphp
+
+                            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                <div class="rounded-xl border p-5 shadow-sm {{ $isExpired ? 'border-red-200 bg-red-50/50' : ($isWarning ? 'border-amber-200 bg-amber-50/50' : 'border-border bg-surface') }}">
+                                    <p class="text-xs text-muted-foreground">رقم الاستمارة</p>
+                                    <p class="mt-1 text-sm font-semibold text-foreground">{{ $policy->policy_number }}</p>
+                                </div>
+                                <div class="rounded-xl border p-5 shadow-sm {{ $isExpired ? 'border-red-200 bg-red-50/50' : ($isWarning ? 'border-amber-200 bg-amber-50/50' : 'border-border bg-surface') }}">
+                                    <p class="text-xs text-muted-foreground">شركة التأمين</p>
+                                    <p class="mt-1 text-sm font-semibold text-foreground">{{ $policy->insurance_company }}</p>
+                                </div>
+                                <div class="rounded-xl border p-5 shadow-sm {{ $isExpired ? 'border-red-200 bg-red-50/50' : ($isWarning ? 'border-amber-200 bg-amber-50/50' : 'border-border bg-surface') }}">
+                                    <p class="text-xs text-muted-foreground">تاريخ الانتهاء</p>
+                                    <p class="mt-1 text-sm font-semibold text-foreground">{{ $policy->end_date?->format('Y-m-d') ?? '—' }}</p>
+                                </div>
+                                <div class="rounded-xl border p-5 shadow-sm {{ $isExpired ? 'border-red-200 bg-red-50/50' : ($isWarning ? 'border-amber-200 bg-amber-50/50' : 'border-border bg-surface') }}">
+                                    <p class="text-xs text-muted-foreground">الأيام المتبقية</p>
+                                    <div class="mt-1 flex items-center gap-2">
+                                        <p class="text-sm font-semibold {{ $isExpired ? 'text-red-600' : ($isWarning ? 'text-amber-600' : 'text-foreground') }}">
+                                            {{ $isExpired ? 'منتهية' : $daysLeft.' يوم' }}
+                                        </p>
+                                        @if ($isExpired)
+                                            <span class="inline-flex rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700">
+                                                منتهية
+                                            </span>
+                                        @elseif ($isWarning)
+                                            <span class="inline-flex rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                                                قريبة الانتهاء
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <p class="text-sm text-muted-foreground">
+                                لا توجد استمارة تأمين نشطة لهذه المركبة.
+                            </p>
+                        @endif
+                    </div>
+
+                    <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
+                        <h2 class="mb-4 text-sm font-semibold text-foreground">
+                            سجل استمارات التأمين
+                        </h2>
+
+                        @if ($vehicle->insurancePolicies->isNotEmpty())
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-border text-sm">
+                                    <thead>
+                                        <tr class="text-xs uppercase tracking-wide text-muted-foreground">
+                                            <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                                رقم البوليصة
+                                            </th>
+                                            <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                                شركة التأمين
+                                            </th>
+                                            <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                                تاريخ البدء
+                                            </th>
+                                            <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                                تاريخ الانتهاء
+                                            </th>
+                                            <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                                القيمة
+                                            </th>
+                                            <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                                الحالة
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-border">
+                                        @foreach ($vehicle->insurancePolicies as $policy)
+                                            <tr class="{{ $policy->is_current ? 'bg-muted/30' : '' }}">
+                                                <td class="px-4 py-3 font-medium text-foreground">
+                                                    {{ $policy->policy_number }}
+                                                </td>
+                                                <td class="px-4 py-3 text-muted-foreground">
+                                                    {{ $policy->insurance_company }}
+                                                </td>
+                                                <td class="px-4 py-3 text-muted-foreground">
+                                                    {{ $policy->start_date?->format('Y-m-d') }}
+                                                </td>
+                                                <td class="px-4 py-3 text-muted-foreground">
+                                                    {{ $policy->end_date?->format('Y-m-d') }}
+                                                </td>
+                                                <td class="px-4 py-3 text-muted-foreground">
+                                                    {{ $policy->value !== null ? number_format((float) $policy->value, 2) : '—' }}
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    @if ($policy->is_current)
+                                                        <span class="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                                                            حالية
+                                                        </span>
+                                                    @else
+                                                        <span class="text-muted-foreground">سابقة</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <p class="text-sm text-muted-foreground">
+                                لا يوجد سجل استمارات لهذه المركبة.
+                            </p>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

@@ -63,6 +63,11 @@ class FuelLogController extends Controller
      */
     public function store(Request $request, Vehicle $vehicle): RedirectResponse
     {
+        $request->merge([
+            'price_per_liter' => str_replace(',', '', $request->input('price_per_liter')),
+            'discount' => $request->filled('discount') ? str_replace(',', '', $request->input('discount')) : null,
+        ]);
+
         $validated = $request->validate([
             'filled_at' => ['required', 'date'],
             'fuel_type' => ['nullable', Rule::in(['gasoline', 'diesel'])],

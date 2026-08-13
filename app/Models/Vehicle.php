@@ -109,6 +109,18 @@ class Vehicle extends Model
         return $this->currentAssignment?->driver;
     }
 
+    // get all the car insurance records
+    public function insurancePolicies(): HasMany
+    {
+        return $this->hasMany(InsurancePolicy::class)->latest('start_date');
+    }
+
+    /** The active policy right now, if any */
+    public function currentInsurancePolicy(): HasOne
+    {
+        return $this->hasOne(InsurancePolicy::class)->where('is_current', true);
+    }
+
     /** التكلفة لكل كيلومتر بناءً على سجلات التعبئة (null لو ما فيه مسافة كافية) */
     public function fuelCostPerKilometer(): ?float
     {

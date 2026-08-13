@@ -25,6 +25,10 @@ class DriverViolationController extends Controller
      */
     public function store(Request $request, Driver $driver): RedirectResponse
     {
+        $request->merge([
+            'amount' => $request->filled('amount') ? str_replace(',', '', $request->input('amount')) : null,
+        ]);
+
         $validated = $request->validate([
             'violation_date' => ['required', 'date', 'before_or_equal:today'],
             'ticket_number' => ['nullable', 'string', 'max:255'],
@@ -42,6 +46,50 @@ class DriverViolationController extends Controller
         ]);
 
         flash()->success('تم تسجيل المخالفة بنجاح.');
+
+        return redirect()
+            ->route('drivers.show', $driver);
+    }
+
+    /**
+     * Show the form for editing the given violation.
+     */
+    public function edit(Driver $driver, DriverViolation $violation): View
+    {
+        abort_if($violation->driver_id !== $driver->id, 404);
+
+        return view('violations.edit', [
+            'driver' => $driver,
+            'violation' => $violation,
+        ]);
+    }
+
+    /**
+     * Update the given violation.
+     */
+    public function update(Request $request, Driver $driver, DriverViolation $violation): RedirectResponse
+    {
+        abort_if($violation->driver_id !== $driver->id, 404);
+
+        $request->merge([
+            'amount' => $request->filled('amount') ? str_replace(',', '', $request->input('amount')) : null,
+        ]);
+
+        $validated = $request->validate([
+            'violation_date' => ['required', 'date', 'before_or_equal:today'],
+            'ticket_number' => ['nullable', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:255'],
+            'amount' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
+        $violation->update([
+            'violation_date' => $validated['violation_date'],
+            'ticket_number' => $validated['ticket_number'] ?? null,
+            'description' => $validated['description'],
+            'amount' => $validated['amount'] ?? null,
+        ]);
+
+        flash()->success('تم تحديث المخالفة بنجاح.');
 
         return redirect()
             ->route('drivers.show', $driver);

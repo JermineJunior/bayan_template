@@ -43,7 +43,7 @@ class DriverController extends Controller
                     now()->addDays(30)->endOfDay(),
                 ]);
             })
-            ->orderBy('full_name')
+            ->orderBy('created_at')
             ->paginate(10)
             ->withQueryString();
 

@@ -53,6 +53,45 @@
 
                     <nav class="flex items-center gap-3" aria-label="الشريط العلوي">
                         @auth
+                            <div x-data="{
+                                isFullscreen: localStorage.getItem('app-fullscreen') === 'true',
+                                init() {
+                                    if (this.isFullscreen) {
+                                        document.documentElement.requestFullscreen().catch(() => {
+                                            localStorage.removeItem('app-fullscreen');
+                                            this.isFullscreen = false;
+                                        });
+                                    }
+                                    document.addEventListener('fullscreenchange', () => {
+                                        this.isFullscreen = !!document.fullscreenElement;
+                                        if (this.isFullscreen) {
+                                            localStorage.setItem('app-fullscreen', 'true');
+                                        } else {
+                                            localStorage.removeItem('app-fullscreen');
+                                        }
+                                    });
+                                },
+                                toggle() {
+                                    if (this.isFullscreen) {
+                                        document.exitFullscreen().catch(() => {});
+                                    } else {
+                                        document.documentElement.requestFullscreen().catch(() => {});
+                                    }
+                                }
+                            }">
+                                <button
+                                    type="button"
+                                    @click="toggle()"
+                                    aria-label="ملء الشاشة"
+                                    class="rounded-md border border-border p-2 text-muted-foreground transition-colors hover:bg-muted"
+                                    :class="{ 'bg-primary/10 text-primary border-primary': isFullscreen }"
+                                >
+                                    <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
                             <a
                                 href="{{ route('account.preferences.edit') }}"
                                 class="flex items-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
@@ -94,5 +133,7 @@
         </div>
 
         <x-theme-switcher variant="floating" />
+
+        @stack('scripts')
     </body>
 </html>

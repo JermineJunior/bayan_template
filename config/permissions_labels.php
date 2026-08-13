@@ -31,6 +31,7 @@ return [
         'oil-changes' => 'تغيير الزيوت',
         'filters' => 'الفلاتر',
         'filter-changes' => 'تغيير الفلاتر',
+        'insurance-policies' => 'التأمين',
         'violations' => 'المخالفات',
     ],
 
@@ -92,8 +93,12 @@ return [
         'filter-changes.view' => 'عرض سجل تغيير الفلاتر',
         'filter-changes.create' => 'تسجيل تغيير فلتر',
 
+        'insurance-policies.view' => 'عرض بوليصات التأمين',
+        'insurance-policies.create' => 'تسجيل بوليصة تأمين',
+
         'violations.view' => 'عرض المخالفات',
         'violations.create' => 'تسجيل مخالفة',
+        'violations.edit' => 'تعديل مخالفة',
         'violations.delete' => 'حذف مخالفة',
     ],
 

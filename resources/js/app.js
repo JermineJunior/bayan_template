@@ -1,4 +1,6 @@
 import Alpine from 'alpinejs';
+import Chart from 'chart.js/auto';
+import mask from '@alpinejs/mask';
 import sidebar from './components/sidebar';
 import themeSwitcher from './components/theme-switcher';
 import oilChangeForm from './components/oil-change-form';
@@ -8,6 +10,11 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 
 window.Alpine = Alpine;
 window.Swal = Swal;
+window.Chart = Chart;
+
+Alpine.plugin(mask);
+
+Alpine.data('sidebar', sidebar);
 
 Alpine.data('sidebar', sidebar);
 Alpine.data('themeSwitcher', themeSwitcher);

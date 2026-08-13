@@ -38,6 +38,13 @@
                                 {{ $lastFuelLog->filled_at?->format('Y-m-d H:i') }}
                             </p>
                         </div>
+                    @else
+                    <div class="text-end">
+                        <p class="text-sm text-foreground">العداد </p>
+                        <p class="text-sm text-foreground font-medium">
+                            {{ $vehicle->current_odometer  }} كم
+                        </p>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -48,14 +55,24 @@
                 class="space-y-6 rounded-xl border border-border bg-surface p-6 shadow-sm"
                 x-data="{
                     liters: {{ (float) old('liters', 0) }},
-                    price: {{ (float) old('price_per_liter', 0) }},
-                    discount: {{ (float) old('discount', 0) }},
+                    price: '{{ old('price_per_liter') }}',
+                    discount: '{{ old('discount') }}',
+                    formatMoney(value) {
+                        if (value === null || value === undefined || isNaN(value)) return '0.00';
+                        return Number(value).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        });
+                    },
                     get total() {
                         const l = parseFloat(this.liters) || 0;
-                        const p = parseFloat(this.price) || 0;
-                        const d = parseFloat(this.discount) || 0;
+                        const p = parseFloat(String(this.price).replace(/[^0-9.-]+/g, '')) || 0;
+                        const d = parseFloat(String(this.discount).replace(/[^0-9.-]+/g, '')) || 0;
                         const t = l * p - d;
                         return t > 0 ? t : 0;
+                    },
+                    get formattedTotal() {
+                        return this.formatMoney(this.total);
                     }
                 }"
             >
@@ -149,12 +166,11 @@
                         <input
                             id="price_per_liter"
                             name="price_per_liter"
-                            type="number"
-                            step="0.001"
-                            min="0"
+                            type="text"
+                            inputmode="decimal"
                             value="{{ old('price_per_liter') }}"
-                            x-model.number="price"
-                            required
+                            x-model="price"
+                            x-mask:function="$money"
                             placeholder="0.000"
                             class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         >
@@ -170,11 +186,11 @@
                         <input
                             id="discount"
                             name="discount"
-                            type="number"
-                            step="0.01"
-                            min="0"
+                            type="text"
+                            inputmode="decimal"
                             value="{{ old('discount') }}"
-                            x-model.number="discount"
+                            x-model="discount"
+                            x-mask:function="$money"
                             placeholder="0.00"
                             class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                         >
@@ -189,10 +205,10 @@
                         </label>
                         <input
                             id="total_value"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            :value="total.toFixed(2)"
+                            type="text"
+                            inputmode="decimal"
+                            :value="formattedTotal"
+                            x-mask:function="$money"
                             readonly
                             placeholder="0.00"
                             class="w-full cursor-not-allowed rounded-md border border-border bg-muted px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"

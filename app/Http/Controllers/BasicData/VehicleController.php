@@ -121,6 +121,8 @@ class VehicleController extends Controller
             'fuelLogs.driver',
             'oilChanges.oil',
             'filterChanges.filter',
+            'insurancePolicies',
+            'currentInsurancePolicy',
         ]);
 
         return view('basic-data.vehicles.show', [

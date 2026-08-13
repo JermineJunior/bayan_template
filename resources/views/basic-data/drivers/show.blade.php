@@ -343,6 +343,14 @@
                                         </td>
                                         <td class="px-4 py-3">
                                             <div class="flex items-center justify-end gap-2">
+                                                @can('violations.edit')
+                                                    <a
+                                                        href="{{ route('drivers.violations.edit', [$driver, $violation]) }}"
+                                                        class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+                                                    >
+                                                        تعديل
+                                                    </a>
+                                                @endcan
                                                 @can('violations.delete')
                                                     <form
                                                         method="POST"

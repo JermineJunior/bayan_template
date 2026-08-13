@@ -35,29 +35,56 @@
             الصلاحيات
         </span>
 
-        <div class="space-y-4">
-            @foreach ($permissionGroups as $area => $permissions)
-                <fieldset class="rounded-xl border border-border bg-background p-4">
-                    <legend class="px-2 text-sm font-semibold text-foreground">
-                        {{ $area }}
-                    </legend>
+        <div x-data="{
+            selectAll: false,
+            init() {
+                this.syncSelectAll();
+            },
+            toggleAll(checked) {
+                this.selectAll = checked;
+                document.querySelectorAll('input[name=\"permissions[]\"]').forEach(el => el.checked = checked);
+            },
+            syncSelectAll() {
+                const all = document.querySelectorAll('input[name=\"permissions[]\"]');
+                const checked = document.querySelectorAll('input[name=\"permissions[]\"]:checked');
+                this.selectAll = all.length > 0 && all.length === checked.length;
+            }
+        }">
+            <label class="flex items-center gap-2 text-sm font-medium text-foreground">
+                <input
+                    type="checkbox"
+                    :checked="selectAll"
+                    @change="toggleAll($event.target.checked)"
+                    class="size-4 rounded border-border text-primary focus:ring-primary"
+                >
+                تحديد / إلغاء تحديد الكل
+            </label>
 
-                    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                        @foreach ($permissions as $permission)
-                            <label class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted">
-                                <input
-                                    type="checkbox"
-                                    name="permissions[]"
-                                    value="{{ $permission }}"
-                                    @checked(in_array($permission, old('permissions', $rolePermissions), true))
-                                    class="size-4 rounded border-border text-primary focus:ring-primary"
-                                >
-                                <code class="text-xs">{{ $permissionLabels[$permission] ?? $permission }}</code>
-                            </label>
-                        @endforeach
-                    </div>
-                </fieldset>
-            @endforeach
+            <div class="mt-4 space-y-4">
+                @foreach ($permissionGroups as $area => $permissions)
+                    <fieldset class="rounded-xl border border-border bg-background p-4">
+                        <legend class="px-2 text-sm font-semibold text-foreground">
+                            {{ $area }}
+                        </legend>
+
+                        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                            @foreach ($permissions as $permission)
+                                <label class="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted">
+                                    <input
+                                        type="checkbox"
+                                        name="permissions[]"
+                                        value="{{ $permission }}"
+                                        @checked(in_array($permission, old('permissions', $rolePermissions), true))
+                                        @change="syncSelectAll()"
+                                        class="size-4 rounded border-border text-primary focus:ring-primary"
+                                    >
+                                    <code class="text-xs">{{ $permissionLabels[$permission] ?? $permission }}</code>
+                                </label>
+                            @endforeach
+                        </div>
+                    </fieldset>
+                @endforeach
+            </div>
         </div>
 
         @error('permissions')

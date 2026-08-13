@@ -53,19 +53,35 @@ class DriverViolationTest extends TestCase
     public function test_guest_is_redirected_to_login_when_accessing_violation_pages(): void
     {
         $driver = $this->makeDriver();
+        $violation = DriverViolation::create([
+            'driver_id' => $driver->id,
+            'violation_date' => '2026-01-15',
+            'description' => 'تجاوز السرعة',
+            'amount' => 150.00,
+        ]);
 
         $this->get(route('drivers.violations.create', $driver))->assertRedirect(route('login'));
         $this->post(route('drivers.violations.store', $driver), $this->violationPayload())->assertRedirect(route('login'));
-        $this->delete(route('violations.destroy', 1))->assertRedirect(route('login'));
+        $this->get(route('drivers.violations.edit', [$driver, $violation]))->assertRedirect(route('login'));
+        $this->put(route('drivers.violations.update', [$driver, $violation]), $this->violationPayload())->assertRedirect(route('login'));
+        $this->delete(route('violations.destroy', $violation))->assertRedirect(route('login'));
     }
 
     public function test_user_without_violations_permissions_cannot_access_violation_pages(): void
     {
         $this->actingUser(['drivers.view']);
         $driver = $this->makeDriver();
+        $violation = DriverViolation::create([
+            'driver_id' => $driver->id,
+            'violation_date' => '2026-01-15',
+            'description' => 'تجاوز السرعة',
+            'amount' => 150.00,
+        ]);
 
         $this->get(route('drivers.violations.create', $driver))->assertForbidden();
         $this->post(route('drivers.violations.store', $driver), $this->violationPayload())->assertForbidden();
+        $this->get(route('drivers.violations.edit', [$driver, $violation]))->assertForbidden();
+        $this->put(route('drivers.violations.update', [$driver, $violation]), $this->violationPayload())->assertForbidden();
     }
 
     public function test_create_page_shows_the_driver(): void
@@ -220,5 +236,78 @@ class DriverViolationTest extends TestCase
             ->assertSee('تجاوز السرعة')
             ->assertSee('150.00')
             ->assertSee('تسجيل مخالفة');
+    }
+
+    public function test_edit_page_shows_the_violation(): void
+    {
+        $this->actingUser(['violations.view', 'violations.edit']);
+        $driver = $this->makeDriver();
+        $violation = DriverViolation::create([
+            'driver_id' => $driver->id,
+            'violation_date' => '2026-01-15',
+            'ticket_number' => 'TKT-001',
+            'description' => 'تجاوز السرعة',
+            'amount' => 150.00,
+        ]);
+
+        $this->get(route('drivers.violations.edit', [$driver, $violation]))
+            ->assertOk()
+            ->assertSee('تعديل مخالفة')
+            ->assertSee('2026-01-15')
+            ->assertSee('TKT-001')
+            ->assertSee('تجاوز السرعة')
+            ->assertSee('150.00');
+    }
+
+    public function test_user_with_violations_edit_can_update_a_violation(): void
+    {
+        $user = $this->actingUser(['violations.view', 'violations.edit']);
+        $driver = $this->makeDriver();
+        $violation = DriverViolation::create([
+            'driver_id' => $driver->id,
+            'violation_date' => '2026-01-15',
+            'ticket_number' => 'TKT-001',
+            'description' => 'تجاوز السرعة',
+            'amount' => 150.00,
+        ]);
+
+        $this->put(route('drivers.violations.update', [$driver, $violation]), [
+            'violation_date' => '2026-02-20',
+            'ticket_number' => 'TKT-002',
+            'description' => 'تجاوز الإشارة',
+            'amount' => '200.00',
+        ])
+            ->assertRedirect(route('drivers.show', $driver))
+            ->assertSessionHas('flasher::envelopes');
+
+        $this->assertDatabaseHas('driver_violations', [
+            'id' => $violation->id,
+            'violation_date' => '2026-02-20',
+            'ticket_number' => 'TKT-002',
+            'description' => 'تجاوز الإشارة',
+            'amount' => '200.00',
+        ]);
+    }
+
+    public function test_user_without_violations_edit_cannot_update_a_violation(): void
+    {
+        $user = $this->actingUser(['violations.view']);
+        $driver = $this->makeDriver();
+        $violation = DriverViolation::create([
+            'driver_id' => $driver->id,
+            'violation_date' => '2026-01-15',
+            'description' => 'تجاوز السرعة',
+            'amount' => 150.00,
+        ]);
+
+        $this->put(route('drivers.violations.update', [$driver, $violation]), [
+            'violation_date' => '2026-02-20',
+            'description' => 'تجاوز الإشارة',
+        ])->assertForbidden();
+
+        $this->assertDatabaseHas('driver_violations', [
+            'id' => $violation->id,
+            'description' => 'تجاوز السرعة',
+        ]);
     }
 }
