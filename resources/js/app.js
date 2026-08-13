@@ -16,7 +16,6 @@ Alpine.plugin(mask);
 
 Alpine.data('sidebar', sidebar);
 
-Alpine.data('sidebar', sidebar);
 Alpine.data('themeSwitcher', themeSwitcher);
 Alpine.data('oilChangeForm', oilChangeForm);
 Alpine.data('filterChangeForm', filterChangeForm);

@@ -16,6 +16,18 @@
         <link rel="preconnect" href="https://gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <script>
+            (function () {
+                try {
+                    if (JSON.parse(localStorage.getItem('sidebar-collapsed') || 'false') === true) {
+                        document.documentElement.classList.add('sidebar-collapsed');
+                    }
+                } catch (e) {
+                    // Storage unavailable — the sidebar stays expanded for the session.
+                }
+            })();
+        </script>
     </head>
 
     <body class="bg-background text-foreground antialiased">
@@ -56,23 +68,19 @@
                             <div x-data="{
                                 isFullscreen: localStorage.getItem('app-fullscreen') === 'true',
                                 init() {
-                                    if (this.isFullscreen) {
-                                        document.documentElement.requestFullscreen().catch(() => {
-                                            localStorage.removeItem('app-fullscreen');
-                                            this.isFullscreen = false;
+                                    this.$nextTick(() => {
+                                        document.addEventListener('fullscreenchange', () => {
+                                            this.isFullscreen = !!document.fullscreenElement;
+                                            if (this.isFullscreen) {
+                                                localStorage.setItem('app-fullscreen', 'true');
+                                            } else {
+                                                localStorage.removeItem('app-fullscreen');
+                                            }
                                         });
-                                    }
-                                    document.addEventListener('fullscreenchange', () => {
-                                        this.isFullscreen = !!document.fullscreenElement;
-                                        if (this.isFullscreen) {
-                                            localStorage.setItem('app-fullscreen', 'true');
-                                        } else {
-                                            localStorage.removeItem('app-fullscreen');
-                                        }
                                     });
                                 },
                                 toggle() {
-                                    if (this.isFullscreen) {
+                                    if (document.fullscreenElement) {
                                         document.exitFullscreen().catch(() => {});
                                     } else {
                                         document.documentElement.requestFullscreen().catch(() => {});
@@ -133,6 +141,7 @@
         </div>
 
         <x-theme-switcher variant="floating" />
+        <x-scroll-to-top />
 
         @stack('scripts')
     </body>

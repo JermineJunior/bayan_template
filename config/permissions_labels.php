@@ -100,6 +100,11 @@ return [
         'violations.create' => 'تسجيل مخالفة',
         'violations.edit' => 'تعديل مخالفة',
         'violations.delete' => 'حذف مخالفة',
+
+        'incidents.view' => 'عرض الحوادث',
+        'incidents.create' => 'تسجيل حادث',
+        'incidents.edit' => 'تعديل حادث',
+        'incidents.delete' => 'حذف حادث',
     ],
 
 ];

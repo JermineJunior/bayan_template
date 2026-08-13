@@ -92,7 +92,7 @@ class DriverController extends Controller
      */
     public function show(Driver $driver): View
     {
-        $driver->load(['department', 'currentAssignment.vehicle', 'violations']);
+        $driver->load(['department', 'currentAssignment.vehicle', 'violations', 'incidents']);
 
         return view('basic-data.drivers.show', [
             'driver' => $driver,

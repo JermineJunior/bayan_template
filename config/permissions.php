@@ -118,4 +118,11 @@ return [
         'violations.delete',
     ],
 
+    'incidents' => [
+        'incidents.view',
+        'incidents.create',
+        'incidents.edit',
+        'incidents.delete',
+    ],
+
 ];

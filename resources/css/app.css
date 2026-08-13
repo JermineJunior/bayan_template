@@ -114,3 +114,24 @@
 [x-cloak] {
     display: none !important;
 }
+
+/*
+|--------------------------------------------------------------------------
+| Sidebar
+|--------------------------------------------------------------------------
+*/
+
+/* Collapsed width applied via a class on <html> set before first paint,
+   so a refresh never flashes the expanded state. */
+@media (min-width: 64rem) {
+    html.sidebar-collapsed .app-sidebar {
+        width: 4rem;
+    }
+}
+
+/* Hide the mobile drawer until Alpine initializes, preventing a flash on refresh. */
+@media (max-width: 63.99rem) {
+    .app-sidebar[x-cloak] {
+        display: none !important;
+    }
+}

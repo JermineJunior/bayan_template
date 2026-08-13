@@ -75,7 +75,7 @@
         <div x-data="{
             tab: localStorage.getItem('vehicle-tabs-{{ $vehicle->id }}') || 'info',
             init() {
-                const valid = ['info', 'assign', 'odometer', 'fuel', 'oil', 'filters', 'insurance'];
+                const valid = ['info', 'assign', 'odometer', 'fuel', 'oil', 'filters', 'insurance', 'incidents'];
                 if (!valid.includes(this.tab)) this.tab = 'info';
                 this.$watch('tab', value => localStorage.setItem('vehicle-tabs-{{ $vehicle->id }}', value));
             }
@@ -154,6 +154,16 @@
                     class="-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors"
                 >
                     التأمين
+                </button>
+                <button
+                    type="button"
+                    role="tab"
+                    @click="tab = 'incidents'"
+                    :aria-selected="tab === 'incidents'"
+                    :class="tab === 'incidents' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'"
+                    class="-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                >
+                    الحوادث
                 </button>
             </div>
 
@@ -323,6 +333,101 @@
                                 لا يوجد سجل استمارات لهذه المركبة.
                             </p>
                         @endif
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="tab === 'incidents'" x-cloak role="tabpanel">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-semibold text-foreground">
+                            سجل الحوادث
+                        </h2>
+
+                        @can('incidents.create')
+                            <a
+                                href="{{ route('vehicles.incidents.create', $vehicle) }}"
+                                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                            >
+                                + الإبلاغ عن حادث
+                            </a>
+                        @endcan
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-sm">
+                        <table class="min-w-full divide-y divide-border text-sm">
+                            <thead>
+                                <tr class="text-xs uppercase tracking-wide text-muted-foreground">
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        رقم التقرير
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        تاريخ الحادث
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        السائق
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        حالة المطالبة
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        تكلفة الإصلاح
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border">
+                                @forelse ($vehicle->incidents as $incident)
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <a
+                                                href="{{ route('incidents.show', $incident) }}"
+                                                class="font-medium text-foreground hover:text-primary"
+                                            >
+                                                {{ $incident->report_number }}
+                                            </a>
+                                        </td>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $incident->incident_date?->format('Y-m-d') ?? '—' }}
+                                        </td>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $incident->driver?->full_name ?? '—' }}
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            @if ($incident->claim_status)
+                                                @php
+                                                    $claimLabels = [
+                                                        'pending' => 'قيد المراجعة',
+                                                        'approved' => 'موافق عليه',
+                                                        'rejected' => 'مرفوض',
+                                                        'paid' => 'مدفوع',
+                                                    ];
+                                                    $claimColors = [
+                                                        'pending' => 'bg-amber-100 text-amber-700',
+                                                        'approved' => 'bg-green-100 text-green-700',
+                                                        'rejected' => 'bg-red-100 text-red-700',
+                                                        'paid' => 'bg-blue-100 text-blue-700',
+                                                    ];
+                                                @endphp
+                                                <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $claimColors[$incident->claim_status] ?? 'bg-gray-100 text-gray-700' }}">
+                                                    {{ $claimLabels[$incident->claim_status] ?? $incident->claim_status }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted-foreground">لا توجد مطالبة</span>
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $incident->repair_cost !== null ? number_format((float) $incident->repair_cost, 2) : '—' }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
+                                            لا توجد حوادث مسجلة لهذه المركبة.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

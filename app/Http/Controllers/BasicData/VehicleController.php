@@ -123,6 +123,7 @@ class VehicleController extends Controller
             'filterChanges.filter',
             'insurancePolicies',
             'currentInsurancePolicy',
+            'incidents',
         ]);
 
         return view('basic-data.vehicles.show', [

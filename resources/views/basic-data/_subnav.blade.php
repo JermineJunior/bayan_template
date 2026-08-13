@@ -31,6 +31,14 @@
             المركبات
         </a>
     @endcan
+    @can('incidents.view')
+        <a
+            href="{{ route('incidents.index') }}"
+            class="flex-1 rounded-lg px-4 py-2 text-center text-sm font-medium transition-colors {{ request()->routeIs('incidents.*') ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground' }}"
+        >
+            الحوادث
+        </a>
+    @endcan
     @canany(['oils.view', 'filters.view'])
         <a
             href="{{ route('catalog.index') }}"

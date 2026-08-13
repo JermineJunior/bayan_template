@@ -10,6 +10,18 @@ export default function () {
 
         mobileOpen: false,
 
+        init() {
+            this.$watch('collapsed', (value) => {
+                document.documentElement.classList.toggle('sidebar-collapsed', value);
+            });
+
+            this.syncCollapsedClass();
+        },
+
+        syncCollapsedClass() {
+            document.documentElement.classList.toggle('sidebar-collapsed', this.collapsed);
+        },
+
         toggle() {
             this.collapsed = !this.collapsed;
 

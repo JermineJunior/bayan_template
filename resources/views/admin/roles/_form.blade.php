@@ -39,22 +39,22 @@
             selectAll: false,
             init() {
                 this.syncSelectAll();
-            },
-            toggleAll(checked) {
-                this.selectAll = checked;
-                document.querySelectorAll('input[name=\"permissions[]\"]').forEach(el => el.checked = checked);
+                this.$watch('selectAll', value => {
+                    this.$el.querySelectorAll('input').forEach(el => {
+                        if (el.type === 'checkbox' && el.name === 'permissions[]') el.checked = value;
+                    });
+                });
             },
             syncSelectAll() {
-                const all = document.querySelectorAll('input[name=\"permissions[]\"]');
-                const checked = document.querySelectorAll('input[name=\"permissions[]\"]:checked');
+                const all = Array.from(this.$el.querySelectorAll('input')).filter(el => el.type === 'checkbox' && el.name === 'permissions[]');
+                const checked = all.filter(el => el.checked);
                 this.selectAll = all.length > 0 && all.length === checked.length;
             }
         }">
             <label class="flex items-center gap-2 text-sm font-medium text-foreground">
                 <input
                     type="checkbox"
-                    :checked="selectAll"
-                    @change="toggleAll($event.target.checked)"
+                    x-model="selectAll"
                     class="size-4 rounded border-border text-primary focus:ring-primary"
                 >
                 تحديد / إلغاء تحديد الكل

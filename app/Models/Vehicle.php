@@ -161,4 +161,10 @@ class Vehicle extends Model
     {
         return Driver::whereIn('id', $this->driverAssignments()->pluck('driver_id'))->get();
     }
+
+    /** All incidents recorded for this vehicle (newest first) */
+    public function incidents(): HasMany
+    {
+        return $this->hasMany(Incident::class)->latest('incident_date');
+    }
 }

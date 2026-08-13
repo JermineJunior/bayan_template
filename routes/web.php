@@ -14,6 +14,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DriverViolationController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\FuelLogController;
+use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\InsurancePolicyController;
 use App\Http\Controllers\OdometerController;
 use App\Http\Controllers\OilController;
@@ -285,4 +286,28 @@ Route::middleware('auth')->group(function () {
     Route::delete('violations/{violation}', [DriverViolationController::class, 'destroy'])
         ->middleware('can:violations.delete')
         ->name('violations.destroy');
+
+    Route::get('incidents', [IncidentController::class, 'index'])
+        ->middleware('can:incidents.view')
+        ->name('incidents.index');
+
+    Route::get('vehicles/{vehicle}/incidents/create', [IncidentController::class, 'create'])
+        ->middleware('can:incidents.create')
+        ->name('vehicles.incidents.create');
+
+    Route::post('vehicles/{vehicle}/incidents', [IncidentController::class, 'store'])
+        ->middleware('can:incidents.create')
+        ->name('vehicles.incidents.store');
+
+    Route::get('incidents/{incident}', [IncidentController::class, 'show'])
+        ->middleware('can:incidents.view')
+        ->name('incidents.show');
+
+    Route::patch('incidents/{incident}/claim-status', [IncidentController::class, 'updateClaimStatus'])
+        ->middleware('can:incidents.edit')
+        ->name('incidents.update-claim-status');
+
+    Route::delete('incidents/{incident}', [IncidentController::class, 'destroy'])
+        ->middleware('can:incidents.delete')
+        ->name('incidents.destroy');
 });
