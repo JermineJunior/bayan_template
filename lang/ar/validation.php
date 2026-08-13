@@ -188,6 +188,10 @@ return [
         'filter_code' => 'كود الفلتر',
         'filter_type' => 'نوع الفلتر',
         'filter_life' => 'العمر الافتراضي',
+        'vehicle_id' => 'المركبة',
+        'odometer_reading' => 'عداد القراءة',
+        'start_date' => 'تاريخ البداية',
+        'end_date' => 'تاريخ النهاية',
     ],
 
 ];

@@ -135,6 +135,15 @@
             </div>
         @endcanany
 
+        @can('maintenance.view')
+            <x-sidebar-link
+                href="{{ route('maintenance.index') }}"
+                :active="request()->routeIs('maintenance.*')"
+                label="اوامر الصيانة"
+                icon="wrench"
+            />
+        @endcan
+
         @can('users.view')
             <x-sidebar-link
                 href="{{ route('users.index') }}"

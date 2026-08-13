@@ -124,5 +124,11 @@ return [
         'incidents.edit',
         'incidents.delete',
     ],
+    'maintenance' => [
+        'maintenance.view',
+        'maintenance.create',
+        'maintenance.edit',
+        'maintenance.delete',
+    ]
 
 ];

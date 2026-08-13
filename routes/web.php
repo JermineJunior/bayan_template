@@ -16,6 +16,8 @@ use App\Http\Controllers\FilterController;
 use App\Http\Controllers\FuelLogController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\InsurancePolicyController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\OdometerController;
 use App\Http\Controllers\OilController;
 use App\Http\Controllers\VehicleFilterChangeController;
@@ -86,10 +88,13 @@ Route::middleware('auth')->group(function () {
 });
 
 // Account preferences: available to any authenticated user (no permission).
-Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
-    Route::get('preferences', [PreferencesController::class, 'edit'])->name('preferences.edit');
-    Route::put('preferences', [PreferencesController::class, 'update'])->name('preferences.update');
-});
+Route::middleware('auth')
+    ->prefix('account')
+    ->name('account.')
+    ->group(function () {
+        Route::get('preferences', [PreferencesController::class, 'edit'])->name('preferences.edit');
+        Route::put('preferences', [PreferencesController::class, 'update'])->name('preferences.update');
+    });
 
 // Basic data (managements / departments / drivers / vehicles).
 Route::middleware('auth')->group(function () {
@@ -310,4 +315,34 @@ Route::middleware('auth')->group(function () {
     Route::delete('incidents/{incident}', [IncidentController::class, 'destroy'])
         ->middleware('can:incidents.delete')
         ->name('incidents.destroy');
+    // Read-only pages share the maintenance .view permission.
+    Route::middleware(['auth', 'can:maintenance.view'])->group(function () {
+        Route::get('maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
+        Route::get('maintenance/create', [MaintenanceController::class, 'create'])->name('maintenance.create');
+        Route::get('maintenance/{maintenance}', [MaintenanceController::class, 'show'])->name('maintenance.show');
+        Route::get('maintenance/{maintenance}/edit', [MaintenanceController::class, 'edit'])->name('maintenance.edit');
+    });
+
+    Route::middleware('auth')->group(function () {
+        Route::post('maintenance', [MaintenanceController::class, 'store'])
+            ->middleware('can:maintenance.create')
+            ->name('maintenance.store');
+
+        Route::put('maintenance/{maintenance}', [MaintenanceController::class, 'update'])
+            ->middleware('can:maintenance.edit')
+            ->name('maintenance.update');
+
+        Route::delete('maintenance/{maintenance}', [MaintenanceController::class, 'destroy'])
+            ->middleware('can:maintenance.delete')
+            ->name('maintenance.destroy');
+
+        Route::get('/maintenance/vehicle/{vehicle}/odometer', [MaintenanceController::class, 'getOdometer'])->name('maintenance.vehicle.odometer');
+
+        Route::get('invoice/create/{maintenance}', [InvoiceController::class, 'create'])->name('invoice.create');
+        Route::post('invoice/{maintenance}', [InvoiceController::class, 'store'])->name('invoice.store');
+        Route::get('invoice/{invoice}',[InvoiceController::class,'show'])->name('invoice.show');
+        Route::get('invoice/{invoice}/edit',[InvoiceController::class,'edit'])->name('invoice.edit');
+        Route::Put('invoice/{invoice}',[InvoiceController::class,'update'])->name('invoice.update');
+        Route::delete('invoice/{invoice}',[InvoiceController::class,'destroy'])->name('invoice.destroy');
+    });
 });

@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Permission labels
@@ -26,6 +25,7 @@ return [
         'vehicles' => 'المركبات',
         'drivers' => 'السائقون',
         'odometer' => 'العداد',
+
         'fuel' => 'الوقود',
         'oils' => 'الزيوت',
         'oil-changes' => 'تغيير الزيوت',
@@ -33,6 +33,8 @@ return [
         'filter-changes' => 'تغيير الفلاتر',
         'insurance-policies' => 'التأمين',
         'violations' => 'المخالفات',
+        
+        'maintenance' => 'اوامر الصيانة',
     ],
 
     'permissions' => [
@@ -105,6 +107,11 @@ return [
         'incidents.create' => 'تسجيل حادث',
         'incidents.edit' => 'تعديل حادث',
         'incidents.delete' => 'حذف حادث',
-    ],
+    
 
+        'maintenance.view' => 'عرض اوامر الصيانة',
+        'maintenance.create' => 'اضافة امر صيانة',
+        'maintenance.edit' => 'تعديل امر صيانة',
+        'maintenance.delete' => 'حذف امر صيانة',
+    ],
 ];
