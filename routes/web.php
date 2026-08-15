@@ -332,6 +332,10 @@ Route::middleware('auth')->group(function () {
             ->middleware('can:maintenance.edit')
             ->name('maintenance.update');
 
+        Route::patch('maintenance/{maintenance}/status', [MaintenanceController::class, 'updateStatus'])
+            ->middleware('can:maintenance.edit')
+            ->name('maintenance.update-status');
+
         Route::delete('maintenance/{maintenance}', [MaintenanceController::class, 'destroy'])
             ->middleware('can:maintenance.delete')
             ->name('maintenance.destroy');

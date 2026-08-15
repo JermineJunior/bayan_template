@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Maintenance;
 use App\Models\Vehicle;
 use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -64,13 +65,15 @@ class MaintenanceController extends Controller
             $validated['created_by'] = Auth::id();
             $validated['date'] = today();
 
-            Maintenance::create($validated);
+            $maintenance = Maintenance::create($validated);
 
-            Vehicle::find($validated['vehicle_id'])->update(['status' => 'maintenance']);
+            $this->syncVehicleStatus($maintenance);
 
             DB::commit();
 
-            return redirect()->route('maintenance.index')->with('success', 'تم إنشاء أمر الصيانة بنجاح.');
+            flash()->success('تم إنشاء أمر الصيانة بنجاح.');
+
+            return redirect()->route('maintenance.index');
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -121,9 +124,11 @@ class MaintenanceController extends Controller
 
             $maintenance->update($validated);
 
-            Vehicle::find($validated['vehicle_id'])->update(['status' => 'maintenance']);
+            $this->syncVehicleStatus($maintenance);
 
-            return redirect()->route('maintenance.index')->with('success', 'تم تعديل امر الصيانة بنجاح');
+            flash()->success('تم تعديل امر الصيانة بنجاح');
+
+            return redirect()->route('maintenance.index');
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -135,7 +140,33 @@ class MaintenanceController extends Controller
     {
         $maintenance->delete();
 
-        return back()->with('success', 'تم حذف امر الصيانة بنجاح');
+        flash()->success('تم حذف امر الصيانة بنجاح');
+
+        return back();
+    }
+
+    public function updateStatus(Request $request, Maintenance $maintenance): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'in:draft,pending,in_progress,completed,cancelled'],
+        ]);
+
+        $maintenance->update([
+            'status' => $validated['status'],
+        ]);
+
+        $this->syncVehicleStatus($maintenance);
+
+        flash()->success('تم تحديث حالة أمر الصيانة بنجاح.');
+
+        return back();
+    }
+
+    private function syncVehicleStatus(Maintenance $maintenance): void
+    {
+        $vehicleStatus = in_array($maintenance->status, ['completed', 'cancelled']) ? 'active' : 'maintenance';
+
+        Vehicle::where('id', $maintenance->vehicle_id)->update(['status' => $vehicleStatus]);
     }
 
     public function getOdometer(Vehicle $vehicle)

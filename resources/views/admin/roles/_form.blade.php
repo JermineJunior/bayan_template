@@ -39,10 +39,10 @@
             selectAll: false,
             init() {
                 this.syncSelectAll();
-                this.$watch('selectAll', value => {
-                    this.$el.querySelectorAll('input').forEach(el => {
-                        if (el.type === 'checkbox' && el.name === 'permissions[]') el.checked = value;
-                    });
+            },
+            applySelectAll() {
+                this.$el.querySelectorAll('input').forEach(el => {
+                    if (el.type === 'checkbox' && el.name === 'permissions[]') el.checked = this.selectAll;
                 });
             },
             syncSelectAll() {
@@ -54,7 +54,8 @@
             <label class="flex items-center gap-2 text-sm font-medium text-foreground">
                 <input
                     type="checkbox"
-                    x-model="selectAll"
+                    :checked="selectAll"
+                    @change="selectAll = $el.checked; applySelectAll()"
                     class="size-4 rounded border-border text-primary focus:ring-primary"
                 >
                 تحديد / إلغاء تحديد الكل

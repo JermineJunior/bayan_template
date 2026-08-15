@@ -57,7 +57,9 @@ class InvoiceController extends Controller
 
             DB::commit();
 
-            return redirect()->route('maintenance.show', $maintenance)->with('success', 'تم ادخال قطع الغيار بنجاح');
+            flash()->success('تم ادخال قطع الغيار بنجاح');
+
+            return redirect()->route('maintenance.show', $maintenance);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -127,7 +129,9 @@ class InvoiceController extends Controller
 
             DB::commit();
 
-            return redirect()->route('maintenance.show', $maintenance)->with('success', 'تم تعديل قطع الغيار بنجاح');
+            flash()->success('تم تعديل قطع الغيار بنجاح');
+
+            return redirect()->route('maintenance.show', $maintenance);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -139,6 +143,8 @@ class InvoiceController extends Controller
     {
         $invoice->delete();
 
-        return back()->with('success', 'تم حذف قطع الغيار بنجاح');
+        flash()->success('تم حذف قطع الغيار بنجاح');
+
+        return back();
     }
 }

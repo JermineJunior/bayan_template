@@ -151,13 +151,31 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3">
-                                @php
-                                    $status = $statusLabels[$maintenance->status] ?? ['—', 'bg-gray-100 text-gray-700'];
-                                @endphp
-                                <span
-                                    class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $status[1] }}">
-                                    {{ $status[0] }}
-                                </span>
+                                @can('maintenance.edit', $maintenance)
+                                    <form method="POST" action="{{ route('maintenance.update-status', $maintenance) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <select
+                                            name="status"
+                                            onchange="this.form.submit()"
+                                            class="rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                        >
+                                            @foreach ($statusLabels as $value => $label)
+                                                <option value="{{ $value }}" @selected($maintenance->status === $value)>
+                                                    {{ $label[0] }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </form>
+                                @else
+                                    @php
+                                        $status = $statusLabels[$maintenance->status] ?? ['—', 'bg-gray-100 text-gray-700'];
+                                    @endphp
+                                    <span
+                                        class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium {{ $status[1] }}">
+                                        {{ $status[0] }}
+                                    </span>
+                                @endcan
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-end gap-2">
