@@ -90,6 +90,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -110,6 +111,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -118,6 +120,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-02-15 08:30:00',
             'liters' => 40,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 800,
             'recorded_by' => $user->id,
         ]);
@@ -163,6 +166,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'station' => 'محطة الخرطوم',
             'invoice_number' => 'INV-100',
@@ -322,6 +326,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -339,6 +344,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -347,6 +353,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-20 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 3000,
             'recorded_by' => $user->id,
         ]);
@@ -364,6 +371,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -372,6 +380,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-20 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -389,6 +398,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -397,6 +407,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-20 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 3000,
             'recorded_by' => $user->id,
         ]);
@@ -416,6 +427,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -432,6 +444,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -440,6 +453,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-20 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -456,6 +470,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -464,6 +479,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-02-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 3000,
             'recorded_by' => $user->id,
         ]);
@@ -487,6 +503,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -495,6 +512,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-02-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 3000,
             'recorded_by' => $user->id,
         ]);
@@ -514,6 +532,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);
@@ -534,6 +553,7 @@ class FuelLogTest extends TestCase
             'filled_at' => '2026-01-10 08:30:00',
             'liters' => 50,
             'price_per_liter' => 2.5,
+            'total_value' => 125.0,
             'odometer_reading' => 1000,
             'recorded_by' => $user->id,
         ]);

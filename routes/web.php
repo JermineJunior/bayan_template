@@ -12,6 +12,7 @@ use App\Http\Controllers\BasicData\VehicleDriverController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DriverViolationController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FilterController;
 use App\Http\Controllers\FuelLogController;
 use App\Http\Controllers\IncidentController;
@@ -315,6 +316,22 @@ Route::middleware('auth')->group(function () {
     Route::delete('incidents/{incident}', [IncidentController::class, 'destroy'])
         ->middleware('can:incidents.delete')
         ->name('incidents.destroy');
+
+    // Expenses: browsing + manual entry. Auto-generated rows (fuel/oil/filter/
+    // maintenance) can only be removed by deleting their source record.
+    Route::middleware('can:expenses.view')->group(function () {
+        Route::get('expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+        Route::get('expenses/create', [ExpenseController::class, 'create'])->name('expenses.create');
+    });
+
+    Route::post('expenses', [ExpenseController::class, 'store'])
+        ->middleware('can:expenses.create')
+        ->name('expenses.store');
+
+    Route::delete('expenses/{expense}', [ExpenseController::class, 'destroy'])
+        ->middleware('can:expenses.delete')
+        ->name('expenses.destroy');
+
     // Read-only pages share the maintenance .view permission.
     Route::middleware(['auth', 'can:maintenance.view'])->group(function () {
         Route::get('maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');

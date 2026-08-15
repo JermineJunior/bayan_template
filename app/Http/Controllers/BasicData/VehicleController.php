@@ -124,6 +124,7 @@ class VehicleController extends Controller
             'insurancePolicies',
             'currentInsurancePolicy',
             'incidents',
+            'expenses',
         ]);
 
         return view('basic-data.vehicles.show', [

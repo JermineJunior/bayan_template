@@ -75,7 +75,7 @@
         <div x-data="{
             tab: localStorage.getItem('vehicle-tabs-{{ $vehicle->id }}') || 'info',
             init() {
-                const valid = ['info', 'assign', 'odometer', 'fuel', 'oil', 'filters', 'insurance', 'incidents'];
+                const valid = ['info', 'assign', 'odometer', 'fuel', 'oil', 'filters', 'insurance', 'incidents', 'expenses'];
                 if (!valid.includes(this.tab)) this.tab = 'info';
                 this.$watch('tab', value => localStorage.setItem('vehicle-tabs-{{ $vehicle->id }}', value));
             }
@@ -164,6 +164,16 @@
                     class="-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors"
                 >
                     الحوادث
+                </button>
+                <button
+                    type="button"
+                    role="tab"
+                    @click="tab = 'expenses'"
+                    :aria-selected="tab === 'expenses'"
+                    :class="tab === 'expenses' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'"
+                    class="-mb-px shrink-0 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors"
+                >
+                    المصروفات
                 </button>
             </div>
 
@@ -423,6 +433,130 @@
                                     <tr>
                                         <td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
                                             لا توجد حوادث مسجلة لهذه المركبة.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="tab === 'expenses'" x-cloak role="tabpanel">
+                <div class="space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-sm font-semibold text-foreground">
+                                سجل المصروفات
+                            </h2>
+                            <p class="mt-1 text-xs text-muted-foreground">
+                                إجمالي المصروفات: {{ number_format((float) $vehicle->expenses->sum('amount'), 2) }}
+                            </p>
+                        </div>
+
+                        @can('expenses.create')
+                            <a
+                                href="{{ route('expenses.create', ['vehicle_id' => $vehicle->id]) }}"
+                                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                            >
+                                + إضافة مصروف
+                            </a>
+                        @endcan
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-border bg-surface shadow-sm">
+                        <table class="min-w-full divide-y divide-border text-sm">
+                            <thead>
+                                <tr class="text-xs uppercase tracking-wide text-muted-foreground">
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        النوع
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        المبلغ
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        التاريخ
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        الوصف
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        المصدر
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-end font-medium">
+                                        إجراءات
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border">
+                                @forelse ($vehicle->expenses as $expense)
+                                    @php
+                                        $expenseLabels = [
+                                            'fuel' => 'وقود',
+                                            'oil' => 'زيوت',
+                                            'filter' => 'فلاتر',
+                                            'maintenance' => 'صيانة',
+                                            'tires' => 'إطارات',
+                                            'spare_parts' => 'قطع غيار',
+                                            'insurance' => 'تأمين',
+                                            'license' => 'تراخيص',
+                                            'violations' => 'مخالفات',
+                                            'other' => 'أخرى',
+                                        ];
+                                    @endphp
+                                    <tr>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $expenseLabels[$expense->expense_type] ?? $expense->expense_type }}
+                                        </td>
+                                        <td class="px-4 py-3 font-medium text-foreground">
+                                            {{ number_format((float) $expense->amount, 2) }}
+                                        </td>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $expense->expense_date?->format('Y-m-d') }}
+                                        </td>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $expense->description ?? '—' }}
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            @if ($expense->is_auto_generated)
+                                                <span class="inline-flex rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+                                                    تلقائي
+                                                </span>
+                                            @else
+                                                <span class="inline-flex rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+                                                    يدوي
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center justify-end gap-2">
+                                                @if (! $expense->is_auto_generated)
+                                                    @can('expenses.delete', $expense)
+                                                        <form
+                                                            method="POST"
+                                                            action="{{ route('expenses.destroy', $expense) }}"
+                                                            onsubmit="return confirmForm(this, 'هل تريد حذف هذا المصروف؟', 'نعم، احذف')"
+                                                        >
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button
+                                                                type="submit"
+                                                                class="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
+                                                            >
+                                                                حذف
+                                                            </button>
+                                                        </form>
+                                                    @endcan
+                                                @else
+                                                    <span class="text-xs text-muted-foreground">—</span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="px-4 py-8 text-center text-muted-foreground">
+                                            لا توجد مصروفات مسجلة لهذه المركبة.
                                         </td>
                                     </tr>
                                 @endforelse

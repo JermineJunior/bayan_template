@@ -39,6 +39,30 @@
                 @csrf
 
                 <div>
+                    <label for="vehicle_id" class="mb-1 block text-sm font-medium text-foreground">
+                        المركبة (اختياري)
+                    </label>
+                    <select
+                        id="vehicle_id"
+                        name="vehicle_id"
+                        class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    >
+                        <option value="">بدون مركبة</option>
+                        @foreach ($vehicles as $vehicle)
+                            <option
+                                value="{{ $vehicle->id }}"
+                                @selected(old('vehicle_id') == $vehicle->id)
+                            >
+                                {{ $vehicle->internal_number }} — {{ $vehicle->plate_number }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('vehicle_id')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
                     <label for="violation_date" class="mb-1 block text-sm font-medium text-foreground">
                         تاريخ المخالفة
                     </label>
@@ -69,6 +93,25 @@
                         class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                     >
                     @error('description')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="amount" class="mb-1 block text-sm font-medium text-foreground">
+                        قيمة الغرامة (اختياري)
+                    </label>
+                    <input
+                        id="amount"
+                        name="amount"
+                        type="text"
+                        inputmode="decimal"
+                        value="{{ old('amount') }}"
+                        x-mask:function="$money"
+                        placeholder="0.00"
+                        class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    >
+                    @error('amount')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>

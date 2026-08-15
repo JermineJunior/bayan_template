@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('driver_violations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('driver_id')->constrained('drivers');
+            $table->foreignId('vehicle_id')->nullable()->constrained('vehicles');
             $table->date('violation_date');
             $table->string('description');
+            $table->decimal('amount', 10, 2)->nullable();
             $table->foreignId('recorded_by')->constrained('users');
             $table->timestamps();
 

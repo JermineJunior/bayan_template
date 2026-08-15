@@ -56,6 +56,7 @@ class VehicleFilterChangeTest extends TestCase
             'filter_id' => $this->makeFilter()->id,
             'last_change' => '2026-01-15',
             'odometer_when_change' => 25000,
+            'cost' => 120,
         ], $overrides);
     }
 
@@ -101,17 +102,32 @@ class VehicleFilterChangeTest extends TestCase
     {
         $user = $this->actingUser(['filter-changes.view', 'filter-changes.create']);
         $vehicle = $this->makeVehicle();
+        $payload = $this->changePayload();
 
-        $this->post(route('vehicles.filter-changes.store', $vehicle), $this->changePayload())
+        $this->post(route('vehicles.filter-changes.store', $vehicle), $payload)
             ->assertRedirect(route('vehicles.show', $vehicle))
             ->assertSessionHas('flasher::envelopes');
 
         $this->assertDatabaseHas('vehicle_filter_changes', [
             'vehicle_id' => $vehicle->id,
-            'filter_id' => $this->changePayload()['filter_id'],
+            'filter_id' => $payload['filter_id'],
             'last_change' => '2026-01-15',
             'odometer_when_change' => 25000,
+            'cost' => 120.00,
             'next_change_odometer' => 35000,
+            'recorded_by' => $user->id,
+        ]);
+
+        $change = VehicleFilterChange::where('vehicle_id', $vehicle->id)->firstOrFail();
+        $this->assertSame('120.00', $change->cost);
+
+        $this->assertDatabaseHas('expenses', [
+            'vehicle_id' => $vehicle->id,
+            'expense_type' => 'filter',
+            'amount' => 120.00,
+            'expense_date' => '2026-01-15',
+            'sourceable_type' => VehicleFilterChange::class,
+            'sourceable_id' => $change->id,
             'recorded_by' => $user->id,
         ]);
     }
@@ -125,7 +141,31 @@ class VehicleFilterChangeTest extends TestCase
             'filter_id' => 999,
             'last_change' => '',
             'odometer_when_change' => 'abc',
-        ])->assertSessionHasErrors(['filter_id', 'last_change', 'odometer_when_change']);
+            'cost' => 'abc',
+        ])->assertSessionHasErrors(['filter_id', 'last_change', 'odometer_when_change', 'cost']);
+
+        $this->assertDatabaseCount('vehicle_filter_changes', 0);
+    }
+
+    public function test_cost_is_validated(): void
+    {
+        $this->actingUser(['filter-changes.view', 'filter-changes.create']);
+        $vehicle = $this->makeVehicle();
+        $filterId = $this->makeFilter()->id;
+
+        $this->post(route('vehicles.filter-changes.store', $vehicle), [
+            'filter_id' => $filterId,
+            'last_change' => '2026-01-15',
+            'odometer_when_change' => 25000,
+            'cost' => -5,
+        ])->assertSessionHasErrors('cost');
+
+        $this->post(route('vehicles.filter-changes.store', $vehicle), [
+            'filter_id' => $filterId,
+            'last_change' => '2026-01-15',
+            'odometer_when_change' => 25000,
+            'cost' => '',
+        ])->assertSessionHasErrors('cost');
 
         $this->assertDatabaseCount('vehicle_filter_changes', 0);
     }
@@ -166,6 +206,7 @@ class VehicleFilterChangeTest extends TestCase
             '2026-01-15',
             25000,
             $user,
+            120.0,
         );
 
         $this->get(route('vehicles.show', $vehicle))
@@ -189,6 +230,7 @@ class VehicleFilterChangeTest extends TestCase
             '2026-01-15',
             25000,
             $user,
+            120.0,
         );
 
         $change = $vehicle->filterChanges()->firstOrFail();

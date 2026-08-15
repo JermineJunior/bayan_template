@@ -325,6 +325,12 @@
                                     <th class="bg-muted/50 px-4 py-3 text-start font-medium">
                                         الوصف
                                     </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        المركبة
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        الغرامة
+                                    </th>
                                     <th class="bg-muted/50 px-4 py-3 text-end font-medium">
                                         إجراءات
                                     </th>
@@ -338,6 +344,12 @@
                                         </td>
                                         <td class="px-4 py-3 font-medium text-foreground">
                                             {{ $violation->description }}
+                                        </td>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $violation->vehicle?->internal_number ?? '—' }}
+                                        </td>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $violation->amount !== null ? number_format((float) $violation->amount, 2) : '—' }}
                                         </td>
                                         <td class="px-4 py-3">
                                             <div class="flex items-center justify-end gap-2">

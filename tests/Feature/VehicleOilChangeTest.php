@@ -56,6 +56,7 @@ class VehicleOilChangeTest extends TestCase
             'oil_id' => $this->makeOil()->id,
             'last_change' => '2026-01-15',
             'odometer_when_change' => 25000,
+            'cost' => 150,
         ], $overrides);
     }
 
@@ -101,17 +102,32 @@ class VehicleOilChangeTest extends TestCase
     {
         $user = $this->actingUser(['oil-changes.view', 'oil-changes.create']);
         $vehicle = $this->makeVehicle();
+        $payload = $this->changePayload();
 
-        $this->post(route('vehicles.oil-changes.store', $vehicle), $this->changePayload())
+        $this->post(route('vehicles.oil-changes.store', $vehicle), $payload)
             ->assertRedirect(route('vehicles.show', $vehicle))
             ->assertSessionHas('flasher::envelopes');
 
         $this->assertDatabaseHas('vehicle_oil_changes', [
             'vehicle_id' => $vehicle->id,
-            'oil_id' => $this->changePayload()['oil_id'],
+            'oil_id' => $payload['oil_id'],
             'last_change' => '2026-01-15',
             'odometer_when_change' => 25000,
+            'cost' => 150.00,
             'next_change_odometer' => 35000,
+            'recorded_by' => $user->id,
+        ]);
+
+        $change = VehicleOilChange::where('vehicle_id', $vehicle->id)->firstOrFail();
+        $this->assertSame('150.00', $change->cost);
+
+        $this->assertDatabaseHas('expenses', [
+            'vehicle_id' => $vehicle->id,
+            'expense_type' => 'oil',
+            'amount' => 150.00,
+            'expense_date' => '2026-01-15',
+            'sourceable_type' => VehicleOilChange::class,
+            'sourceable_id' => $change->id,
             'recorded_by' => $user->id,
         ]);
     }
@@ -125,7 +141,31 @@ class VehicleOilChangeTest extends TestCase
             'oil_id' => 999,
             'last_change' => '',
             'odometer_when_change' => 'abc',
-        ])->assertSessionHasErrors(['oil_id', 'last_change', 'odometer_when_change']);
+            'cost' => 'abc',
+        ])->assertSessionHasErrors(['oil_id', 'last_change', 'odometer_when_change', 'cost']);
+
+        $this->assertDatabaseCount('vehicle_oil_changes', 0);
+    }
+
+    public function test_cost_is_validated(): void
+    {
+        $this->actingUser(['oil-changes.view', 'oil-changes.create']);
+        $vehicle = $this->makeVehicle();
+        $oilId = $this->makeOil()->id;
+
+        $this->post(route('vehicles.oil-changes.store', $vehicle), [
+            'oil_id' => $oilId,
+            'last_change' => '2026-01-15',
+            'odometer_when_change' => 25000,
+            'cost' => -5,
+        ])->assertSessionHasErrors('cost');
+
+        $this->post(route('vehicles.oil-changes.store', $vehicle), [
+            'oil_id' => $oilId,
+            'last_change' => '2026-01-15',
+            'odometer_when_change' => 25000,
+            'cost' => '',
+        ])->assertSessionHasErrors('cost');
 
         $this->assertDatabaseCount('vehicle_oil_changes', 0);
     }
@@ -166,6 +206,7 @@ class VehicleOilChangeTest extends TestCase
             '2026-01-15',
             25000,
             $user,
+            150.0,
         );
 
         $this->get(route('vehicles.show', $vehicle))
@@ -189,6 +230,7 @@ class VehicleOilChangeTest extends TestCase
             '2026-01-15',
             25000,
             $user,
+            150.0,
         );
 
         $change = $vehicle->oilChanges()->firstOrFail();

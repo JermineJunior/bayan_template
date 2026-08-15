@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Driver;
 use App\Models\DriverViolation;
+use App\Models\Vehicle;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -17,6 +18,7 @@ class DriverViolationController extends Controller
     {
         return view('violations.create', [
             'driver' => $driver,
+            'vehicles' => Vehicle::orderBy('internal_number')->get(),
         ]);
     }
 
@@ -25,15 +27,23 @@ class DriverViolationController extends Controller
      */
     public function store(Request $request, Driver $driver): RedirectResponse
     {
+        $request->merge([
+            'amount' => $request->filled('amount') ? str_replace(',', '', $request->input('amount')) : null,
+        ]);
+
         $validated = $request->validate([
+            'vehicle_id' => ['nullable', 'integer', 'exists:vehicles,id'],
             'violation_date' => ['required', 'date', 'before_or_equal:today'],
             'description' => ['required', 'string', 'max:255'],
+            'amount' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         DriverViolation::create([
             'driver_id' => $driver->id,
+            'vehicle_id' => $validated['vehicle_id'] ?? null,
             'violation_date' => $validated['violation_date'],
             'description' => $validated['description'],
+            'amount' => $validated['amount'] ?? null,
             'recorded_by' => $request->user()->id,
         ]);
 
@@ -53,6 +63,7 @@ class DriverViolationController extends Controller
         return view('violations.edit', [
             'driver' => $driver,
             'violation' => $violation,
+            'vehicles' => Vehicle::orderBy('internal_number')->get(),
         ]);
     }
 
@@ -63,14 +74,22 @@ class DriverViolationController extends Controller
     {
         abort_if($violation->driver_id !== $driver->id, 404);
 
+        $request->merge([
+            'amount' => $request->filled('amount') ? str_replace(',', '', $request->input('amount')) : null,
+        ]);
+
         $validated = $request->validate([
+            'vehicle_id' => ['nullable', 'integer', 'exists:vehicles,id'],
             'violation_date' => ['required', 'date', 'before_or_equal:today'],
             'description' => ['required', 'string', 'max:255'],
+            'amount' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $violation->update([
+            'vehicle_id' => $validated['vehicle_id'] ?? null,
             'violation_date' => $validated['violation_date'],
             'description' => $validated['description'],
+            'amount' => $validated['amount'] ?? null,
         ]);
 
         flash()->success('تم تحديث المخالفة بنجاح.');

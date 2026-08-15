@@ -20,6 +20,7 @@ return new class extends Migration
             // Stored, not derived: computed once at creation as
             // odometer_when_change + oil.oil_life (at that moment), then frozen.
             // Stays historically accurate even if the oil's oil_life is edited later.
+            $table->decimal('cost', 10, 2); // actual amount paid for this specific change — feeds the auto-generated expense record
             $table->decimal('next_change_odometer', 10, 2);
             $table->foreignId('recorded_by')->constrained('users');
             $table->timestamps();

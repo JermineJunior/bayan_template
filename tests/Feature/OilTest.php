@@ -203,6 +203,7 @@ class OilTest extends TestCase
             '2026-01-10',
             1000,
             $user,
+            150.0,
         );
 
         $this->delete(route('oils.destroy', $oil))

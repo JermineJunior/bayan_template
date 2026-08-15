@@ -17,6 +17,7 @@ class FuelLog extends Model
         'fuel_type',
         'liters',
         'price_per_liter',
+        'total_value',
         'discount',
         'odometer_reading',
         'station',
@@ -46,6 +47,35 @@ class FuelLog extends Model
     public function recordedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'recorded_by');
+    }
+
+    public static function record(
+        Vehicle $vehicle,
+        string $filledAt,
+        float $liters,
+        float $pricePerLiter,
+        float $odometerReading,
+        User $recordedBy,
+        ?string $fuelType = null,
+        ?float $discount = null,
+        ?Driver $driver = null,
+        ?string $station = null,
+        ?string $invoiceNumber = null,
+    ): self {
+        return static::create([
+            'vehicle_id' => $vehicle->id,
+            'driver_id' => $driver?->id,
+            'filled_at' => $filledAt,
+            'fuel_type' => $fuelType,
+            'liters' => $liters,
+            'price_per_liter' => $pricePerLiter,
+            'discount' => $discount,
+            'total_value' => $liters * $pricePerLiter - ($discount ?? 0), // calculation at the model level
+            'odometer_reading' => $odometerReading,
+            'station' => $station,
+            'invoice_number' => $invoiceNumber,
+            'recorded_by' => $recordedBy->id,
+        ]);
     }
 
     /**

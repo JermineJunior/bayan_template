@@ -57,9 +57,10 @@ class FuelLogController extends Controller
     /**
      * Store a newly created fuel log.
      *
-     * total_value is a generated column (liters * price_per_liter - discount)
-     * and is never accepted as input. fuel_logs form their own odometer
-     * sequence — this feature never touches vehicles.current_odometer.
+     * total_value is computed in PHP (liters * price_per_liter - discount)
+     * inside FuelLog::record() and is never accepted as input. fuel_logs
+     * form their own odometer sequence — this feature never touches
+     * vehicles.current_odometer.
      */
     public function store(Request $request, Vehicle $vehicle): RedirectResponse
     {
@@ -92,19 +93,19 @@ class FuelLogController extends Controller
                 ]);
         }
 
-        FuelLog::create([
-            'vehicle_id' => $vehicle->id,
-            'driver_id' => $validated['driver_id'] ?? null,
-            'filled_at' => $validated['filled_at'],
-            'fuel_type' => $validated['fuel_type'] ?? null,
-            'liters' => $validated['liters'],
-            'price_per_liter' => $validated['price_per_liter'],
-            'discount' => $validated['discount'] ?? null,
-            'odometer_reading' => $validated['odometer_reading'],
-            'station' => $validated['station'] ?? null,
-            'invoice_number' => $validated['invoice_number'] ?? null,
-            'recorded_by' => $request->user()->id,
-        ]);
+        FuelLog::record(
+            vehicle: $vehicle,
+            filledAt: $validated['filled_at'],
+            liters: (float) $validated['liters'],
+            pricePerLiter: (float) $validated['price_per_liter'],
+            odometerReading: (float) $validated['odometer_reading'],
+            recordedBy: $request->user(),
+            fuelType: $validated['fuel_type'] ?? null,
+            discount: $validated['discount'] ?? null,
+            driver: $validated['driver_id'] ? Driver::find($validated['driver_id']) : null,
+            station: $validated['station'] ?? null,
+            invoiceNumber: $validated['invoice_number'] ?? null,
+        );
 
         flash()->success('تم تسجيل عملية التعبئة بنجاح.');
 

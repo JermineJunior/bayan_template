@@ -144,6 +144,15 @@
             />
         @endcan
 
+        @can('expenses.view')
+            <x-sidebar-link
+                href="{{ route('expenses.index') }}"
+                :active="request()->routeIs('expenses.*')"
+                label="المصروفات"
+                icon="money"
+            />
+        @endcan
+
         @can('users.view')
             <x-sidebar-link
                 href="{{ route('users.index') }}"

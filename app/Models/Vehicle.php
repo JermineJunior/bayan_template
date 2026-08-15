@@ -167,4 +167,9 @@ class Vehicle extends Model
     {
         return $this->hasMany(Incident::class)->latest('incident_date');
     }
+
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Expense::class)->latest('expense_date');
+    }
 }

@@ -35,6 +35,7 @@ return [
         'violations' => 'المخالفات',
 
         'maintenance' => 'اوامر الصيانة',
+        'expenses' => 'المصروفات',
     ],
 
     'permissions' => [
@@ -112,5 +113,9 @@ return [
         'maintenance.create' => 'اضافة امر صيانة',
         'maintenance.edit' => 'تعديل امر صيانة',
         'maintenance.delete' => 'حذف امر صيانة',
+
+        'expenses.view' => 'عرض المصروفات',
+        'expenses.create' => 'إضافة مصروف',
+        'expenses.delete' => 'حذف مصروف',
     ],
 ];

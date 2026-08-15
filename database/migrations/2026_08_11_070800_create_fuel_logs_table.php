@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('price_per_liter', 8, 3);
             $table->decimal('discount', 10, 2)->nullable();
             // عمود محسوب — القيمة الإجمالية = لترات × سعر اللتر − الخصم (إن وُجد)، ما يُدخل يدويًا
-            $table->decimal('total_value', 10, 2)->storedAs('liters * price_per_liter - COALESCE(discount, 0)');
+            $table->decimal('total_value', 10, 2); // no calculation in sql level
             $table->decimal('odometer_reading', 10, 2);
             $table->string('station')->nullable();
             $table->string('invoice_number')->nullable();

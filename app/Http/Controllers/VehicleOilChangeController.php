@@ -31,10 +31,15 @@ class VehicleOilChangeController extends Controller
      */
     public function store(Request $request, Vehicle $vehicle): RedirectResponse
     {
+        $request->merge([
+            'cost' => $request->filled('cost') ? str_replace(',', '', $request->input('cost')) : null,
+        ]);
+
         $validated = $request->validate([
             'oil_id' => ['required', 'integer', Rule::exists('oils', 'id')],
             'last_change' => ['required', 'date', 'before_or_equal:today'],
             'odometer_when_change' => ['required', 'numeric', 'min:0'],
+            'cost' => ['required', 'numeric', 'min:0'],
         ]);
 
         VehicleOilChange::record(
@@ -43,6 +48,7 @@ class VehicleOilChangeController extends Controller
             $validated['last_change'],
             (float) $validated['odometer_when_change'],
             $request->user(),
+            (float) $validated['cost'],
         );
 
         flash()->success('تم تسجيل تغيير الزيت بنجاح.');

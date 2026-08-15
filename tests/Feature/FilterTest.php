@@ -203,6 +203,7 @@ class FilterTest extends TestCase
             '2026-01-10',
             1000,
             $user,
+            120.0,
         );
 
         $this->delete(route('filters.destroy', $filter))

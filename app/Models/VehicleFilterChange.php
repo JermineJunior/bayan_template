@@ -15,6 +15,7 @@ class VehicleFilterChange extends Model
         'filter_id',
         'last_change',
         'odometer_when_change',
+        'cost',
         'next_change_odometer',
         'recorded_by',
     ];
@@ -23,6 +24,7 @@ class VehicleFilterChange extends Model
         'last_change' => 'date',
         'odometer_when_change' => 'decimal:2',
         'next_change_odometer' => 'decimal:2',
+        'cost' => 'decimal:2'
     ];
 
     public function vehicle(): BelongsTo
@@ -46,12 +48,14 @@ class VehicleFilterChange extends Model
         string $lastChangeDate,
         float $odometerWhenChange,
         User $recordedBy,
+        float $cost
     ): self {
         return static::create([
             'vehicle_id' => $vehicle->id,
             'filter_id' => $filter->id,
             'last_change' => $lastChangeDate,
             'odometer_when_change' => $odometerWhenChange,
+            'cost'  => $cost,
             'next_change_odometer' => $odometerWhenChange + (float) $filter->filter_life,
             'recorded_by' => $recordedBy->id,
         ]);

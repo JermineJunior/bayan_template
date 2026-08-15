@@ -131,4 +131,10 @@ return [
         'maintenance.delete',
     ],
 
+    'expenses' => [
+        'expenses.view',
+        'expenses.create',
+        'expenses.delete',
+    ],
+
 ];

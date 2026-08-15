@@ -2,6 +2,16 @@
 
 namespace App\Providers;
 
+use App\Models\DriverViolation;
+use App\Models\FuelLog;
+use App\Models\Maintenance;
+use App\Models\VehicleFilterChange;
+use App\Models\VehicleOilChange;
+use App\Observers\DriverViolationObserver;
+use App\Observers\FuelLogObserver;
+use App\Observers\MaintenanceObserver;
+use App\Observers\VehicleFilterChangeObserver;
+use App\Observers\VehicleOilChangeObserver;
 use App\Policies\RolePolicy;
 use App\Services\SettingsService;
 use Illuminate\Contracts\View\View;
@@ -20,7 +30,11 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->shareThemeWithLayouts();
         $this->shareAppSettingsWithLayouts();
-
+        FuelLog::observe(FuelLogObserver::class);
+        VehicleOilChange::observe(VehicleOilChangeObserver::class);
+        VehicleFilterChange::observe(VehicleFilterChangeObserver::class);
+        Maintenance::observe(MaintenanceObserver::class);
+        DriverViolation::observe(DriverViolationObserver::class);
         // Spatie's Role lives outside App\Models, so its policy is not picked up
         // by Laravel's convention-based discovery and is registered explicitly.
         Gate::policy(Role::class, RolePolicy::class);
@@ -72,7 +86,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with([
                 'appName' => $settings->get('app_name', config('app.name', 'Vibe')),
                 'logoUrl' => $logoPath !== null ? Storage::disk('public')->url($logoPath) : null,
-                'userFontSize' => optional(auth()->user())->font_size ?? 'default',
+                'userFontSize' => optional(auth('web')->user())->font_size ?? 'default',
             ]);
         });
     }
