@@ -5,8 +5,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-use function Laravel\Prompts\table;
-
 return new class extends Migration
 {
     /**
@@ -25,11 +23,11 @@ return new class extends Migration
             $table->string('reason')->nullable();
             $table->string('workshop')->nullable();
             $table->string('technical')->nullable();
-            $table->decimal('labor_cost',15,2)->nullable();
-            $table->decimal('spare_cost',15,2)->nullable();
-            $table->decimal('total_cost',15,2)->nullable();
-            $table->enum('type',['periodic','preventive','emergency'])->default('periodic');
-            $table->enum('status',['draft','pending','in_progress','completed','cancelled'])->default('draft');
+            $table->decimal('labor_cost', 15, 2)->nullable();
+            $table->decimal('spare_cost', 15, 2)->nullable();
+            $table->decimal('total_cost', 15, 2)->nullable();
+            $table->enum('type', ['periodic', 'preventive', 'emergency'])->default('periodic');
+            $table->enum('status', ['draft', 'pending', 'in_progress', 'completed', 'cancelled'])->default('draft');
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->text('note')->nullable();
             $table->timestamps();

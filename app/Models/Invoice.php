@@ -18,15 +18,15 @@ class Invoice extends Model
     {
         $date = $date ? Date::parse($date) : now();
 
-        $prefix = 'INV-' . $date->format('Y');
+        $prefix = 'INV-'.$date->format('Y');
 
-        $last = self::where('invoice_number', 'like', $prefix . '-%')
+        $last = self::where('invoice_number', 'like', $prefix.'-%')
             ->orderByDesc('invoice_number')
             ->first();
 
         $sequence = $last ? substr($last->invoice_number, -5) + 1 : 1;
 
-        return $prefix . '-' . str_pad($sequence, 5, '0', STR_PAD_LEFT);
+        return $prefix.'-'.str_pad($sequence, 5, '0', STR_PAD_LEFT);
     }
 
     public function maintenance()

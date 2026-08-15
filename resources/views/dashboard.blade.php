@@ -46,6 +46,10 @@
                 <div class="text-3xl font-semibold text-primary">{{ number_format((float) $fleetFuelCost, 2) }}</div>
                 <div class="mt-2 text-sm text-muted-foreground">تكلفة الوقود الشهرية</div>
             </div>
+            <div class="flex min-h-24 flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-surface p-4 text-center">
+                <div class="text-3xl font-semibold text-primary">{{ number_format((float) $monthlyMaintenanceCost, 2) }}</div>
+                <div class="mt-2 text-sm text-muted-foreground">تكلفة الصيانة الشهرية</div>
+            </div>
         </div>
 
         @if ($expiringPolicies->isNotEmpty())
@@ -122,6 +126,88 @@
                 </h2>
                 <div class="relative h-72">
                     <canvas id="fuelConsumptionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+            <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
+                <h2 class="mb-4 text-sm font-semibold text-foreground">
+                    أعلى المركبات استهلاكًا للوقود هذا الشهر
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-border text-sm">
+                        <thead>
+                            <tr class="text-xs uppercase tracking-wide text-muted-foreground">
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    المركبة
+                                </th>
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    الاستهلاك (لتر)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border">
+                            @forelse ($topFuelVehicles as $item)
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <a href="{{ route('vehicles.show', $item->vehicle) }}" class="font-medium text-foreground hover:text-primary">
+                                            {{ $item->vehicle->internal_number }}
+                                        </a>
+                                    </td>
+                                    <td class="px-4 py-3 text-muted-foreground">
+                                        {{ number_format((float) $item->total_liters, 2) }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="px-4 py-3 text-center text-muted-foreground">
+                                        لا توجد بيانات لهذا الشهر
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
+                <h2 class="mb-4 text-sm font-semibold text-foreground">
+                    أعلى المركبات تكلفةً في الصيانة
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-border text-sm">
+                        <thead>
+                            <tr class="text-xs uppercase tracking-wide text-muted-foreground">
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    المركبة
+                                </th>
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    إجمالي التكلفة
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border">
+                            @forelse ($topMaintenanceVehicles as $item)
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <a href="{{ route('vehicles.show', $item->vehicle) }}" class="font-medium text-foreground hover:text-primary">
+                                            {{ $item->vehicle->internal_number }}
+                                        </a>
+                                    </td>
+                                    <td class="px-4 py-3 text-muted-foreground">
+                                        {{ number_format((float) $item->total_cost, 2) }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="px-4 py-3 text-center text-muted-foreground">
+                                        لا توجد بيانات صيانة
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

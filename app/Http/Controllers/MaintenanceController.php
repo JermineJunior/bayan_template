@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
 use App\Models\Maintenance;
 use App\Models\Vehicle;
 use Exception;
@@ -74,6 +73,7 @@ class MaintenanceController extends Controller
             return redirect()->route('maintenance.index')->with('success', 'تم إنشاء أمر الصيانة بنجاح.');
         } catch (Exception $e) {
             DB::rollBack();
+
             return back()->withInput()->withErrors('حدث خطا ما ');
         }
     }
@@ -81,8 +81,9 @@ class MaintenanceController extends Controller
     public function show(Maintenance $maintenance)
     {
         $maintenance = $maintenance->load(['vehicle']);
+
         return view('maintenance.show', [
-            'maintenance' => $maintenance->load(['invoices','vehicle']),
+            'maintenance' => $maintenance->load(['invoices', 'vehicle']),
         ]);
     }
 
@@ -125,6 +126,7 @@ class MaintenanceController extends Controller
             return redirect()->route('maintenance.index')->with('success', 'تم تعديل امر الصيانة بنجاح');
         } catch (Exception $e) {
             DB::rollBack();
+
             return back()->withInput()->withErrors('حدث خطا ما ');
         }
     }
@@ -132,6 +134,7 @@ class MaintenanceController extends Controller
     public function destroy(Maintenance $maintenance)
     {
         $maintenance->delete();
+
         return back()->with('success', 'تم حذف امر الصيانة بنجاح');
     }
 

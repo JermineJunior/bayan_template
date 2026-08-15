@@ -33,7 +33,7 @@ return [
         'filter-changes' => 'تغيير الفلاتر',
         'insurance-policies' => 'التأمين',
         'violations' => 'المخالفات',
-        
+
         'maintenance' => 'اوامر الصيانة',
     ],
 
@@ -107,7 +107,6 @@ return [
         'incidents.create' => 'تسجيل حادث',
         'incidents.edit' => 'تعديل حادث',
         'incidents.delete' => 'حذف حادث',
-    
 
         'maintenance.view' => 'عرض اوامر الصيانة',
         'maintenance.create' => 'اضافة امر صيانة',

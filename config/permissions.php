@@ -129,6 +129,6 @@ return [
         'maintenance.create',
         'maintenance.edit',
         'maintenance.delete',
-    ]
+    ],
 
 ];

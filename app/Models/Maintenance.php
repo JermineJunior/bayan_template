@@ -7,7 +7,24 @@ use Illuminate\Support\Facades\Date;
 
 class Maintenance extends Model
 {
-    protected $fillable = ['maintenance_number', 'vehicle_id', 'date', 'start_date', 'end_date', 'odometer_reading', 'reason', 'workshop', 'technical', 'labor_cost', 'spare_cost', 'total_cost', 'type', 'status', 'note', 'created_by'];
+    protected $fillable = [
+        'maintenance_number',
+        'vehicle_id',
+        'date',
+        'start_date',
+        'end_date',
+        'odometer_reading',
+        'reason',
+        'workshop',
+        'technical',
+        'labor_cost',
+        'spare_cost',
+        'total_cost',
+        'type',
+        'status',
+        'note',
+        'created_by'
+    ];
 
     protected $casts = [
         'date' => 'date',
@@ -34,6 +51,7 @@ class Maintenance extends Model
 
         return $prefix . '-' . str_pad($sequence, 5, '0', STR_PAD_LEFT);
     }
+
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);

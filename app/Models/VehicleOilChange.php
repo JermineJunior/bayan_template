@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class VehicleOilChange extends Model
 {
-     use HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'vehicle_id',
@@ -60,7 +61,8 @@ class VehicleOilChange extends Model
             'recorded_by' => $recordedBy->id,
         ]);
     }
-     /**
+
+    /**
      * Km remaining until the next change, based on the vehicle's CURRENT odometer.
      * Computed live every time — never stored, since it changes whenever the vehicle
      * odometer moves, unlike next_change_odometer which is fixed at the time of change.

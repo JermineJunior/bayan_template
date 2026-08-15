@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Oil extends Model
 {
     protected $table = 'oils';
+
     protected $fillable = [
         'oil_name',
         'oil_code',
@@ -23,5 +24,4 @@ class Oil extends Model
     {
         return $this->hasMany(VehicleOilChange::class);
     }
-
 }

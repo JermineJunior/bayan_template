@@ -60,14 +60,15 @@ class InvoiceController extends Controller
             return redirect()->route('maintenance.show', $maintenance)->with('success', 'تم ادخال قطع الغيار بنجاح');
         } catch (Exception $e) {
             DB::rollBack();
+
             return back()->withErrors($e->getMessage());
         }
     }
 
-    public function show(Invoice $invoice) 
+    public function show(Invoice $invoice)
     {
-        return view('maintenance.invoice.show',[
-            'invoice' => $invoice->load(['details','maintenance'])
+        return view('maintenance.invoice.show', [
+            'invoice' => $invoice->load(['details', 'maintenance']),
         ]);
     }
 
@@ -129,6 +130,7 @@ class InvoiceController extends Controller
             return redirect()->route('maintenance.show', $maintenance)->with('success', 'تم تعديل قطع الغيار بنجاح');
         } catch (Exception $e) {
             DB::rollBack();
+
             return back()->withErrors($e->getMessage());
         }
     }
@@ -136,6 +138,7 @@ class InvoiceController extends Controller
     public function destroy(Invoice $invoice)
     {
         $invoice->delete();
+
         return back()->with('success', 'تم حذف قطع الغيار بنجاح');
     }
 }

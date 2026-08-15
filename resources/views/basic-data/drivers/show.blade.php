@@ -323,13 +323,7 @@
                                         تاريخ المخالفة
                                     </th>
                                     <th class="bg-muted/50 px-4 py-3 text-start font-medium">
-                                        رقم التذكرة
-                                    </th>
-                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
                                         الوصف
-                                    </th>
-                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
-                                        المبلغ
                                     </th>
                                     <th class="bg-muted/50 px-4 py-3 text-end font-medium">
                                         إجراءات
@@ -342,14 +336,8 @@
                                         <td class="px-4 py-3 text-muted-foreground">
                                             {{ $violation->violation_date?->format('Y-m-d') ?? '—' }}
                                         </td>
-                                        <td class="px-4 py-3 text-muted-foreground">
-                                            {{ $violation->ticket_number ?? '—' }}
-                                        </td>
                                         <td class="px-4 py-3 font-medium text-foreground">
                                             {{ $violation->description }}
-                                        </td>
-                                        <td class="px-4 py-3 text-muted-foreground">
-                                            {{ $violation->amount !== null ? number_format((float) $violation->amount, 2) : '—' }}
                                         </td>
                                         <td class="px-4 py-3">
                                             <div class="flex items-center justify-end gap-2">

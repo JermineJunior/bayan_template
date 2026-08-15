@@ -23,8 +23,7 @@ return new class extends Migration
             $table->foreignId('insurance_policy_id')->nullable()->constrained('insurance_policies');
             $table->enum('claim_status', ['pending', 'approved', 'rejected', 'paid'])->nullable();
 
-            $table->unsignedBigInteger('maintenance_order_id')->nullable(); // nullable until merging the maintenance work
-
+            
             $table->foreignId('recorded_by')->constrained('users');
             $table->timestamps();
 

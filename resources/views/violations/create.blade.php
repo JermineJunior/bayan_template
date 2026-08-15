@@ -56,23 +56,6 @@
                 </div>
 
                 <div>
-                    <label for="ticket_number" class="mb-1 block text-sm font-medium text-foreground">
-                        رقم التذكرة
-                    </label>
-                    <input
-                        id="ticket_number"
-                        name="ticket_number"
-                        type="text"
-                        value="{{ old('ticket_number') }}"
-                        maxlength="255"
-                        class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                    >
-                    @error('ticket_number')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
                     <label for="description" class="mb-1 block text-sm font-medium text-foreground">
                         الوصف
                     </label>
@@ -86,25 +69,6 @@
                         class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                     >
                     @error('description')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
-                    <label for="amount" class="mb-1 block text-sm font-medium text-foreground">
-                        المبلغ
-                    </label>
-                    <input
-                        id="amount"
-                        name="amount"
-                        type="text"
-                        inputmode="decimal"
-                        value="{{ old('amount') }}"
-                        placeholder="0.00"
-                        x-mask:function="$money"
-                        class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                    >
-                    @error('amount')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>

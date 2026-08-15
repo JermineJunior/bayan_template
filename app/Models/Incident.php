@@ -52,17 +52,6 @@ class Incident extends Model
         return $this->hasMany(IncidentPhoto::class);
     }
 
-    /**
-     * maintenance_order_id is intentionally NOT a relation yet — the maintenance_orders
-     * table doesn't exist in this branch. Once it's merged in from the teammate's work,
-     * add:
-     *   public function maintenanceOrder(): BelongsTo
-     *   {
-     *       return $this->belongsTo(MaintenanceOrder::class);
-     *   }
-     * and the FK constraint from the migration's follow-up comment.
-     */
-
     public function getHasClaimAttribute(): bool
     {
         return $this->claim_status !== null;

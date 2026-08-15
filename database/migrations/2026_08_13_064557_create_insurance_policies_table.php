@@ -14,16 +14,16 @@ return new class extends Migration
         Schema::create('insurance_policies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('vehicle_id')->constrained('vehicles');
-            $table->string('policy_number',60);
-            $table->string('insurance_company',150);
+            $table->string('policy_number', 60);
+            $table->string('insurance_company', 150);
             $table->date('start_date');
             $table->date('end_date');
-            $table->decimal('value',10,2);
+            $table->decimal('value', 10, 2);
             $table->boolean('is_current')->default(true);
             $table->foreignId('recorded_by')->constrained('users');
             $table->timestamps();
 
-            $table->index(['vehicle_id','is_current']);
+            $table->index(['vehicle_id', 'is_current']);
             $table->index('end_date');
         });
     }

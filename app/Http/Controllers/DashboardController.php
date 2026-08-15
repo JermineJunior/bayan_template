@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Driver;
 use App\Models\FuelLog;
 use App\Models\InsurancePolicy;
+use App\Models\Maintenance;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -40,6 +41,28 @@ class DashboardController extends Controller
         $fleetFuelCost = FuelLog::whereMonth('filled_at', now()->month)
             ->whereYear('filled_at', now()->year)
             ->sum(DB::raw('COALESCE(liters, 0) * COALESCE(price_per_liter, 0) - COALESCE(discount, 0)'));
+
+        $monthlyMaintenanceCost = Maintenance::whereMonth('date', now()->month)
+            ->whereYear('date', now()->year)
+            ->where('status', '!=', 'cancelled')
+            ->sum(DB::raw('COALESCE(total_cost, 0)'));
+
+        $topFuelVehicles = FuelLog::whereMonth('filled_at', now()->month)
+            ->whereYear('filled_at', now()->year)
+            ->select('vehicle_id', DB::raw('SUM(COALESCE(liters, 0)) as total_liters'))
+            ->with('vehicle')
+            ->groupBy('vehicle_id')
+            ->orderByDesc('total_liters')
+            ->limit(5)
+            ->get();
+
+        $topMaintenanceVehicles = Maintenance::where('status', '!=', 'cancelled')
+            ->select('vehicle_id', DB::raw('SUM(COALESCE(total_cost, 0)) as total_cost'))
+            ->with('vehicle')
+            ->groupBy('vehicle_id')
+            ->orderByDesc('total_cost')
+            ->limit(5)
+            ->get();
 
         $vehicleStatusData = Vehicle::select('status', DB::raw('count(*) as count'))
             ->groupBy('status')
@@ -88,6 +111,9 @@ class DashboardController extends Controller
             'insurancesExpiringSoon' => $insurancesExpiringSoon,
             'dueOilChanges' => $dueOilChanges,
             'fleetFuelCost' => $fleetFuelCost,
+            'monthlyMaintenanceCost' => $monthlyMaintenanceCost,
+            'topFuelVehicles' => $topFuelVehicles,
+            'topMaintenanceVehicles' => $topMaintenanceVehicles,
             'vehicleStatusData' => $vehicleStatusData,
             'monthlyFuelConsumption' => $monthlyFuelConsumption,
             'expiringPolicies' => $expiringPolicies,

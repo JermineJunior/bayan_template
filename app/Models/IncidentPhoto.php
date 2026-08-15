@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 class IncidentPhoto extends Model
 {
-
     protected $fillable = ['incident_id', 'file_path'];
 
     public function incident(): BelongsTo
