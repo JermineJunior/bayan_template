@@ -28,6 +28,18 @@
                             الرقم الوطني: {{ $driver->national_id }}
                         </p>
                     </div>
+                    <div class="text-left">
+                        <p class="text-sm font-semibold text-foreground">المركبة الحالية</p>
+                        @if ($driver->currentVehicle())
+                            <p class="text-sm text-muted-foreground">
+                               {{ $driver->currentVehicle()->internal_number  }} , {{ $driver->currentVehicle()->plate_number  }}
+                            </p>
+                        @else
+                        <p class="text-sm text-muted-foreground">
+                               لا توجد سيارة مسندة لهذا السائق
+                        </p>
+                        @endif
+                    </div>
                 </div>
             </div>
 

@@ -17,8 +17,9 @@ class DriverFactory extends Factory
      */
     public function definition(): array
     {
+        $names  = ['محمد ابراهيم حسن','مصعب محمد ابو القاسم','عماد السر عبد الرحمن','مهند عبد الوهاب عمر'];
         return [
-            'full_name' => fake()->name(),
+            'full_name' => fake()->unique()->randomElement($names),
             'national_id' => (string) fake()->unique()->numerify('##-##########-#'),
             'phone_number' => fake()->numerify('09########'),
             'department_id' => null,

@@ -29,6 +29,7 @@ class Vehicle extends Model
         'engine_capacity',
         'management_id',
         'status',
+        'stopped_at',
         'current_odometer',
         'operating_hours',
         'image_path',
@@ -38,7 +39,26 @@ class Vehicle extends Model
         'manufacture_year' => 'integer',
         'current_odometer' => 'decimal:2',
         'operating_hours' => 'decimal:2',
+        'stopped_at' => 'datetime',
     ];
+
+    /**
+     * Keep stopped_at in sync with the status field: entering "stopped" stamps
+     * the timestamp, leaving it clears the timestamp. Runs on every Eloquent
+     * save so it also covers paths other than the vehicle form.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (Vehicle $vehicle) {
+            $wasStopped = $vehicle->exists && $vehicle->getOriginal('status') === 'stopped';
+
+            if ($vehicle->status === 'stopped' && ! $wasStopped) {
+                $vehicle->stopped_at = now();
+            } elseif ($vehicle->status !== 'stopped' && $wasStopped) {
+                $vehicle->stopped_at = null;
+            }
+        });
+    }
 
     public function management()
     {

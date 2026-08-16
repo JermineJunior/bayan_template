@@ -18,7 +18,7 @@ class FuelLogObserver
             'expense_type' => 'fuel',
             'amount' => $fuelLog->total_value,
             'expense_date' => $fuelLog->filled_at->toDateString(),
-            'description' => "Fuel fill-up — {$fuelLog->liters} L",
+            'description' => "تعبئة وقود — {$fuelLog->liters} لتر",
             'sourceable_type' => FuelLog::class,
             'sourceable_id' => $fuelLog->id,
             'recorded_by' => $fuelLog->recorded_by,

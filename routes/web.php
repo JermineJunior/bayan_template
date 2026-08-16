@@ -19,6 +19,7 @@ use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\InsurancePolicyController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OdometerController;
 use App\Http\Controllers\OilController;
 use App\Http\Controllers\VehicleFilterChangeController;
@@ -95,6 +96,14 @@ Route::middleware('auth')
     ->group(function () {
         Route::get('preferences', [PreferencesController::class, 'edit'])->name('preferences.edit');
         Route::put('preferences', [PreferencesController::class, 'update'])->name('preferences.update');
+    });
+
+// Notifications: available to any authenticated user (no permission).
+Route::middleware('auth')
+    ->group(function () {
+        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::patch('notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+        Route::patch('notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
     });
 
 // Basic data (managements / departments / drivers / vehicles).

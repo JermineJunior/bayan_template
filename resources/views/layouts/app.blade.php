@@ -65,6 +65,95 @@
 
                     <nav class="flex items-center gap-3" aria-label="الشريط العلوي">
                         @auth
+                            @php
+                                $unreadCount = auth()->user()->unreadNotifications->count();
+                                $recentNotifications = auth()->user()->notifications()->limit(5)->get();
+                            @endphp
+
+                            {{-- Notification bell + dropdown --}}
+                            <div
+                                x-data="notificationBell('{{ route('notifications.mark-all-read') }}', {{ $unreadCount }})"
+                                class="relative"
+                            >
+                                <button
+                                    type="button"
+                                    @click="toggle()"
+                                    aria-label="الإشعارات"
+                                    class="relative rounded-md border border-border p-2 text-muted-foreground transition-colors hover:bg-muted"
+                                >
+                                    <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                                    </svg>
+                                    <span
+                                        x-show="unreadCount > 0"
+                                        x-text="unreadCount"
+                                        x-cloak
+                                        class="absolute -top-1 -end-1 flex size-5 items-center justify-center rounded-full bg-red-600 text-[11px] font-bold text-white"
+                                    ></span>
+                                </button>
+
+                                <div
+                                    x-show="open"
+                                    x-cloak
+                                    x-transition
+                                    @click.outside="close()"
+                                    class="absolute end-0 top-full z-50 mt-2 w-80 max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-border bg-surface shadow-lg"
+                                >
+                                    <div class="flex items-center justify-between border-b border-border px-4 py-3">
+                                        <h2 class="text-sm font-semibold text-foreground">
+                                            الإشعارات
+                                        </h2>
+                                        <button
+                                            type="button"
+                                            x-show="unreadCount > 0"
+                                            @click="markAllRead()"
+                                            class="text-xs font-medium text-primary transition-colors hover:opacity-80"
+                                        >
+                                            تحديد الكل كمقروء
+                                        </button>
+                                    </div>
+
+                                    <ul class="max-h-96 overflow-y-auto">
+                                        @forelse ($recentNotifications as $notification)
+                                            <li>
+                                                <button
+                                                    type="button"
+                                                    data-notification-item
+                                                    data-read-url="{{ route('notifications.mark-read', $notification->id) }}"
+                                                    @click="markRead($event.currentTarget)"
+                                                    class="flex w-full items-start gap-3 px-4 py-3 text-start transition-colors hover:bg-muted {{ $notification->read_at ? '' : 'bg-primary/5' }}"
+                                                >
+                                                    @unless ($notification->read_at)
+                                                        <span data-unread-dot class="mt-1.5 size-2 shrink-0 rounded-full bg-primary"></span>
+                                                    @endunless
+
+                                                    <span class="min-w-0 flex-1">
+                                                        <span data-message class="block text-sm {{ $notification->read_at ? 'text-muted-foreground' : 'font-medium text-foreground' }}">
+                                                            {{ $notification->data['message'] }}
+                                                        </span>
+                                                        <span class="mt-0.5 block text-xs text-muted-foreground">
+                                                            {{ $notification->created_at->diffForHumans() }}
+                                                        </span>
+                                                    </span>
+                                                </button>
+                                            </li>
+                                        @empty
+                                            <li class="px-4 py-8 text-center text-sm text-muted-foreground">
+                                                لا توجد إشعارات.
+                                            </li>
+                                        @endforelse
+                                    </ul>
+
+                                    <a
+                                        href="{{ route('notifications.index') }}"
+                                        class="block border-t border-border px-4 py-2.5 text-center text-sm font-medium text-primary transition-colors hover:bg-muted"
+                                    >
+                                        عرض الكل
+                                    </a>
+                                </div>
+                            </div>
+
                             <div x-data="{
                                 isFullscreen: localStorage.getItem('app-fullscreen') === 'true',
                                 init() {

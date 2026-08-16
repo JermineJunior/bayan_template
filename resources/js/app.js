@@ -5,6 +5,7 @@ import sidebar from './components/sidebar';
 import themeSwitcher from './components/theme-switcher';
 import oilChangeForm from './components/oil-change-form';
 import filterChangeForm from './components/filter-change-form';
+import notificationBell from './components/notification-bell';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import './maintenance';
@@ -19,6 +20,7 @@ Alpine.data('sidebar', sidebar);
 Alpine.data('themeSwitcher', themeSwitcher);
 Alpine.data('oilChangeForm', oilChangeForm);
 Alpine.data('filterChangeForm', filterChangeForm);
+Alpine.data('notificationBell', notificationBell);
 
 Alpine.start();
 

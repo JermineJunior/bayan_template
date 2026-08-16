@@ -31,6 +31,7 @@ return new class extends Migration
                 'stopped',
                 'sold',
                 'out_of_service', ])->default('active');
+            $table->timestamp('stopped_at')->nullable();
             $table->decimal('current_odometer', 10, 2)->nullable(); // العداد الحالي
             $table->decimal('operating_hours', 10, 2)->nullable(); // ساعات التشغيل
             $table->string('image_path', 255)->nullable(); // مسار الصورة

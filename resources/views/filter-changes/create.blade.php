@@ -28,11 +28,16 @@
                             رقم اللوحة: {{ $vehicle->plate_number }}
                         </p>
                     </div>
-                    <div class="text-end">
-                        <p class="text-sm text-muted-foreground">العداد الحالي</p>
-                        <p class="text-sm font-medium text-foreground">
-                            {{ $vehicle->current_odometer !== null ? number_format((float) $vehicle->current_odometer, 0).' كم' : '—' }}
-                        </p>
+                    <div class="flex items-center justify-end gap-2">
+                        <div class="text-end">
+                            <p class="text-sm text-muted-foreground">العداد الحالي</p>
+                            <p class="text-sm font-medium text-foreground">
+                                {{ $vehicle->current_odometer !== null ? number_format((float) $vehicle->current_odometer, 0).' كم' : '—' }}
+                            </p>
+                        </div>
+                        @if ($vehicle->current_odometer !== null)
+                            <x-copy-odometer :value="$vehicle->current_odometer" />
+                        @endif
                     </div>
                 </div>
             </div>
@@ -40,117 +45,121 @@
             <form
                 method="POST"
                 action="{{ route('vehicles.filter-changes.store', $vehicle) }}"
-                class="space-y-6 rounded-xl border border-border bg-surface p-6 shadow-sm"
+                class="space-y-6"
             >
                 @csrf
 
-                <div>
-                    <label for="filter_id" class="mb-1 block text-sm font-medium text-foreground">
-                        الفلتر
-                    </label>
-                    <div class="flex items-start gap-2">
-                        <select
-                            id="filter_id"
-                            name="filter_id"
-                            required
-                            class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                        >
-                            <option value="">اختر الفلتر</option>
-                            @foreach (config('filter_types') as $typeValue => $typeLabel)
-                                @if ($filters->where('filter_type', $typeValue)->isNotEmpty())
-                                    <optgroup label="{{ $typeLabel }}">
-                                        @foreach ($filters->where('filter_type', $typeValue) as $filter)
-                                            <option
-                                                value="{{ $filter->id }}"
-                                                @selected(old('filter_id') == $filter->id)
-                                            >
-                                                {{ $filter->filter_name }} ({{ $filter->filter_code }})
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                @endif
-                            @endforeach
-                        </select>
-
-                        @can('filters.create')
-                            <button
-                                type="button"
-                                @click="openFilterModal()"
-                                class="shrink-0 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                <x-form-section title="اختيار الفلتر">
+                    <div>
+                        <label for="filter_id" class="mb-1 block text-sm font-medium text-foreground">
+                            الفلتر
+                        </label>
+                        <div class="flex items-start gap-2">
+                            <select
+                                id="filter_id"
+                                name="filter_id"
+                                required
+                                class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                             >
-                                + إضافة فلتر
-                            </button>
-                        @endcan
-                    </div>
-                    @error('filter_id')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+                                <option value="">اختر الفلتر</option>
+                                @foreach (config('filter_types') as $typeValue => $typeLabel)
+                                    @if ($filters->where('filter_type', $typeValue)->isNotEmpty())
+                                        <optgroup label="{{ $typeLabel }}">
+                                            @foreach ($filters->where('filter_type', $typeValue) as $filter)
+                                                <option
+                                                    value="{{ $filter->id }}"
+                                                    @selected(old('filter_id') == $filter->id)
+                                                >
+                                                    {{ $filter->filter_name }} ({{ $filter->filter_code }})
+                                                </option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endif
+                                @endforeach
+                            </select>
 
-                <div class="grid gap-6 sm:grid-cols-2">
-                    <div>
-                        <label for="last_change" class="mb-1 block text-sm font-medium text-foreground">
-                            تاريخ آخر تغيير
-                        </label>
-                        <input
-                            id="last_change"
-                            name="last_change"
-                            type="date"
-                            value="{{ old('last_change') }}"
-                            required
-                            class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                        >
-                        @error('last_change')
+                            @can('filters.create')
+                                <button
+                                    type="button"
+                                    @click="openFilterModal()"
+                                    class="shrink-0 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                                >
+                                    + إضافة فلتر
+                                </button>
+                            @endcan
+                        </div>
+                        @error('filter_id')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+                </x-form-section>
 
-                    <div>
-                        <label for="odometer_when_change" class="mb-1 block text-sm font-medium text-foreground">
-                            قراءة العداد عند التغيير
-                        </label>
-                        <input
-                            id="odometer_when_change"
-                            name="odometer_when_change"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value="{{ old('odometer_when_change') }}"
-                            required
-                            placeholder="0.00"
-                            class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                        >
-                        <p class="mt-1 text-xs text-muted-foreground">
-                            كيلومتر التغيير القادم = هذه القراءة + العمر الافتراضي للفلتر.
-                        </p>
-                        @error('odometer_when_change')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <x-form-section title="بيانات التغيير">
+                    <div class="grid gap-6 sm:grid-cols-2">
+                        <div>
+                            <label for="last_change" class="mb-1 block text-sm font-medium text-foreground">
+                                تاريخ آخر تغيير
+                            </label>
+                            <input
+                                id="last_change"
+                                name="last_change"
+                                type="date"
+                                value="{{ old('last_change') }}"
+                                required
+                                class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                            >
+                            @error('last_change')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <div>
-                        <label for="cost" class="mb-1 block text-sm font-medium text-foreground">
-                            التكلفة (المبلغ المدفوع فعليًا)
-                        </label>
-                        <input
-                            id="cost"
-                            name="cost"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value="{{ old('cost') }}"
-                            required
-                            placeholder="0.00"
-                            class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                        >
-                        <p class="mt-1 text-xs text-muted-foreground">
-                            المبلغ الفعلي المدفوع لهذه التغييرة — ليس سعر الكتالوج الافتراضي.
-                        </p>
-                        @error('cost')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                        <div>
+                            <label for="odometer_when_change" class="mb-1 block text-sm font-medium text-foreground">
+                                قراءة العداد عند التغيير
+                            </label>
+                            <input
+                                id="odometer_when_change"
+                                name="odometer_when_change"
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value="{{ old('odometer_when_change') }}"
+                                required
+                                placeholder="0.00"
+                                class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                            >
+                            <p class="mt-1 text-xs text-muted-foreground">
+                                كيلومتر التغيير القادم = هذه القراءة + العمر الافتراضي للفلتر.
+                            </p>
+                            @error('odometer_when_change')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="cost" class="mb-1 block text-sm font-medium text-foreground">
+                                التكلفة (المبلغ المدفوع فعليًا)
+                            </label>
+                            <input
+                                id="cost"
+                                name="cost"
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value="{{ old('cost') }}"
+                                required
+                                placeholder="0.00"
+                                class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                            >
+                            <p class="mt-1 text-xs text-muted-foreground">
+                                المبلغ الفعلي المدفوع لهذه التغييرة — ليس سعر الكتالوج الافتراضي.
+                            </p>
+                            @error('cost')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
-                </div>
+                </x-form-section>
 
                 <div class="flex items-center gap-3">
                     <button
