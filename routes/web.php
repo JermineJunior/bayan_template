@@ -22,6 +22,7 @@ use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OdometerController;
 use App\Http\Controllers\OilController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VehicleFilterChangeController;
 use App\Http\Controllers\VehicleOilChangeController;
 use Illuminate\Support\Facades\Route;
@@ -376,3 +377,60 @@ Route::middleware('auth')->group(function () {
         Route::delete('invoice/{invoice}', [InvoiceController::class, 'destroy'])->name('invoice.destroy');
     });
 });
+
+// Reports: a hub page plus three routes per report (form / results / print).
+// Each report is gated by its source module's .view permission.
+Route::middleware('auth')
+    ->prefix('reports')
+    ->name('reports.')
+    ->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+
+        Route::middleware('can:fuel.view')->group(function () {
+            Route::get('fuel-consumption', [ReportController::class, 'fuelConsumptionForm'])->name('fuel-consumption.form');
+            Route::get('fuel-consumption/results', [ReportController::class, 'fuelConsumptionResults'])->name('fuel-consumption.results');
+            Route::get('fuel-consumption/print', [ReportController::class, 'fuelConsumptionPrint'])->name('fuel-consumption.print');
+        });
+
+        Route::middleware('can:vehicles.view')->group(function () {
+            Route::get('fleet-overview', [ReportController::class, 'fleetOverviewForm'])->name('fleet-overview.form');
+            Route::get('fleet-overview/results', [ReportController::class, 'fleetOverviewResults'])->name('fleet-overview.results');
+            Route::get('fleet-overview/print', [ReportController::class, 'fleetOverviewPrint'])->name('fleet-overview.print');
+        });
+
+        Route::middleware('can:oil-changes.view')->group(function () {
+            Route::get('oil-filter-changes', [ReportController::class, 'oilFilterChangesForm'])->name('oil-filter-changes.form');
+            Route::get('oil-filter-changes/results', [ReportController::class, 'oilFilterChangesResults'])->name('oil-filter-changes.results');
+            Route::get('oil-filter-changes/print', [ReportController::class, 'oilFilterChangesPrint'])->name('oil-filter-changes.print');
+        });
+
+        Route::middleware('can:insurance-policies.view')->group(function () {
+            Route::get('insurance-status', [ReportController::class, 'insuranceStatusForm'])->name('insurance-status.form');
+            Route::get('insurance-status/results', [ReportController::class, 'insuranceStatusResults'])->name('insurance-status.results');
+            Route::get('insurance-status/print', [ReportController::class, 'insuranceStatusPrint'])->name('insurance-status.print');
+        });
+
+        Route::middleware('can:incidents.view')->group(function () {
+            Route::get('incidents-log', [ReportController::class, 'incidentsLogForm'])->name('incidents-log.form');
+            Route::get('incidents-log/results', [ReportController::class, 'incidentsLogResults'])->name('incidents-log.results');
+            Route::get('incidents-log/print', [ReportController::class, 'incidentsLogPrint'])->name('incidents-log.print');
+        });
+
+        Route::middleware('can:expenses.view')->group(function () {
+            Route::get('expenses', [ReportController::class, 'expensesForm'])->name('expenses.form');
+            Route::get('expenses/results', [ReportController::class, 'expensesResults'])->name('expenses.results');
+            Route::get('expenses/print', [ReportController::class, 'expensesPrint'])->name('expenses.print');
+        });
+
+        Route::middleware('can:violations.view')->group(function () {
+            Route::get('driver-violations', [ReportController::class, 'driverViolationsForm'])->name('driver-violations.form');
+            Route::get('driver-violations/results', [ReportController::class, 'driverViolationsResults'])->name('driver-violations.results');
+            Route::get('driver-violations/print', [ReportController::class, 'driverViolationsPrint'])->name('driver-violations.print');
+        });
+
+        Route::middleware('can:maintenance.view')->group(function () {
+            Route::get('maintenance-cost', [ReportController::class, 'maintenanceCostForm'])->name('maintenance-cost.form');
+            Route::get('maintenance-cost/results', [ReportController::class, 'maintenanceCostResults'])->name('maintenance-cost.results');
+            Route::get('maintenance-cost/print', [ReportController::class, 'maintenanceCostPrint'])->name('maintenance-cost.print');
+        });
+    });

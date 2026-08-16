@@ -153,6 +153,15 @@
             />
         @endcan
 
+        @canany(['fuel.view', 'vehicles.view', 'oil-changes.view', 'insurance-policies.view', 'incidents.view', 'expenses.view', 'violations.view', 'maintenance.view'])
+            <x-sidebar-link
+                href="{{ route('reports.index') }}"
+                :active="request()->routeIs('reports.*')"
+                label="التقارير"
+                icon="bar-chart"
+            />
+        @endcanany
+
         @can('users.view')
             <x-sidebar-link
                 href="{{ route('users.index') }}"
