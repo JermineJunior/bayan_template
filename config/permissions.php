@@ -137,4 +137,18 @@ return [
         'expenses.delete',
     ],
 
+    'suppliers' => [
+        'suppliers.view',
+        'suppliers.create',
+        'suppliers.edit',
+        'suppliers.delete',
+    ],
+
+    'spare-parts' => [
+        'spare-parts.view',
+        'spare-parts.create',
+        'spare-parts.edit',
+        'spare-parts.delete',
+    ],
+
 ];

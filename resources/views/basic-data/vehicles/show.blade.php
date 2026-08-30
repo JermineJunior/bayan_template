@@ -11,7 +11,7 @@
             'sold' => ['مباعة', 'bg-gray-100 text-gray-700'],
             'out_of_service' => ['خارج الخدمة', 'bg-red-100 text-red-700'],
         ];
-        $fuelLabels = ['gasoline' => 'بنزين', 'diesel' => 'ديزل'];
+        $fuelLabels = ['gasoline' => 'بنزين', 'diesel' => 'جازولين'];
         $status = $statusLabels[$vehicle->status] ?? ['—', 'bg-gray-100 text-gray-700'];
         $currentDriver = $vehicle->currentDriver();
         $assignments = $vehicle->driverAssignments()->with('driver')->latest('assignment_date')->get();
@@ -568,3 +568,4 @@
         </div>
     </div>
 @endsection
+      

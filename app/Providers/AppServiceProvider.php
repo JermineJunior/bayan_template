@@ -4,11 +4,13 @@ namespace App\Providers;
 
 use App\Models\DriverViolation;
 use App\Models\FuelLog;
+use App\Models\InvoiceDetail;
 use App\Models\Maintenance;
 use App\Models\VehicleFilterChange;
 use App\Models\VehicleOilChange;
 use App\Observers\DriverViolationObserver;
 use App\Observers\FuelLogObserver;
+use App\Observers\InvoiceDetailObserver;
 use App\Observers\MaintenanceObserver;
 use App\Observers\VehicleFilterChangeObserver;
 use App\Observers\VehicleOilChangeObserver;
@@ -35,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         VehicleFilterChange::observe(VehicleFilterChangeObserver::class);
         Maintenance::observe(MaintenanceObserver::class);
         DriverViolation::observe(DriverViolationObserver::class);
+        InvoiceDetail::observe(InvoiceDetailObserver::class); 
         // Spatie's Role lives outside App\Models, so its policy is not picked up
         // by Laravel's convention-based discovery and is registered explicitly.
         Gate::policy(Role::class, RolePolicy::class);
@@ -63,7 +66,7 @@ class AppServiceProvider extends ServiceProvider
                 'theme' => $theme,
                 'themes' => $themes,
                 'themeLabels' => collect($themes)->mapWithKeys(
-                    fn (string $name): array => [$name => $labels[$name] ?? $name],
+                    fn(string $name): array => [$name => $labels[$name] ?? $name],
                 )->all(),
             ]);
         });

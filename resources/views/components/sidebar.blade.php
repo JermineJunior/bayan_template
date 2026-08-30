@@ -1,7 +1,7 @@
 <aside
     x-cloak
     aria-label="القائمة الجانبية"
-    class="app-sidebar fixed inset-y-0 start-0 z-40 flex h-screen w-64 shrink-0 flex-col border-e border-border bg-surface transition-all duration-200 lg:static lg:translate-x-0"
+    class="app-sidebar fixed inset-y-0 start-0 z-40 flex h-screen w-64 shrink-0 flex-col border-e border-border bg-surface transition-all duration-200 lg:self-start lg:sticky lg:top-0 lg:translate-x-0 lg:overflow-hidden"
     :class="mobileOpen ? 'translate-x-0' : 'translate-x-full'"
 >
     {{-- Brand --}}
@@ -38,7 +38,7 @@
 
     {{-- Navigation: each item declares the permission it requires and is
          removed from the DOM entirely when the user lacks it. --}}
-    <nav @click="close()" class="flex-1 space-y-1 overflow-y-auto p-3">
+    <nav @click="close()" class="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
         <x-sidebar-link
             href="{{ route('home') }}"
             :active="request()->routeIs('home')"
@@ -150,6 +150,24 @@
                 :active="request()->routeIs('expenses.*')"
                 label="المصروفات"
                 icon="money"
+            />
+        @endcan
+
+        @can('suppliers.view')
+            <x-sidebar-link
+                href="{{ route('suppliers.index') }}"
+                :active="request()->routeIs('suppliers.*') || request()->routeIs('supplier-invoices.*')"
+                label="الموردون"
+                icon="truck"
+            />
+        @endcan
+
+        @can('spare-parts.view')
+            <x-sidebar-link
+                href="{{ route('spare-parts.index') }}"
+                :active="request()->routeIs('spare-parts.*')"
+                label="قطع الغيار"
+                icon="package"
             />
         @endcan
 

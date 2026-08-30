@@ -177,7 +177,7 @@
                 >
                     <option value="">اختر النوع</option>
                     <option value="gasoline" @selected(old('fuel_type', $vehicle?->fuel_type) === 'gasoline')>بنزين</option>
-                    <option value="diesel" @selected(old('fuel_type', $vehicle?->fuel_type) === 'diesel')>ديزل</option>
+                    <option value="diesel" @selected(old('fuel_type', $vehicle?->fuel_type) === 'diesel')>جازولين</option>
                 </select>
                 @error('fuel_type')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -334,3 +334,4 @@
         </a>
     </div>
 </form>
+      

@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Invoice extends Model
 {
-    protected $fillable = ['invoice_number', 'maintenance_id', 'supplier', 'total_amount', 'date'];
+    protected $fillable = ['invoice_number', 'maintenance_id', 'date'];
 
     protected $casts = [
-        'total_amount' => 'decimal:2',
         'date' => 'date',
     ];
 
@@ -18,24 +18,29 @@ class Invoice extends Model
     {
         $date = $date ? Date::parse($date) : now();
 
-        $prefix = 'INV-'.$date->format('Y');
+        $prefix = 'INV-' . $date->format('Y');
 
-        $last = self::where('invoice_number', 'like', $prefix.'-%')
+        $last = self::where('invoice_number', 'like', $prefix . '-%')
             ->orderByDesc('invoice_number')
             ->first();
 
         $sequence = $last ? substr($last->invoice_number, -5) + 1 : 1;
 
-        return $prefix.'-'.str_pad($sequence, 5, '0', STR_PAD_LEFT);
+        return $prefix . '-' . str_pad($sequence, 5, '0', STR_PAD_LEFT);
     }
 
-    public function maintenance()
+    public function maintenance(): BelongsTo
     {
         return $this->belongsTo(Maintenance::class);
     }
 
-    public function details()
+    public function details(): HasMany
     {
         return $this->hasMany(InvoiceDetail::class);
     }
-}
+
+    /** Sum of every line item's row total — never stored, always derived */
+    public function getTotalAmountAttribute(): float
+    {
+        return (float) $this->details()->get()->sum('row_sub_total');
+    }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Maintenance;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invoices', function (Blueprint $table) {
+        Schema::create('supplier_payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Maintenance::class)->constrained()->cascadeOnDelete();
-            $table->string('invoice_number')->unique();
-            $table->date('date');
+            $table->foreignId('supplier_invoice_id')->constrained('supplier_invoices');
+            $table->decimal('amount', 12, 2);
+            $table->date('paid_at');
+            $table->foreignId('recorded_by')->constrained('users');
             $table->timestamps();
+
+            $table->index('paid_at');
         });
     }
 
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('invoices');
+        Schema::dropIfExists('supplier_payments');
     }
 };

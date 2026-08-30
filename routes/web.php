@@ -23,6 +23,13 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OdometerController;
 use App\Http\Controllers\OilController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SparePartController;
+use App\Http\Controllers\SparePartIssueController;
+use App\Http\Controllers\SparePartPurchaseController;
+use App\Http\Controllers\SparePartStocktakeController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupplierInvoiceController;
+use App\Http\Controllers\SupplierPaymentController;
 use App\Http\Controllers\VehicleFilterChangeController;
 use App\Http\Controllers\VehicleOilChangeController;
 use Illuminate\Support\Facades\Route;
@@ -434,3 +441,52 @@ Route::middleware('auth')
             Route::get('maintenance-cost/print', [ReportController::class, 'maintenanceCostPrint'])->name('maintenance-cost.print');
         });
     });
+
+// Suppliers: standard CRUD plus invoice/payment sub-routes scoped under a
+// supplier and an invoice respectively.
+Route::middleware('auth')->group(function () {
+    Route::resource('suppliers', SupplierController::class);
+
+    // Invoices are created from a supplier's context.
+    Route::get('suppliers/{supplier}/invoices/create', [SupplierInvoiceController::class, 'create'])
+        ->middleware('can:suppliers.create')
+        ->name('suppliers.invoices.create');
+
+    Route::post('suppliers/{supplier}/invoices', [SupplierInvoiceController::class, 'store'])
+        ->middleware('can:suppliers.create')
+        ->name('suppliers.invoices.store');
+
+    Route::get('supplier-invoices/{invoice}', [SupplierInvoiceController::class, 'show'])
+        ->middleware('can:suppliers.view')
+        ->name('supplier-invoices.show');
+
+    // Payments are created under an invoice.
+    Route::post('supplier-invoices/{invoice}/payments', [SupplierPaymentController::class, 'store'])
+        ->middleware('can:suppliers.view')
+        ->name('supplier-invoices.payments.store');
+});
+
+// Spare parts: catalog CRUD plus purchase / issue / stocktake logging, each
+// scoped under the spare part it mutates.
+Route::middleware('auth')->group(function () {
+    Route::resource('spare-parts', SparePartController::class);
+
+    // Purchase / issue / stocktake are all stock mutations — they reuse the
+    // spare-parts.create gate, matching how the suppliers invoice flow works.
+    Route::middleware('can:spare-parts.create')->group(function () {
+        Route::get('spare-parts/{sparePart}/purchase', [SparePartPurchaseController::class, 'create'])
+            ->name('spare-parts.purchase.create');
+        Route::post('spare-parts/{sparePart}/purchase', [SparePartPurchaseController::class, 'store'])
+            ->name('spare-parts.purchase.store');
+
+        Route::get('spare-parts/{sparePart}/issue', [SparePartIssueController::class, 'create'])
+            ->name('spare-parts.issue.create');
+        Route::post('spare-parts/{sparePart}/issue', [SparePartIssueController::class, 'store'])
+            ->name('spare-parts.issue.store');
+
+        Route::get('spare-parts/{sparePart}/stocktake', [SparePartStocktakeController::class, 'create'])
+            ->name('spare-parts.stocktake.create');
+        Route::post('spare-parts/{sparePart}/stocktake', [SparePartStocktakeController::class, 'store'])
+            ->name('spare-parts.stocktake.store');
+    });
+});

@@ -36,6 +36,8 @@ return [
 
         'maintenance' => 'اوامر الصيانة',
         'expenses' => 'المصروفات',
+        'suppliers' => 'الموردون',
+        'spare-parts' => 'قطع الغيار',
     ],
 
     'permissions' => [
@@ -117,5 +119,15 @@ return [
         'expenses.view' => 'عرض المصروفات',
         'expenses.create' => 'إضافة مصروف',
         'expenses.delete' => 'حذف مصروف',
+
+        'suppliers.view' => 'عرض الموردين',
+        'suppliers.create' => 'إضافة مورد',
+        'suppliers.edit' => 'تعديل مورد',
+        'suppliers.delete' => 'حذف مورد',
+
+        'spare-parts.view' => 'عرض قطع الغيار',
+        'spare-parts.create' => 'إضافة قطعة غيار',
+        'spare-parts.edit' => 'تعديل قطعة غيار',
+        'spare-parts.delete' => 'حذف قطعة غيار',
     ],
 ];

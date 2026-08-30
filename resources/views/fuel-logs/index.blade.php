@@ -4,7 +4,7 @@
 
 @section('content')
     @php
-        $fuelLabels = ['gasoline' => 'بنزين', 'diesel' => 'ديزل'];
+        $fuelLabels = ['gasoline' => 'بنزين', 'diesel' => 'جازولين'];
     @endphp
 
     <div class="mx-auto max-w-7xl px-4 py-8">

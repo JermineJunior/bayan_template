@@ -1,0 +1,82 @@
+@php
+    $isEdit = filled($supplier);
+@endphp
+
+<form
+    method="POST"
+    action="{{ $isEdit ? route('suppliers.update', $supplier) : route('suppliers.store') }}"
+    class="max-w-3xl space-y-6 rounded-xl border border-border bg-surface p-6 shadow-sm"
+>
+    @csrf
+    @if ($isEdit)
+        @method('PUT')
+    @endif
+
+    <div>
+        <label for="name" class="mb-1 block text-sm font-medium text-foreground">
+            الاسم
+        </label>
+        <input
+            id="name"
+            name="name"
+            type="text"
+            value="{{ old('name', $supplier?->name) }}"
+            required
+            maxlength="150"
+            class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        >
+        @error('name')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="phone" class="mb-1 block text-sm font-medium text-foreground">
+            الهاتف
+        </label>
+        <input
+            id="phone"
+            name="phone"
+            type="text"
+            value="{{ old('phone', $supplier?->phone) }}"
+            maxlength="30"
+            class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        >
+        @error('phone')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="address" class="mb-1 block text-sm font-medium text-foreground">
+            العنوان
+        </label>
+        <input
+            id="address"
+            name="address"
+            type="text"
+            value="{{ old('address', $supplier?->address) }}"
+            maxlength="255"
+            class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+        >
+        @error('address')
+            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div class="flex items-center gap-3">
+        <button
+            type="submit"
+            class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        >
+            {{ $isEdit ? 'حفظ المورد' : 'إنشاء المورد' }}
+        </button>
+
+        <a
+            href="{{ route('suppliers.index') }}"
+            class="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+        >
+            إلغاء
+        </a>
+    </div>
+</form>
