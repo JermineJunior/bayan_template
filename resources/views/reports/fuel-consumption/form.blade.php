@@ -18,6 +18,9 @@
             action="{{ route('reports.fuel-consumption.results') }}"
             class="mb-6 rounded-xl border border-border bg-surface p-4 shadow-sm"
         >
+            <div class="mb-4">
+                @include('reports._quick_dates')
+            </div>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                     <label for="vehicle_id" class="mb-1 block text-sm font-medium text-foreground">

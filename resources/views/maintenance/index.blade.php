@@ -147,7 +147,7 @@
                             </td>
                             <td class="px-4 py-3">
                                 <span class="rounded-md bg-muted px-2 py-1 text-xs text-foreground">
-                                    {{ number_format($maintenance->total_cost) }}
+                                    {{ money($maintenance->total_cost) }}
                                 </span>
                             </td>
                             <td class="px-4 py-3">

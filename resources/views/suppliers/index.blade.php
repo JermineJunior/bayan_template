@@ -64,19 +64,19 @@
                                 {{ $supplier->address ?? '—' }}
                             </td>
                             <td class="px-4 py-3 text-muted-foreground">
-                                {{ number_format($supplier->total_invoiced, 2) }}
+                                {{ money($supplier->total_invoiced) }}
                             </td>
                             <td class="px-4 py-3 text-muted-foreground">
-                                {{ number_format($supplier->total_paid, 2) }}
+                                {{ money($supplier->total_paid) }}
                             </td>
                             <td class="px-4 py-3">
                                 @if ($supplier->balance > 0)
                                     <span class="inline-flex rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700">
-                                        {{ number_format($supplier->balance, 2) }}
+                                        {{ money($supplier->balance) }}
                                     </span>
                                 @else
                                     <span class="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
-                                        {{ number_format($supplier->balance, 2) }}
+                                        {{ money($supplier->balance) }}
                                     </span>
                                 @endif
                             </td>

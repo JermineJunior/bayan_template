@@ -74,19 +74,19 @@
             <div class="rounded-xl border border-border bg-surface p-4 shadow-sm">
                 <p class="text-xs text-muted-foreground">إجمالي الفواتير</p>
                 <p class="mt-1 text-2xl font-semibold text-foreground">
-                    {{ number_format($supplier->total_invoiced, 2) }}
+                    {{ money($supplier->total_invoiced) }}
                 </p>
             </div>
             <div class="rounded-xl border border-border bg-surface p-4 shadow-sm">
                 <p class="text-xs text-muted-foreground">إجمالي المدفوع</p>
                 <p class="mt-1 text-2xl font-semibold text-foreground">
-                    {{ number_format($supplier->total_paid, 2) }}
+                    {{ money($supplier->total_paid) }}
                 </p>
             </div>
             <div class="rounded-xl border border-border bg-surface p-4 shadow-sm">
                 <p class="text-xs text-muted-foreground">الرصيد</p>
                 <p class="mt-1 text-2xl font-semibold {{ $hasBalance ? 'text-red-600' : 'text-green-600' }}">
-                    {{ number_format($supplier->balance, 2) }}
+                    {{ money($supplier->balance) }}
                 </p>
             </div>
         </div>
@@ -145,19 +145,19 @@
                                 {{ $invoice->invoice_date?->format('Y-m-d') }}
                             </td>
                             <td class="px-4 py-3 text-muted-foreground">
-                                {{ number_format((float) $invoice->amount, 2) }}
+                                {{ money($invoice->amount) }}
                             </td>
                             <td class="px-4 py-3 text-muted-foreground">
-                                {{ number_format($invoice->total_paid, 2) }}
+                                {{ money($invoice->total_paid) }}
                             </td>
                             <td class="px-4 py-3">
                                 @if ($invoice->balance > 0)
                                     <span class="inline-flex rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700">
-                                        {{ number_format($invoice->balance, 2) }}
+                                        {{ money($invoice->balance) }}
                                     </span>
                                 @else
                                     <span class="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
-                                        {{ number_format($invoice->balance, 2) }}
+                                        {{ money($invoice->balance) }}
                                     </span>
                                 @endif
                             </td>

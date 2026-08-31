@@ -144,6 +144,15 @@
             />
         @endcan
 
+        @can('maintenance.view')
+            <x-sidebar-link
+                href="{{ route('invoices.index') }}"
+                :active="request()->routeIs('invoices.*')"
+                label="فواتير صرف القطع"
+                icon="package"
+            />
+        @endcan
+
         @can('expenses.view')
             <x-sidebar-link
                 href="{{ route('expenses.index') }}"

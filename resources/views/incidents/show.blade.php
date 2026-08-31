@@ -59,7 +59,7 @@
                     <div>
                         <dt class="text-xs text-muted-foreground">تكلفة الإصلاح</dt>
                         <dd class="mt-1 text-sm font-medium text-foreground">
-                            {{ $incident->repair_cost !== null ? number_format((float) $incident->repair_cost, 2) : '—' }}
+                            {{ $incident->repair_cost !== null ? money($incident->repair_cost) : '—' }}
                         </dd>
                     </div>
                     <div>

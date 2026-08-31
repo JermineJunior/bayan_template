@@ -2,7 +2,19 @@
     $isEdit = filled($maintenance);
 @endphp
 <!-- one form for both create and edit -->
-<div id="maintenance-form">
+<div id="maintenance-form" x-data="{
+        init() {
+            this.$nextTick(() => this.updateTotal());
+        },
+        updateTotal() {
+            const labor = window.parseMoney(this.$refs.laborCost?.value ?? '');
+            const spare = window.parseMoney(this.$refs.spareCost?.value ?? '');
+            const total = labor + spare;
+            if (this.$refs.totalCost) {
+                this.$refs.totalCost.value = total > 0 ? window.formatMoney(total) : '';
+            }
+        }
+    }">
     <form method="POST" action="{{ $isEdit ? route('maintenance.update', $maintenance) : route('maintenance.store') }}"
         class="max-w-3xl space-y-6">
         @csrf
@@ -130,8 +142,10 @@
                 <label for="labor_cost" class="mb-1 block text-sm font-medium text-foreground">
                     تكلفة الفني
                 </label>
-                <input id="labor_cost" name="labor_cost" type="text" value="{{ old('labor_cost', $maintenance?->labor_cost) }}"
-                    class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
+                <input id="labor_cost" name="labor_cost" type="text" inputmode="decimal" value="{{ old('labor_cost', $maintenance?->labor_cost) }}"
+                    x-ref="laborCost"
+                    @input="updateTotal()"
+                    class="money-input w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
                 @error('labor_cost')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -143,6 +157,7 @@
                 </label>
                 <input id="spare_cost" name="spare_cost" type="text"
                     value="{{ old('spare_cost', $maintenance?->spare_cost) }}" readonly
+                    x-ref="spareCost"
                     class="w-full rounded-md border border-border bg-gray-200 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
                 @error('spare_cost')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -155,6 +170,7 @@
                 </label>
                 <input id="total_cost" name="total_cost" type="text"
                     value="{{ old('total_cost', $maintenance?->total_cost) }}" readonly
+                    x-ref="totalCost"
                     class="w-full rounded-md border border-border bg-gray-200 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
                 @error('total_cost')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

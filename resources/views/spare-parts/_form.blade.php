@@ -103,12 +103,12 @@
             <input
                 id="purchase_price"
                 name="purchase_price"
-                type="number"
-                step="0.01"
+                type="text"
+                inputmode="decimal"
                 min="0"
                 value="{{ old('purchase_price', $sparePart?->purchase_price) }}"
                 placeholder="0.00"
-                class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                class="money-input w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             >
             @error('purchase_price')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

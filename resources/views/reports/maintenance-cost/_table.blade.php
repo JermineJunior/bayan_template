@@ -58,7 +58,7 @@
                     {{ $row->reason ?? '—' }}
                 </td>
                 <td class="px-4 py-3 font-medium text-foreground">
-                    {{ number_format((float) $row->total_cost, 2) }}
+                    {{ money($row->total_cost) }}
                 </td>
             </tr>
         @empty

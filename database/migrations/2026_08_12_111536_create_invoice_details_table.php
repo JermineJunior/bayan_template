@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('invoice_details', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Invoice::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(SparePart::class)->constrained();
+            //$table->foreignIdFor(SparePart::class)->constrained();
             $table->integer('qty');
             $table->decimal('price', 15, 2);
             $table->timestamps();

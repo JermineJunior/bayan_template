@@ -36,7 +36,7 @@
                     إجمالي القيمة
                 </p>
                 <p class="mt-1 text-2xl font-semibold text-primary">
-                    {{ number_format((float) $totalValue, 2) }}
+                    {{ money($totalValue) }}
                 </p>
             </div>
         </div>

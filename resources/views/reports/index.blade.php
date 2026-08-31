@@ -53,6 +53,18 @@
                 'route' => 'reports.maintenance-cost.form',
                 'permission' => 'maintenance.view',
             ],
+            [
+                'title' => 'الموردون',
+                'description' => 'فواتير الموردين والمبالغ المدفوعة والأرصدة المتبقية.',
+                'route' => 'reports.suppliers.form',
+                'permission' => 'suppliers.view',
+            ],
+            [
+                'title' => 'قطع الغيار',
+                'description' => 'أصناف قطع الغيار وأسعارها وأرصدتها ووضع المخزون.',
+                'route' => 'reports.spare-parts.form',
+                'permission' => 'spare-parts.view',
+            ],
         ];
     @endphp
 

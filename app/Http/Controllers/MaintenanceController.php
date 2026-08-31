@@ -45,6 +45,11 @@ class MaintenanceController extends Controller
     {
         try {
             DB::beginTransaction();
+            $request->merge([
+                'labor_cost' => $request->filled('labor_cost') ? str_replace(',', '', $request->input('labor_cost')) : null,
+                'spare_cost' => $request->filled('spare_cost') ? str_replace(',', '', $request->input('spare_cost')) : null,
+                'total_cost' => $request->filled('total_cost') ? str_replace(',', '', $request->input('total_cost')) : null,
+            ]);
             $validated = $request->validate([
                 'maintenance_number' => ['required', 'string', 'max:255', 'unique:maintenances,maintenance_number'],
                 'vehicle_id' => ['required', 'exists:vehicles,id'],
@@ -102,6 +107,11 @@ class MaintenanceController extends Controller
     {
         try {
             DB::beginTransaction();
+            $request->merge([
+                'labor_cost' => $request->filled('labor_cost') ? str_replace(',', '', $request->input('labor_cost')) : null,
+                'spare_cost' => $request->filled('spare_cost') ? str_replace(',', '', $request->input('spare_cost')) : null,
+                'total_cost' => $request->filled('total_cost') ? str_replace(',', '', $request->input('total_cost')) : null,
+            ]);
             $validated = $request->validate([
                 'maintenance_number' => ['required', 'string', 'max:255', Rule::unique('maintenances', 'maintenance_number')->ignore($maintenance)],
                 'vehicle_id' => ['required', 'exists:vehicles,id'],

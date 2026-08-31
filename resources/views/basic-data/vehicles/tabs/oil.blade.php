@@ -133,7 +133,7 @@
                                         {{ number_format((float) $change->odometer_when_change, 0) }} كم
                                     </td>
                                     <td class="px-4 py-3 font-medium text-foreground">
-                                        {{ number_format((float) $change->cost, 2) }}
+                                        {{ money($change->cost) }}
                                     </td>
                                     <td class="px-4 py-3 text-muted-foreground">
                                         {{ number_format((float) $change->next_change_odometer, 0) }} كم

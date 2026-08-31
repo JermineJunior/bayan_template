@@ -7,6 +7,6 @@
 
     <div class="total">
         إجمالي اللترات: {{ number_format((float) $totalLiters, 2) }}
-        — إجمالي القيمة: {{ number_format((float) $totalValue, 2) }}
+        — إجمالي القيمة: {{ money($totalValue) }}
     </div>
 @endsection

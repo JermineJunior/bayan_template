@@ -45,7 +45,7 @@
                         @if ($sparePart->purchase_price !== null)
                             <div>
                                 <dt class="inline">سعر الشراء: </dt>
-                                <dd class="inline">{{ number_format((float) $sparePart->purchase_price, 2) }}</dd>
+                                <dd class="inline">{{ money($sparePart->purchase_price) }}</dd>
                             </div>
                         @endif
                     </dl>
@@ -91,7 +91,7 @@
             <div class="rounded-xl border border-border bg-surface p-4 shadow-sm">
                 <p class="text-xs text-muted-foreground">الحد الأدنى</p>
                 <p class="mt-1 text-2xl font-semibold text-foreground">
-                    {{ number_format($sparePart->minimum_quantity, 2) }}
+                    {{ number_format((float) $sparePart->minimum_quantity) }}
                 </p>
             </div>
             <div class="rounded-xl border border-border bg-surface p-4 shadow-sm">
@@ -119,18 +119,6 @@
 
             @can('spare-parts.create')
                 <div class="flex flex-wrap items-center gap-2">
-                    <a
-                        href="{{ route('spare-parts.purchase.create', $sparePart) }}"
-                        class="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
-                    >
-                        + شراء
-                    </a>
-                    <a
-                        href="{{ route('spare-parts.issue.create', $sparePart) }}"
-                        class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
-                    >
-                        + صرف
-                    </a>
                     <a
                         href="{{ route('spare-parts.stocktake.create', $sparePart) }}"
                         class="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"

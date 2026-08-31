@@ -18,37 +18,5 @@ class InvoiceDetailObserver
             recordedBy: auth('web')->user(),
             unitPrice: (float) $detail->price,
         );
-    }
-
-    /**
-     * Handle the InvoiceDetail "updated" event.
-     */
-    public function updated(InvoiceDetail $invoiceDetail): void
-    {
-        //
-    }
-
-    /**
-     * Handle the InvoiceDetail "deleted" event.
-     */
-    public function deleted(InvoiceDetail $invoiceDetail): void
-    {
-        //
-    }
-
-    /**
-     * Handle the InvoiceDetail "restored" event.
-     */
-    public function restored(InvoiceDetail $invoiceDetail): void
-    {
-        //
-    }
-
-    /**
-     * Handle the InvoiceDetail "force deleted" event.
-     */
-    public function forceDeleted(InvoiceDetail $invoiceDetail): void
-    {
-        //
-    }
+    } 
 }

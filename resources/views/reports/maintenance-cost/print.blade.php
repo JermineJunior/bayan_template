@@ -6,6 +6,6 @@
     @include('reports.maintenance-cost._table')
 
     <div class="total">
-        إجمالي التكاليف: {{ number_format((float) $totalCost, 2) }}
+        إجمالي التكاليف: {{ money($totalCost) }}
     </div>
 @endsection

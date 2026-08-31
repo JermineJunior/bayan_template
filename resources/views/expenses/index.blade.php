@@ -129,7 +129,7 @@
             <div>
                 <p class="text-xs text-muted-foreground">إجمالي المصروفات (حسب الفلترة)</p>
                 <p class="mt-1 text-2xl font-semibold text-primary">
-                    {{ number_format((float) $totalAmount, 2) }}
+                    {{ money($totalAmount) }}
                 </p>
             </div>
         </div>
@@ -176,7 +176,7 @@
                                 {{ $expenseTypeLabels[$expense->expense_type] ?? $expense->expense_type }}
                             </td>
                             <td class="px-4 py-3 font-medium text-foreground">
-                                {{ number_format((float) $expense->amount, 2) }}
+                                {{ money($expense->amount) }}
                             </td>
                             <td class="px-4 py-3 text-muted-foreground">
                                 {{ $expense->expense_date?->format('Y-m-d') }}

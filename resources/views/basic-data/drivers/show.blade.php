@@ -349,7 +349,7 @@
                                             {{ $violation->vehicle?->internal_number ?? '—' }}
                                         </td>
                                         <td class="px-4 py-3 text-muted-foreground">
-                                            {{ $violation->amount !== null ? number_format((float) $violation->amount, 2) : '—' }}
+                                            {{ $violation->amount !== null ? money($violation->amount) : '—' }}
                                         </td>
                                         <td class="px-4 py-3">
                                             <div class="flex items-center justify-end gap-2">
@@ -480,7 +480,7 @@
                                             @endif
                                         </td>
                                         <td class="px-4 py-3 text-muted-foreground">
-                                            {{ $incident->repair_cost !== null ? number_format((float) $incident->repair_cost, 2) : '—' }}
+                                            {{ $incident->repair_cost !== null ? money($incident->repair_cost) : '—' }}
                                         </td>
                                     </tr>
                                 @empty

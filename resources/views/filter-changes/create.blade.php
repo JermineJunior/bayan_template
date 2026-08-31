@@ -143,13 +143,13 @@
                             <input
                                 id="cost"
                                 name="cost"
-                                type="number"
-                                step="0.01"
+                                type="text"
+                                inputmode="decimal"
                                 min="0"
                                 value="{{ old('cost') }}"
                                 required
                                 placeholder="0.00"
-                                class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                class="money-input w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                             >
                             <p class="mt-1 text-xs text-muted-foreground">
                                 المبلغ الفعلي المدفوع لهذه التغييرة — ليس سعر الكتالوج الافتراضي.

@@ -10,6 +10,9 @@ use App\Models\Incident;
 use App\Models\InsurancePolicy;
 use App\Models\Maintenance;
 use App\Models\Management;
+use App\Models\SparePart;
+use App\Models\Supplier;
+use App\Models\SupplierInvoice;
 use App\Models\Vehicle;
 use App\Models\VehicleFilterChange;
 use App\Models\VehicleOilChange;
@@ -34,6 +37,8 @@ class ReportController extends Controller
             'expenses.view',
             'violations.view',
             'maintenance.view',
+            'suppliers.view',
+            'spare-parts.view',
         ]), 403);
 
         return view('reports.index');
@@ -397,5 +402,128 @@ class ReportController extends Controller
             ->when($request->filled('to_date'), fn ($query) => $query->whereDate('end_date', '<=', $request->query('to_date')))
             ->orderByDesc('end_date')
             ->get();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 9. Suppliers
+    |--------------------------------------------------------------------------
+    */
+
+    public function suppliersForm(): View
+    {
+        return view('reports.suppliers.form', [
+            'suppliers' => Supplier::orderBy('name')->get(),
+        ]);
+    }
+
+    public function suppliersResults(Request $request): View
+    {
+        $rows = $this->getSupplierData($request);
+
+        return view('reports.suppliers.results', [
+            'rows' => $rows,
+            'totalInvoiced' => $rows->sum('amount'),
+            'totalPaid' => $rows->sum('total_paid'),
+            'totalBalance' => $rows->sum('balance'),
+        ]);
+    }
+
+    public function suppliersPrint(Request $request): View
+    {
+        $rows = $this->getSupplierData($request);
+
+        return view('reports.suppliers.print', [
+            'rows' => $rows,
+            'totalInvoiced' => $rows->sum('amount'),
+            'totalPaid' => $rows->sum('total_paid'),
+            'totalBalance' => $rows->sum('balance'),
+        ]);
+    }
+
+    private function getSupplierData(Request $request): Collection
+    {
+        return SupplierInvoice::query()
+            ->with('supplier')
+            ->when($request->filled('supplier_id'), fn ($query) => $query->where('supplier_id', $request->integer('supplier_id')))
+            ->when($request->filled('from_date'), fn ($query) => $query->whereDate('invoice_date', '>=', $request->query('from_date')))
+            ->when($request->filled('to_date'), fn ($query) => $query->whereDate('invoice_date', '<=', $request->query('to_date')))
+            ->latest('invoice_date')
+            ->get()
+            ->map(function (SupplierInvoice $invoice) {
+                return (object) [
+                    'supplier_name' => $invoice->supplier?->name ?? '—',
+                    'invoice_number' => $invoice->invoice_number,
+                    'invoice_date' => $invoice->invoice_date,
+                    'amount' => (float) $invoice->amount,
+                    'total_paid' => (float) $invoice->total_paid,
+                    'balance' => (float) $invoice->balance,
+                ];
+            });
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 10. Spare Parts
+    |--------------------------------------------------------------------------
+    */
+
+    public function sparePartsForm(): View
+    {
+        return view('reports.spare-parts.form', [
+            'categories' => SparePart::query()
+                ->whereNotNull('category')
+                ->distinct()
+                ->orderBy('category')
+                ->pluck('category'),
+            'suppliers' => Supplier::orderBy('name')->get(),
+        ]);
+    }
+
+    public function sparePartsResults(Request $request): View
+    {
+        $rows = $this->getSparePartData($request);
+
+        return view('reports.spare-parts.results', [
+            'rows' => $rows,
+            'totalParts' => $rows->count(),
+            'lowStockCount' => $rows->where('is_low_stock', true)->count(),
+        ]);
+    }
+
+    public function sparePartsPrint(Request $request): View
+    {
+        $rows = $this->getSparePartData($request);
+
+        return view('reports.spare-parts.print', [
+            'rows' => $rows,
+            'totalParts' => $rows->count(),
+            'lowStockCount' => $rows->where('is_low_stock', true)->count(),
+        ]);
+    }
+
+    private function getSparePartData(Request $request): Collection
+    {
+        return SparePart::query()
+            ->with('defaultSupplier')
+            ->when($request->filled('category'), fn ($query) => $query->where('category', $request->query('category')))
+            ->when($request->filled('supplier_id'), fn ($query) => $query->where('default_supplier_id', $request->integer('supplier_id')))
+            ->when($request->boolean('low_stock'), function ($query) {
+                $query->whereRaw('(SELECT COALESCE(SUM(quantity), 0) FROM spare_part_transactions WHERE spare_part_transactions.spare_part_id = spare_parts.id) <= spare_parts.minimum_quantity');
+            })
+            ->orderBy('name')
+            ->get()
+            ->map(function (SparePart $part) {
+                return (object) [
+                    'part_number' => $part->part_number,
+                    'name' => $part->name,
+                    'category' => $part->category ?? '—',
+                    'supplier_name' => $part->defaultSupplier?->name ?? '—',
+                    'purchase_price' => (float) $part->purchase_price,
+                    'minimum_quantity' => (float) $part->minimum_quantity,
+                    'quantity_on_hand' => (float) $part->quantity_on_hand,
+                    'is_low_stock' => (bool) $part->is_low_stock,
+                ];
+            });
     }
 }

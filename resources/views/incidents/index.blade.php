@@ -152,7 +152,7 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-muted-foreground">
-                                {{ $incident->repair_cost !== null ? number_format((float) $incident->repair_cost, 2) : '—' }}
+                                {{ $incident->repair_cost !== null ? money($incident->repair_cost) : '—' }}
                             </td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-end">

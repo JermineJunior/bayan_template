@@ -53,7 +53,7 @@
                     {{ $expenseTypeLabels[$row->expense_type] ?? $row->expense_type }}
                 </td>
                 <td class="px-4 py-3 font-medium text-foreground">
-                    {{ number_format((float) $row->amount, 2) }}
+                    {{ money($row->amount) }}
                 </td>
                 <td class="px-4 py-3 text-muted-foreground">
                     {{ $row->expense_date?->format('Y-m-d') }}

@@ -134,6 +134,12 @@ class SparePartController extends Controller
      */
     private function validated(Request $request, ?SparePart $sparePart = null): array
     {
+        $request->merge([
+            'purchase_price' => $request->filled('purchase_price')
+                ? str_replace(',', '', $request->input('purchase_price'))
+                : null,
+        ]);
+
         return $request->validate([
             'part_number' => ['nullable', 'string', 'max:50', Rule::unique('spare_parts', 'part_number')->ignore($sparePart?->id)],
             'name' => ['required', 'string', 'max:150'],

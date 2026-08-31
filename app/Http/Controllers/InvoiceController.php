@@ -5,146 +5,121 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\Maintenance;
-use Exception;
+use App\Models\SparePart;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 
 class InvoiceController extends Controller
 {
-    public function create(Maintenance $maintenance)
+    /**
+     * Display a paginated listing of all invoices, optionally filtered by a
+     * maintenance job.
+     */
+    public function index(Request $request): View
     {
-        return view('maintenance.invoice.create', [
+        $query = Invoice::query()
+            ->with(['maintenance.vehicle'])
+            ->latest('date');
+
+        if ($request->filled('maintenance_id')) {
+            $query->where('maintenance_id', $request->integer('maintenance_id'));
+        }
+
+        return view('invoices.index', [
+            'invoices' => $query->paginate(10)->withQueryString(),
+            'maintenances' => Maintenance::orderByDesc('created_at')->get(),
+        ]);
+    }
+
+    /**
+     * Show the form for issuing parts against a specific maintenance job.
+     * The invoice always belongs to that maintenance job.
+     */
+    public function create(Maintenance $maintenance): View
+    {
+        return view('invoices.create', [
             'maintenance' => $maintenance,
+            'spareParts' => SparePart::query()
+                ->orderBy('name')
+                ->get(['id', 'part_number', 'name', 'category', 'purchase_price']),
         ]);
     }
 
-    public function store(Request $request)
+    /**
+     * Store a new invoice and its line items, deducting stock atomically.
+     *
+     * The whole operation runs inside a DB transaction: each InvoiceDetail's
+     * creation fires InvoiceDetailObserver, which calls recordIssue() and
+     * deducts stock. If any one line runs short of stock, the exception rolls
+     * the entire invoice back — no invoice, no line items, and no partial
+     * stock deduction ever persists.
+     */
+    public function store(Request $request, Maintenance $maintenance): RedirectResponse
     {
+        $items = collect($request->input('items', []))
+            ->map(fn ($item) => [
+                ...$item,
+                'price' => $item['price'] !== null ? str_replace(',', '', $item['price']) : $item['price'],
+            ])
+            ->all();
+
+        $request->merge(['items' => $items]);
+
+        $validated = $request->validate([
+            'date' => ['required', 'date'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.spare_part_id' => ['required', 'integer', Rule::exists('spare_parts', 'id')],
+            'items.*.qty' => ['required', 'numeric', 'min:0.01'],
+            'items.*.price' => ['required', 'numeric', 'min:0'],
+        ]);
+
         try {
-            DB::beginTransaction();
-            $request->validate([
-                'invoice_number' => ['required', 'unique:invoices,invoice_number'],
-                'date' => 'date|required|before_or_equal:now',
-                'details.*.spare' => 'required',
-                'details.*.price' => 'required|numeric',
-            ]);
-
-            $invoice = Invoice::create([
-                'maintenance_id' => $request->maintenance_id,
-                'invoice_number' => $request->invoice_number,
-                'date' => $request->date,
-                'supplier' => $request->supplier,
-                'total_amount' => $request->total_amount,
-            ]);
-
-            foreach ($request->details as $index => $item) {
-                InvoiceDetail::create([
-                    'invoice_id' => $invoice->id,
-                    'spare' => $item['spare'],
-                    'qty' => $item['qty'],
-                    'price' => $item['price'],
-                    'row_sub_total' => $item['qty'] * $item['price'],
+            DB::transaction(function () use ($maintenance, $validated, &$invoice) {
+                $invoice = Invoice::create([
+                    'invoice_number' => Invoice::generateInvoiceNumber($validated['date']),
+                    'maintenance_id' => $maintenance->id,
+                    'date' => $validated['date'],
                 ]);
-            }
 
-            $maintenance = Maintenance::find($request->maintenance_id);
-
-            $maintenance->update([
-                'spare_cost' => $maintenance->spare_cost + $request->total_amount,
-                'total_cost' => $maintenance->total_cost + $request->total_amount,
-            ]);
-
-            DB::commit();
-
-            flash()->success('تم ادخال قطع الغيار بنجاح');
-
-            return redirect()->route('maintenance.show', $maintenance);
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            return back()->withErrors($e->getMessage());
-        }
-    }
-
-    public function show(Invoice $invoice)
-    {
-        return view('maintenance.invoice.show', [
-            'invoice' => $invoice->load(['details', 'maintenance']),
-        ]);
-    }
-
-    public function edit(Invoice $invoice)
-    {
-        return view('maintenance.invoice.edit', [
-            'invoice' => $invoice->load(['details']),
-        ]);
-    }
-
-    public function update(Invoice $invoice, Request $request)
-    {
-        try {
-            DB::beginTransaction();
-
-            $request->validate([
-                'invoice_number' => ['required', Rule::unique('invoices', 'invoice_number')->ignore($invoice->id)],
-                'date' => 'date|required|before_or_equal:now',
-                'details.*.spare' => 'required',
-                'details.*.price' => 'required|numeric',
-            ]);
-
-            $old_maintenance = Maintenance::find($invoice->maintenance_id);
-
-            $old_maintenance->update([
-                'spare_cost' => $old_maintenance->spare_cost - $invoice->total_amount,
-                'total_cost' => $old_maintenance->total_cost - $invoice->total_amount,
-            ]);
-
-            $invoice->delete();
-
-            $new_invoice = Invoice::create([
-                'maintenance_id' => $request->maintenance_id,
-                'invoice_number' => $request->invoice_number,
-                'date' => $request->date,
-                'supplier' => $request->supplier,
-                'total_amount' => $request->total_amount,
-            ]);
-
-            foreach ($request->details as $index => $item) {
-                InvoiceDetail::create([
-                    'invoice_id' => $new_invoice->id,
-                    'spare' => $item['spare'],
-                    'qty' => $item['qty'],
-                    'price' => $item['price'],
-                    'row_sub_total' => $item['qty'] * $item['price'],
+                foreach ($validated['items'] as $index => $item) {
+                    try {
+                        InvoiceDetail::create([
+                            'invoice_id' => $invoice->id,
+                            'spare_part_id' => $item['spare_part_id'],
+                            'qty' => $item['qty'],
+                            'price' => $item['price'],
+                        ]);
+                    } catch (\RuntimeException $e) {
+                        throw new \RuntimeException(
+                            $e->getMessage(),
+                            $index,
+                        );
+                    }
+                }
+            });
+        } catch (\RuntimeException $e) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    "items.{$e->getCode()}.qty" => $e->getMessage(),
                 ]);
-            }
-
-            $maintenance = Maintenance::find($request->maintenance_id);
-
-            $maintenance->update([
-                'spare_cost' => $maintenance->spare_cost + $request->total_amount,
-                'total_cost' => $maintenance->total_cost + $request->total_amount,
-            ]);
-
-            DB::commit();
-
-            flash()->success('تم تعديل قطع الغيار بنجاح');
-
-            return redirect()->route('maintenance.show', $maintenance);
-        } catch (Exception $e) {
-            DB::rollBack();
-
-            return back()->withErrors($e->getMessage());
         }
+
+        flash()->success('تم صرف قطع الغيار وإنشاء الفاتورة بنجاح.');
+
+        return redirect()->route('invoices.show', $invoice);
     }
 
-    public function destroy(Invoice $invoice)
+    /**
+     * Display the given invoice with its line items.
+     */
+    public function show(Invoice $invoice): View
     {
-        $invoice->delete();
-
-        flash()->success('تم حذف قطع الغيار بنجاح');
-
-        return back();
+        return view('invoices.show', [
+            'invoice' => $invoice->load(['maintenance.vehicle', 'details.sparePart']),
+        ]);
     }
 }

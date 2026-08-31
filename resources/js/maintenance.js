@@ -8,9 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const vehicleSelect = document.getElementById('vehicle_id');
     const odometerInput = document.getElementById('odometer_reading');
-    const laborInput = document.getElementById('labor_cost');
-    const spareInput = document.getElementById('spare_cost');
-    const totalInput = document.getElementById('total_cost');
 
     vehicleSelect?.addEventListener('change',async function () {
 
@@ -51,22 +48,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
     });
-
-    function calculateTotal() {
-
-        const labor = parseFloat(laborInput?.value) || 0;
-        const spare = parseFloat(spareInput?.value) || 0;
-
-        const total = labor + spare;
-
-        if (totalInput) {
-            totalInput.value = total.toFixed(2);
-        }
-    }
-
-    laborInput?.addEventListener('input', calculateTotal);
-    spareInput?.addEventListener('input', calculateTotal);
-
-    calculateTotal();
 
 });

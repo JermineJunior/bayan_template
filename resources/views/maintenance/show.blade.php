@@ -156,13 +156,13 @@
                                 <div class="flex items-center justify-between gap-4 border-b border-border pb-2">
                                     <dt class="text-muted-foreground">تكلفة الفني</dt>
                                     <dd class="flex items-center gap-2 font-medium text-foreground">
-                                        {{ number_format($maintenance->labor_cost) }}
+                                        {{ money($maintenance->labor_cost) }}
                                     </dd>
                                 </div>
                                 <div class="flex items-center justify-between gap-4 border-b border-border pb-2">
                                     <dt class="text-muted-foreground">تكلفة الاسبير</dt>
                                     <dd class="flex items-center gap-2 font-medium text-foreground">
-                                        {{ number_format($maintenance->spare_cost) }}
+                                        {{ money($maintenance->spare_cost) }}
                                     </dd>
                                 </div>
                             </dl>
@@ -180,9 +180,9 @@
                                     المركبة الحالية
                                 </h2>
 
-                                <a href="{{ route('invoice.create', $maintenance) }}"
+                                <a href="{{ route('maintenances.invoices.create', $maintenance) }}"
                                     class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                    إنشاء قطع غيار
+                                    + صرف قطع غيار
                                 </a>
                             </div>
 
@@ -226,30 +226,15 @@
                                                     {{ $invoice->date->format('Y-m-d') }}
                                                 </td>
                                                 <td class="px-4 py-3 font-medium text-foreground">
-                                                    {{ number_format($invoice->total_amount) }}
+                                                    {{ money($invoice->total_amount) }}
                                                 </td>
                                                 <td class="px-4 py-3 font-medium text-foreground">
                                                     <div class="flex items-center justify-end gap-2">
 
-                                                        <a href="{{ route('invoice.show', $invoice) }}"
+                                                        <a href="{{ route('invoices.show', $invoice) }}"
                                                             class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted">
                                                             عرض
                                                         </a>
-                                                        <a href="{{ route('invoice.edit', $invoice) }}"
-                                                            class="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted">
-                                                            تعديل
-                                                        </a>
-
-                                                        <form method="POST"
-                                                            action="{{ route('invoice.destroy', $invoice) }}"
-                                                            onsubmit="return confirmForm(this, 'هل تريد حذف هذه فاتورة الغيار', 'نعم، احذف')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                class="rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50">
-                                                                حذف
-                                                            </button>
-                                                        </form>
                                                     </div>
                                                 </td>
                                             @endforeach

@@ -62,7 +62,7 @@
                     {{ $row->location ?? '—' }}
                 </td>
                 <td class="px-4 py-3 text-muted-foreground">
-                    {{ $row->repair_cost !== null ? number_format((float) $row->repair_cost, 2) : '—' }}
+                    {{ $row->repair_cost !== null ? money($row->repair_cost) : '—' }}
                 </td>
                 <td class="px-4 py-3">
                     @if ($row->claim_status)

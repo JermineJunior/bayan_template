@@ -45,4 +45,9 @@ return [
         'label' => 'Maintenance overdue past its end date',
         'permission' => 'maintenance.view',
     ],
+
+    'spare_parts_low_stock' => [
+        'label' => 'Spare part below its minimum stock level',
+        'permission' => 'spare-parts.view',
+    ],
 ];

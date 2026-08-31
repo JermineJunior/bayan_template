@@ -16,6 +16,10 @@ class SupplierPaymentController extends Controller
      */
     public function store(Request $request, SupplierInvoice $invoice): RedirectResponse
     {
+        $request->merge([
+            'amount' => str_replace(',', '', $request->input('amount')),
+        ]);
+
         $validated = $request->validate([
             'amount' => ['required', 'numeric', 'min:0.01'],
             'paid_at' => ['required', 'date'],

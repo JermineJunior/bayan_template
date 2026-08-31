@@ -28,7 +28,7 @@
                     إجمالي المصروفات
                 </p>
                 <p class="mt-1 text-2xl font-semibold text-primary">
-                    {{ number_format((float) $totalAmount, 2) }}
+                    {{ money($totalAmount) }}
                 </p>
             </div>
         </div>

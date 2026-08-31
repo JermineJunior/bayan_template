@@ -43,11 +43,11 @@
                 <div class="mt-2 text-sm text-muted-foreground">تغيير زيوت مستحق</div>
             </div>
             <div class="flex min-h-24 flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-surface p-4 text-center">
-                <div class="text-3xl font-semibold text-primary">{{ number_format((float) $fleetFuelCost, 2) }}</div>
+                <div class="text-3xl font-semibold text-primary">{{ money($fleetFuelCost) }}</div>
                 <div class="mt-2 text-sm text-muted-foreground">تكلفة الوقود الشهرية</div>
             </div>
             <div class="flex min-h-24 flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-surface p-4 text-center">
-                <div class="text-3xl font-semibold text-primary">{{ number_format((float) $monthlyMaintenanceCost, 2) }}</div>
+                <div class="text-3xl font-semibold text-primary">{{ money($monthlyMaintenanceCost) }}</div>
                 <div class="mt-2 text-sm text-muted-foreground">تكلفة الصيانة الشهرية</div>
             </div>
         </div>
@@ -196,7 +196,7 @@
                                         </a>
                                     </td>
                                     <td class="px-4 py-3 text-muted-foreground">
-                                        {{ number_format((float) $item->total_cost, 2) }}
+                                        {{ money($item->total_cost) }}
                                     </td>
                                 </tr>
                             @empty

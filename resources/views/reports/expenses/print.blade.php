@@ -6,6 +6,6 @@
     @include('reports.expenses._table')
 
     <div class="total">
-        إجمالي المصروفات: {{ number_format((float) $totalAmount, 2) }}
+        إجمالي المصروفات: {{ money($totalAmount) }}
     </div>
 @endsection

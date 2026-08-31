@@ -114,8 +114,7 @@
                     value="{{ old('amount') }}"
                     required
                     placeholder="0.00"
-                    x-mask:function="$money"
-                    class="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    class="money-input w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                 @error('amount')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

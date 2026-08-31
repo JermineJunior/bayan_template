@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Driver;
 use App\Models\InsurancePolicy;
 use App\Models\Maintenance;
+use App\Models\SparePart;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Notifications\FleetAlertNotification;
@@ -25,6 +26,7 @@ class CheckFleetAlerts extends Command
         $this->checkDriverLicenses();
         $this->checkStoppedVehicles();
         $this->checkOverdueMaintenance();
+        $this->checkLowStock();
 
         $this->info('Fleet alert check complete.');
     }
@@ -153,6 +155,26 @@ class CheckFleetAlerts extends Command
                     $maintenance,
                 );
             });
+    }
+
+    /**
+     * Spare parts whose current quantity on hand has dropped to (or below)
+     * their configured minimum.
+     */
+    private function checkLowStock(): void
+    {
+        $config = config('fleet_alerts.spare_parts_low_stock');
+
+        SparePart::all()->each(function (SparePart $part) use ($config) {
+            if ($part->is_low_stock) {
+                $this->notifyPermittedUsers(
+                    'spare_parts_low_stock',
+                    $config['permission'],
+                    "قطع الغيار منخفضة المخزون: {$part->name} ({$part->part_number}) — المتوفر ".number_format($part->quantity_on_hand).' / الحد الأدنى '.number_format($part->minimum_quantity),
+                    $part,
+                );
+            }
+        });
     }
 
     /**

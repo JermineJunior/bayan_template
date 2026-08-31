@@ -131,10 +131,11 @@
                                 {{ $sparePart->defaultSupplier?->name ?? '—' }}
                             </td>
                             <td class="px-4 py-3 font-medium text-foreground">
-                                {{ number_format($sparePart->quantity_on_hand, 2) }}
+                                {{ number_format((float)$sparePart->quantity_on_hand) }}
                             </td>
+                            
                             <td class="px-4 py-3 text-muted-foreground">
-                                {{ number_format($sparePart->minimum_quantity, 2) }}
+                                {{ number_format((float) $sparePart->minimum_quantity) }}
                             </td>
                             <td class="px-4 py-3">
                                 @if ($sparePart->is_low_stock && $sparePart->quantity_on_hand <= 0)

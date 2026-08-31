@@ -40,10 +40,10 @@
                     {{ number_format((float) $row->liters, 2) }}
                 </td>
                 <td class="px-4 py-3 text-muted-foreground">
-                    {{ number_format((float) $row->price_per_liter, 3) }}
+                    {{ money($row->price_per_liter, 3) }}
                 </td>
                 <td class="px-4 py-3 font-medium text-foreground">
-                    {{ number_format((float) $row->total_value, 2) }}
+                    {{ money($row->total_value) }}
                 </td>
                 <td class="px-4 py-3 text-muted-foreground">
                     {{ number_format((float) $row->odometer_reading, 0) }} كم

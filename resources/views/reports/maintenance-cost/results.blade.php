@@ -28,7 +28,7 @@
                     إجمالي التكاليف
                 </p>
                 <p class="mt-1 text-2xl font-semibold text-primary">
-                    {{ number_format((float) $totalCost, 2) }}
+                    {{ money($totalCost) }}
                 </p>
             </div>
         </div>

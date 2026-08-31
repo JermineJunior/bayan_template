@@ -56,7 +56,7 @@
                     {{ $row->end_date?->format('Y-m-d') }}
                 </td>
                 <td class="px-4 py-3 text-muted-foreground">
-                    {{ number_format((float) $row->value, 2) }}
+                    {{ money($row->value) }}
                 </td>
                 <td class="px-4 py-3">
                     <span class="badge">{{ $row->is_expired ? 'منتهية' : ($row->is_current ? 'سارية' : 'غير سارية') }}</span>

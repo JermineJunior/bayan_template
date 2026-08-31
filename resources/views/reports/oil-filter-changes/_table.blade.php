@@ -56,7 +56,7 @@
                     {{ $row->next_change_odometer !== null ? number_format((float) $row->next_change_odometer, 0).' كم' : '—' }}
                 </td>
                 <td class="px-4 py-3 text-muted-foreground">
-                    {{ $row->cost !== null ? number_format((float) $row->cost, 2) : '—' }}
+                    {{ $row->cost !== null ? money($row->cost) : '—' }}
                 </td>
             </tr>
         @empty
