@@ -17,6 +17,25 @@ class IncidentController extends Controller
      */
     public function index(Request $request): View
     {
+
+        
+        
+        
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
         $incidents = Incident::query()
             ->with(['vehicle', 'driver'])
             ->when($request->filled('vehicle_id'), function ($query) use (

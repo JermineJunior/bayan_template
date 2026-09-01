@@ -61,6 +61,11 @@
     /* Primary */
     --app-primary: #0F766E;
     --app-primary-foreground: #FFFFFF;
+
+    /* Auth hero gradient (light) */
+    --app-hero-1: #0F766E;
+    --app-hero-2: #0D9488;
+    --app-hero-3: #0E7490;
 }
 
 [data-theme='dark'] {
@@ -83,6 +88,25 @@
     /* Primary */
     --app-primary: #14B8A6;
     --app-primary-foreground: #062E2A;
+
+    /* Auth hero gradient (dark) */
+    --app-hero-1: #134E4A;
+    --app-hero-2: #0F766E;
+    --app-hero-3: #155E75;
+}
+
+/*
+|--------------------------------------------------------------------------
+| Auth hero
+|--------------------------------------------------------------------------
+|
+| Gradient used by the split login page. Colours come from --app-hero-*
+| tokens so the panel adapts automatically when the theme changes.
+|
+*/
+
+.auth-hero {
+    background-image: linear-gradient(135deg, var(--app-hero-1) 0%, var(--app-hero-2) 55%, var(--app-hero-3) 100%);
 }
 
 /*

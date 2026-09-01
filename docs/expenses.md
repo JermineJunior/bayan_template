@@ -56,13 +56,16 @@
 | `FuelLogObserver` | `FuelLog` | `fuel` | `total_value` | "تعبئة وقود — {liters} لتر" |
 | `VehicleOilChangeObserver` | `VehicleOilChange` | `oil` | `cost` | "تغيير زيت — {oil_name}" |
 | `VehicleFilterChangeObserver` | `VehicleFilterChange` | `filter` | `cost` | "تغيير فلتر — {filter_name}" |
-| `InvoiceController::store()` | `Invoice` | `maintenance` | `labor_cost + invoice.total` | سبب الصيانة |
+| `MaintenanceObserver` | `Maintenance` | `maintenance` | `labor_cost` | سبب الصيانة (عند الإنشاء) |
+| `InvoiceController::store()` | `Maintenance` | `maintenance` | `labor_cost + Σ invoice totals` | تحديث نفس المصروف عند إضافة قطع غيار |
 | `DriverViolationObserver` | `DriverViolation` | `violations` | `amount` | "مخالفة — {desc}" (فقط إذا وُجدت مركبة ومبلغ) |
 
-> ملاحظة: مصروف **الصيانة** لا يُسجَّل عند إنشاء أمر الصيانة، بل عند **ربط قطع
-> الغيار بأمر الصيانة** — أي عند إنشاء الفاتورة (`InvoiceController::store()`).
-> مبلغه = `labor_cost` + إجمالي بنود الفاتورة (مجموع `qty × price`). يُربط بالمصدر
-> عبر `sourceable_type = Invoice` و `sourceable_id = invoice.id`.
+> ملاحظة: **مصروف الصيانة** يُسجَّل **فور إنشاء** أمر الصيانة عبر
+> `MaintenanceObserver` بقيمة `labor_cost` فقط — بحيث يُسجَّل حتى لو لم يتطلب
+> الأمر قطع غيار. عند **ربط قطع الغيار** عبر فاتورة صرف (`InvoiceController::store()`)
+> تُستدعى `syncMaintenanceExpense()` لتحديث **نفس** المصروف ليصبح
+> `labor_cost + مجموع إجمالي الفواتير` (كل فاتورة = Σ `qty × price`). يُربط
+> بالمصدر عبر `sourceable_type = Maintenance` و `sourceable_id = maintenance.id`.
 
 ### الـ Routes
 
@@ -108,8 +111,9 @@ echo $expense->is_auto_generated; // false
 ## تفاعلات مع وحدات أخرى
 
 - **الوقود/الزيوت/الفلاتر/المخالفات:** تُولّد مصروفات تلقائية عبر Observers.
-- **الصيانة (Maintenance):** يُسجَّل مصروف `maintenance` عند إنشاء **فاتورة
-  صرف** لأمر الصيانة (`InvoiceController::store()`) بقيمة
-  `labor_cost + إجمالي الفاتورة` — انظر [invoices.md](invoices.md).
+- **الصيانة (Maintenance):** يُسجَّل مصروف `maintenance` فور إنشاء الأمر بقيمة
+  `labor_cost` (`MaintenanceObserver`)، ثم يُحدَّث عند إنشاء **فاتورة صرف**
+  (`InvoiceController::store()`) ليصبح `labor_cost + مجموع إجمالي الفواتير`.
+  راجع [invoices.md](invoices.md).
 - **المركبات (Vehicles):** المصروفات تظهر في تبويب المصروفات لصفحة المركبة.
 - **التقارير (Reports):** تقرير المصروفات يعرضها حسب المركبة والنوع والفترة.

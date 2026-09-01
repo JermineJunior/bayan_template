@@ -94,11 +94,18 @@ class Vehicle extends Model
         return $this->hasMany(VehicleOilChange::class)->latest('last_change');
     }
 
+    /**
+     * الحالة الحالية لكل نوع زيت (أحدث سجل لكل نوع). عندما تكون علاقة
+     * oilChanges محمّلة مسبقًا (مثلما تفعل لوحة التحكم عبر eager loading)
+     * يُعاد استخدام نفس البيانات بدلًا من استعلام جديد لكل مركبة.
+     */
     public function currentOilStatus(): Collection
     {
-        return $this->oilChanges()
-            ->with('oil')
-            ->get()
+        $changes = $this->relationLoaded('oilChanges')
+            ? $this->oilChanges
+            : $this->oilChanges()->with('oil')->get();
+
+        return $changes
             ->unique(fn (VehicleOilChange $change) => $change->oil->oil_type)
             ->values();
     }
@@ -109,11 +116,17 @@ class Vehicle extends Model
         return $this->hasMany(VehicleFilterChange::class)->latest('last_change');
     }
 
+    /**
+     * الحالة الحالية لكل نوع فلتر (أحدث سجل لكل نوع). مثل currentOilStatus()
+     * يعيد استخدام علاقة filterChanges المحمّلة مسبقًا إن وُجدت.
+     */
     public function currentFilterStatus(): Collection
     {
-        return $this->filterChanges()
-            ->with('filter')
-            ->get()
+        $changes = $this->relationLoaded('filterChanges')
+            ? $this->filterChanges
+            : $this->filterChanges()->with('filter')->get();
+
+        return $changes
             ->unique(fn (VehicleFilterChange $change) => $change->filter->filter_type)
             ->values();
     }

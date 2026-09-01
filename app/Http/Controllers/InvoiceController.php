@@ -109,7 +109,7 @@ class InvoiceController extends Controller
                 ]);
         }
 
-        $this->createMaintenanceExpense($maintenance, $invoice);
+        $this->syncMaintenanceExpense($maintenance);
 
         flash()->success('تم صرف قطع الغيار وإنشاء الفاتورة بنجاح.');
 
@@ -117,23 +117,41 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Record the maintenance expense once spare parts are tied to the
-     * maintenance invoice. The amount is the labour cost plus the total of
-     * this invoice (sum of qty * price over its details).
+     * Update the maintenance expense so it reflects labour cost plus the
+     * totals of every issue invoice (spare parts) tied to the maintenance.
+     *
+     * The expense itself is created by MaintenanceObserver when the order is
+     * created (labour only); here we keep it in sync as spare parts are added.
      */
-    private function createMaintenanceExpense(Maintenance $maintenance, Invoice $invoice): void
+    private function syncMaintenanceExpense(Maintenance $maintenance): void
     {
-        $invoice->loadMissing('details');
+        $partsTotal = (float) $maintenance->invoices()
+            ->with('details')
+            ->get()
+            ->sum(fn (Invoice $invoice) => (float) $invoice->total);
+
+        $expense = Expense::where('sourceable_type', Maintenance::class)
+            ->where('sourceable_id', $maintenance->id)
+            ->first();
+
+        if ($expense) {
+            $expense->update([
+                'amount' => (float) $maintenance->labor_cost + $partsTotal,
+                'expense_date' => $maintenance->end_date?->toDateString() ?? now()->toDateString(),
+            ]);
+
+            return;
+        }
 
         Expense::create([
             'vehicle_id' => $maintenance->vehicle_id,
             'expense_type' => 'maintenance',
-            'amount' => (float) $maintenance->labor_cost + (float) $invoice->total,
+            'amount' => (float) $maintenance->labor_cost + $partsTotal,
             'expense_date' => $maintenance->end_date?->toDateString() ?? now()->toDateString(),
             'description' => $maintenance->reason,
-            'sourceable_type' => $invoice::class,
-            'sourceable_id' => $invoice->id,
-            'recorded_by' => auth('web')->id(),
+            'sourceable_type' => Maintenance::class,
+            'sourceable_id' => $maintenance->id,
+            'recorded_by' => $maintenance->created_by,
         ]);
     }
 

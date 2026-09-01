@@ -62,9 +62,9 @@
                     price: '{{ old('price_per_liter') }}',
                     discount: '{{ old('discount') }}',
                     formatMoney(value) {
-                        if (value === null || value === undefined || isNaN(value)) return '0.00';
+                        if (value === null || value === undefined || isNaN(value)) return '0';
                         return Number(value).toLocaleString('en-US', {
-                            minimumFractionDigits: 2,
+                            minimumFractionDigits: 0,
                             maximumFractionDigits: 2,
                         });
                     },

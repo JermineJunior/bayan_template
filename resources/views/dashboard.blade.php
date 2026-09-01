@@ -50,6 +50,19 @@
                 <div class="text-3xl font-semibold text-primary">{{ money($monthlyMaintenanceCost) }}</div>
                 <div class="mt-2 text-sm text-muted-foreground">تكلفة الصيانة الشهرية</div>
             </div>
+            {{-- بطاقات إضافية: قطع الغيار منخفضة المخزون، مصروفات الشهر، إجمالي أرصدة الموردين --}}
+            <div class="flex min-h-24 flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-surface p-4 text-center">
+                <div class="text-3xl font-semibold text-primary">{{ number_format($lowStockCount) }}</div>
+                <div class="mt-2 text-sm text-muted-foreground">قطع غيار منخفضة المخزون</div>
+            </div>
+            <div class="flex min-h-24 flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-surface p-4 text-center">
+                <div class="text-3xl font-semibold text-primary">{{ money($monthlyExpenses) }}</div>
+                <div class="mt-2 text-sm text-muted-foreground">إجمالي مصروفات الشهر</div>
+            </div>
+            <div class="flex min-h-24 flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 bg-surface p-4 text-center">
+                <div class="text-3xl font-semibold text-primary">{{ money($supplierBalancesTotal) }}</div>
+                <div class="mt-2 text-sm text-muted-foreground">إجمالي أرصدة الموردين</div>
+            </div>
         </div>
 
         @if ($expiringPolicies->isNotEmpty())
@@ -102,6 +115,202 @@
                                         <span class="font-medium {{ $days < 0 ? 'text-red-600' : 'text-amber-600' }}">
                                             {{ $days < 0 ? 'منتهية' : $days.' يوم' }}
                                         </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endif
+
+        {{-- الرخص القريبة من الانتهاء: نفس نطاق الـ 30 يومًا المستخدم في البطاقة أعلاه --}}
+        @if ($expiringLicenses->isNotEmpty())
+            <div class="mt-6 rounded-xl border border-border bg-surface p-6 shadow-sm">
+                <h2 class="mb-4 text-sm font-semibold text-foreground">
+                    رخص سائقين قريبة الانتهاء
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-border text-sm">
+                        <thead>
+                            <tr class="text-xs uppercase tracking-wide text-muted-foreground">
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    السائق
+                                </th>
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    رقم الهوية
+                                </th>
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    تاريخ الانتهاء
+                                </th>
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    الأيام المتبقية
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border">
+                            @foreach ($expiringLicenses as $license)
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <a href="{{ route('drivers.show', $license) }}" class="font-medium text-foreground hover:text-primary">
+                                            {{ $license->full_name }}
+                                        </a>
+                                    </td>
+                                    <td class="px-4 py-3 text-muted-foreground">
+                                        {{ $license->national_id }}
+                                    </td>
+                                    <td class="px-4 py-3 text-muted-foreground">
+                                        {{ $license->license_expiry_date?->format('Y-m-d') }}
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        @php
+                                            $days = (int) now()->startOfDay()->diffInDays($license->license_expiry_date, false);
+                                        @endphp
+                                        <span class="font-medium {{ $days < 0 ? 'text-red-600' : 'text-amber-600' }}">
+                                            {{ $days < 0 ? 'منتهية' : $days.' يوم' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endif
+
+        {{-- التغييرات المستحقة (زيت/فلاتر): السجلات المتأخرة لكل مركبة — المركبة مع السجل نفسه --}}
+        <div class="mt-6 grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
+            @if ($oilChangesDue->isNotEmpty())
+                <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
+                    <h2 class="mb-4 text-sm font-semibold text-foreground">
+                        تغييرات الزيت المستحقة
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-border text-sm">
+                            <thead>
+                                <tr class="text-xs uppercase tracking-wide text-muted-foreground">
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        المركبة
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        نوع الزيت
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        المتبقي
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border">
+                                @foreach ($oilChangesDue as $change)
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <a href="{{ route('vehicles.show', $change->vehicle) }}" class="font-medium text-foreground hover:text-primary">
+                                                {{ $change->vehicle->internal_number }}
+                                            </a>
+                                        </td>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $change->oil?->oil_name }}
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            @php $km = (float) $change->remaining_change; @endphp
+                                            <span class="font-medium {{ $km < 0 ? 'text-red-600' : 'text-amber-600' }}">
+                                                {{ $km < 0 ? 'متأخر '.number_format(abs($km)).' كم' : 'باقٍ '.number_format($km).' كم' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
+            @if ($filterChangesDue->isNotEmpty())
+                <div class="rounded-xl border border-border bg-surface p-6 shadow-sm">
+                    <h2 class="mb-4 text-sm font-semibold text-foreground">
+                        تغييرات الفلاتر المستحقة
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-border text-sm">
+                            <thead>
+                                <tr class="text-xs uppercase tracking-wide text-muted-foreground">
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        المركبة
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        نوع الفلتر
+                                    </th>
+                                    <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                        المتبقي
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border">
+                                @foreach ($filterChangesDue as $change)
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <a href="{{ route('vehicles.show', $change->vehicle) }}" class="font-medium text-foreground hover:text-primary">
+                                                {{ $change->vehicle->internal_number }}
+                                            </a>
+                                        </td>
+                                        <td class="px-4 py-3 text-muted-foreground">
+                                            {{ $change->filter?->filter_name }}
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            @php $km = (float) $change->remaining_change; @endphp
+                                            <span class="font-medium {{ $km < 0 ? 'text-red-600' : 'text-amber-600' }}">
+                                                {{ $km < 0 ? 'متأخر '.number_format(abs($km)).' كم' : 'باقٍ '.number_format($km).' كم' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+        </div>
+
+        {{-- قطع الغيار التي انخفضت إلى الحد الأدنى أو أقل (is_low_stock) --}}
+        @if ($lowStockParts->isNotEmpty())
+            <div class="mt-6 rounded-xl border border-border bg-surface p-6 shadow-sm">
+                <h2 class="mb-4 text-sm font-semibold text-foreground">
+                    قطع غيار منخفضة المخزون
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-border text-sm">
+                        <thead>
+                            <tr class="text-xs uppercase tracking-wide text-muted-foreground">
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    القطعة
+                                </th>
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    رقم القطعة
+                                </th>
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    المتوفر
+                                </th>
+                                <th class="bg-muted/50 px-4 py-3 text-start font-medium">
+                                    الحد الأدنى
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border">
+                            @foreach ($lowStockParts as $part)
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <a href="{{ route('spare-parts.show', $part) }}" class="font-medium text-foreground hover:text-primary">
+                                            {{ $part->name }}
+                                        </a>
+                                    </td>
+                                    <td class="px-4 py-3 text-muted-foreground">
+                                        {{ $part->part_number }}
+                                    </td>
+                                    <td class="px-4 py-3 text-muted-foreground">
+                                        {{ number_format((float) $part->quantity_on_hand, 2) }}
+                                    </td>
+                                    <td class="px-4 py-3 text-muted-foreground">
+                                        {{ number_format((float) $part->minimum_quantity, 2) }}
                                     </td>
                                 </tr>
                             @endforeach

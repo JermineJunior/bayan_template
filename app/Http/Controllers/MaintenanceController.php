@@ -90,7 +90,7 @@ class MaintenanceController extends Controller
         $maintenance = $maintenance->load(['vehicle']);
 
         return view('maintenance.show', [
-            'maintenance' => $maintenance->load(['invoices', 'vehicle']),
+            'maintenance' => $maintenance->load(['invoices.details', 'vehicle']),
         ]);
     }
 

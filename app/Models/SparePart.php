@@ -32,9 +32,17 @@ class SparePart extends Model
         return $this->hasMany(SparePartTransaction::class)->latest('created_at');
     }
 
-    /** Current stock — always the sum of every transaction ever recorded, never stored */
+    /**
+     * المخزون الحالي — مجموع كل معاملات القطعة، لا يُخزن. عند الجلب عبر
+     * withSum('transactions') يكون الناتج جاهزًا في transactions_sum_quantity
+     * فيُعاد استخدامه بدلًا من تنفيذ استعلام SUM لكل قطعة على حدة.
+     */
     public function getQuantityOnHandAttribute(): float
     {
+        if (array_key_exists('transactions_sum_quantity', $this->getAttributes())) {
+            return (float) $this->transactions_sum_quantity;
+        }
+
         return (float) $this->transactions()->sum('quantity');
     }
 
