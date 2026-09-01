@@ -8,8 +8,7 @@
         },
         updateTotal() {
             const labor = window.parseMoney(this.$refs.laborCost?.value ?? '');
-            const spare = window.parseMoney(this.$refs.spareCost?.value ?? '');
-            const total = labor + spare;
+            const total = labor;
             if (this.$refs.totalCost) {
                 this.$refs.totalCost.value = total > 0 ? window.formatMoney(total) : '';
             }
@@ -137,7 +136,7 @@
             </div>
         </div>
 
-        <div class="grid gap-6 sm:grid-cols-3">
+        <div class="grid gap-6 sm:grid-cols-2">
             <div>
                 <label for="labor_cost" class="mb-1 block text-sm font-medium text-foreground">
                     تكلفة الفني
@@ -147,19 +146,6 @@
                     @input="updateTotal()"
                     class="money-input w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
                 @error('labor_cost')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div>
-                <label for="spare_cost" class="mb-1 block text-sm font-medium text-foreground">
-                    تكلفة الاسبير
-                </label>
-                <input id="spare_cost" name="spare_cost" type="text"
-                    value="{{ old('spare_cost', $maintenance?->spare_cost) }}" readonly
-                    x-ref="spareCost"
-                    class="w-full rounded-md border border-border bg-gray-200 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
-                @error('spare_cost')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>

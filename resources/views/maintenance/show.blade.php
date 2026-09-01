@@ -162,7 +162,7 @@
                                 <div class="flex items-center justify-between gap-4 border-b border-border pb-2">
                                     <dt class="text-muted-foreground">تكلفة الاسبير</dt>
                                     <dd class="flex items-center gap-2 font-medium text-foreground">
-                                        {{ money($maintenance->spare_cost) }}
+                                        {{ money($maintenance->invoices->first()->total) }}
                                     </dd>
                                 </div>
                             </dl>

@@ -47,7 +47,6 @@ class MaintenanceController extends Controller
             DB::beginTransaction();
             $request->merge([
                 'labor_cost' => $request->filled('labor_cost') ? str_replace(',', '', $request->input('labor_cost')) : null,
-                'spare_cost' => $request->filled('spare_cost') ? str_replace(',', '', $request->input('spare_cost')) : null,
                 'total_cost' => $request->filled('total_cost') ? str_replace(',', '', $request->input('total_cost')) : null,
             ]);
             $validated = $request->validate([
@@ -60,7 +59,6 @@ class MaintenanceController extends Controller
                 'workshop' => ['nullable', 'string', 'max:255'],
                 'technical' => ['nullable', 'string', 'max:255'],
                 'labor_cost' => ['nullable', 'numeric', 'min:0'],
-                'spare_cost' => ['nullable', 'numeric', 'min:0'],
                 'total_cost' => ['nullable', 'numeric', 'min:0'],
                 'type' => ['required', 'in:periodic,preventive,emergency'],
                 'status' => ['required', 'in:draft,pending,in_progress,completed,cancelled'],
@@ -109,7 +107,6 @@ class MaintenanceController extends Controller
             DB::beginTransaction();
             $request->merge([
                 'labor_cost' => $request->filled('labor_cost') ? str_replace(',', '', $request->input('labor_cost')) : null,
-                'spare_cost' => $request->filled('spare_cost') ? str_replace(',', '', $request->input('spare_cost')) : null,
                 'total_cost' => $request->filled('total_cost') ? str_replace(',', '', $request->input('total_cost')) : null,
             ]);
             $validated = $request->validate([
@@ -122,7 +119,6 @@ class MaintenanceController extends Controller
                 'workshop' => ['nullable', 'string', 'max:255'],
                 'technical' => ['nullable', 'string', 'max:255'],
                 'labor_cost' => ['nullable', 'numeric', 'min:0'],
-                'spare_cost' => ['nullable', 'numeric', 'min:0'],
                 'total_cost' => ['nullable', 'numeric', 'min:0'],
                 'type' => ['required', 'in:periodic,preventive,emergency'],
                 'status' => ['required', 'in:draft,pending,in_progress,completed,cancelled'],

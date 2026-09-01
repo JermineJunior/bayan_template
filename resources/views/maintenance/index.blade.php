@@ -146,8 +146,8 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="rounded-md bg-muted px-2 py-1 text-xs text-foreground">
-                                    {{ money($maintenance->total_cost) }}
+                                <span class="rounded-md bg-muted px-2 py-1 text-sm text-foreground">
+                                    {{ money($maintenance->invoices->first()->total + $maintenance->labor_cost) }}(تكلفة قطع غيار + صيانة)
                                 </span>
                             </td>
                             <td class="px-4 py-3">

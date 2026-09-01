@@ -18,7 +18,6 @@ class Maintenance extends Model
         'workshop',
         'technical',
         'labor_cost',
-        'spare_cost',
         'total_cost',
         'type',
         'status',
@@ -32,7 +31,6 @@ class Maintenance extends Model
         'end_date' => 'date',
         'odometer_reading' => 'decimal:2',
         'labor_cost' => 'decimal:2',
-        'spare_cost' => 'decimal:2',
         'total_cost' => 'decimal:2',
     ];
 

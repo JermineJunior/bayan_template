@@ -40,9 +40,13 @@ class Invoice extends Model
         return $this->hasMany(InvoiceDetail::class);
     }
 
-    /** Sum of every line item's row total — never stored, always derived */
-    public function getTotalAmountAttribute(): float
+    /**
+     * Calculate the dynamic grand total of the invoice.
+     */
+    public function getTotalAttribute(): float
     {
-        return (float) $this->details()->get()->sum('row_sub_total');
+        return $this->details->sum(function ($detail) {
+            return $detail->qty * $detail->price;
+        });
     }
 }
