@@ -2,7 +2,7 @@
 
 ## الغرض (Purpose)
 
-سجل مركزي لمصروفات المركبات. المصروفات إما **تلقائية** (يُنشئها Observers عند
+سجل مركزي لمصروفات المركبات. المصروفات إما **تلقائية** (تُنشأ تلقائيًا عند
 تسجيل وقود/زيوت/فلاتر/صيانة/مخالفة) أو **يدوية** (أنواع `spare_parts` و `other`).
 
 - المصروفات التلقائية مربوطة بمصدرها عبر علاقة متعددة الأشكال (`sourceable`).
@@ -49,18 +49,20 @@
 - `store(Request)` — تحقق (vehicle مطلوب، نوع ضمن MANUAL_TYPES، مبلغ ≥ 0).
 - `destroy(Expense)` — يرفض حذف المصروف التلقائي برسالة عربية، ويحذف اليدوي فقط.
 
-### الـ Observers (توليد تلقائي)
+### توليد المصروفات التلقائية
 
-| الـ Observer | المصدر | النوع | القيمة | الوصف |
+| الـ Observer / الموقع | المصدر | النوع | القيمة | الوصف |
 | ------------ | ------ | ----- | ------ | ----- |
 | `FuelLogObserver` | `FuelLog` | `fuel` | `total_value` | "تعبئة وقود — {liters} لتر" |
 | `VehicleOilChangeObserver` | `VehicleOilChange` | `oil` | `cost` | "تغيير زيت — {oil_name}" |
 | `VehicleFilterChangeObserver` | `VehicleFilterChange` | `filter` | `cost` | "تغيير فلتر — {filter_name}" |
-| `MaintenanceObserver` | `Maintenance` | `maintenance` | `total_cost` | السبب |
+| `InvoiceController::store()` | `Invoice` | `maintenance` | `labor_cost + invoice.total` | سبب الصيانة |
 | `DriverViolationObserver` | `DriverViolation` | `violations` | `amount` | "مخالفة — {desc}" (فقط إذا وُجدت مركبة ومبلغ) |
 
-> ملاحظة: `MaintenanceObserver` حاليًا يضبط `sourceable_id` بلا `sourceable_type`
-> — وبالتالي قد لا تُعتبر مصروف الصيانة "تلقائية" عند التحقق من `is_auto_generated`.
+> ملاحظة: مصروف **الصيانة** لا يُسجَّل عند إنشاء أمر الصيانة، بل عند **ربط قطع
+> الغيار بأمر الصيانة** — أي عند إنشاء الفاتورة (`InvoiceController::store()`).
+> مبلغه = `labor_cost` + إجمالي بنود الفاتورة (مجموع `qty × price`). يُربط بالمصدر
+> عبر `sourceable_type = Invoice` و `sourceable_id = invoice.id`.
 
 ### الـ Routes
 
@@ -105,7 +107,9 @@ echo $expense->is_auto_generated; // false
 
 ## تفاعلات مع وحدات أخرى
 
-- **الوقود/الزيوت/الفلاتر/الصيانة/المخالفات:** تُولّد مصروفات تلقائية عبر
-  Observers.
+- **الوقود/الزيوت/الفلاتر/المخالفات:** تُولّد مصروفات تلقائية عبر Observers.
+- **الصيانة (Maintenance):** يُسجَّل مصروف `maintenance` عند إنشاء **فاتورة
+  صرف** لأمر الصيانة (`InvoiceController::store()`) بقيمة
+  `labor_cost + إجمالي الفاتورة` — انظر [invoices.md](invoices.md).
 - **المركبات (Vehicles):** المصروفات تظهر في تبويب المصروفات لصفحة المركبة.
 - **التقارير (Reports):** تقرير المصروفات يعرضها حسب المركبة والنوع والفترة.

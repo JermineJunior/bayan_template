@@ -85,7 +85,7 @@
             <div class="rounded-xl border border-border bg-surface p-4 shadow-sm">
                 <p class="text-xs text-muted-foreground">المتوفر بالمخزون</p>
                 <p class="mt-1 text-2xl font-semibold text-foreground">
-                    {{ number_format($sparePart->quantity_on_hand, 2) }}
+                    {{ number_format($sparePart->quantity_on_hand) }}
                 </p>
             </div>
             <div class="rounded-xl border border-border bg-surface p-4 shadow-sm">

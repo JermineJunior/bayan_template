@@ -96,6 +96,11 @@ try {
 }
 ```
 
+بعد نجاح الحفظ، تُستدعى `createMaintenanceExpense()` لتسجيل **مصروف الصيانة**
+(انظر [expenses.md](expenses.md)): قيمته = `labor_cost` الخاص بأمر الصيانة +
+إجمالي هذه الفاتورة (`qty × price`)، ويُربط بالمصدر `sourceable` (Invoice) —
+أي أن مصروف الصيانة يُسجَّل **بمجرد** ربط قطع الغيار بأمر الصيانة عبر الفاتورة.
+
 ### الـ Views
 
 في `resources/views/invoices/`:

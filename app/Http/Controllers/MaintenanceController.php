@@ -16,6 +16,7 @@ class MaintenanceController extends Controller
     public function index(Request $request)
     {
         $maintenances = Maintenance::query()
+            ->with('invoices.details')
             ->when(filled('search'), function ($q) use ($request) {
                 $q->where('maintenance_number', 'like', "%{$request->search}%");
             })

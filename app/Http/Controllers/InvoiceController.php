@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\Maintenance;
@@ -108,9 +109,32 @@ class InvoiceController extends Controller
                 ]);
         }
 
+        $this->createMaintenanceExpense($maintenance, $invoice);
+
         flash()->success('تم صرف قطع الغيار وإنشاء الفاتورة بنجاح.');
 
         return redirect()->route('invoices.show', $invoice);
+    }
+
+    /**
+     * Record the maintenance expense once spare parts are tied to the
+     * maintenance invoice. The amount is the labour cost plus the total of
+     * this invoice (sum of qty * price over its details).
+     */
+    private function createMaintenanceExpense(Maintenance $maintenance, Invoice $invoice): void
+    {
+        $invoice->loadMissing('details');
+
+        Expense::create([
+            'vehicle_id' => $maintenance->vehicle_id,
+            'expense_type' => 'maintenance',
+            'amount' => (float) $maintenance->labor_cost + (float) $invoice->total,
+            'expense_date' => $maintenance->end_date?->toDateString() ?? now()->toDateString(),
+            'description' => $maintenance->reason,
+            'sourceable_type' => $invoice::class,
+            'sourceable_id' => $invoice->id,
+            'recorded_by' => auth('web')->id(),
+        ]);
     }
 
     /**

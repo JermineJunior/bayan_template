@@ -227,7 +227,7 @@
                                         <span class="text-xs text-muted-foreground">({{ $detail->sparePart->part_number }})</span>
                                     </td>
                                     <td class="px-4 py-3 text-muted-foreground">
-                                        {{ number_format((float) $detail->qty, 2) }}
+                                        {{ number_format((float) $detail->qty) }}
                                     </td>
                                     <td class="px-4 py-3 text-muted-foreground">
                                         {{ money($detail->price) }}

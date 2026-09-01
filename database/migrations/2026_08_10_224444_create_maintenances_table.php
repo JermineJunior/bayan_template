@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('workshop')->nullable();
             $table->string('technical')->nullable();
             $table->decimal('labor_cost', 15, 2)->nullable();
-            $table->decimal('spare_cost', 15, 2)->nullable();
+          //  $table->decimal('spare_cost', 15, 2)->nullable();
             $table->decimal('total_cost', 15, 2)->nullable();
             $table->enum('type', ['periodic', 'preventive', 'emergency'])->default('periodic');
             $table->enum('status', ['draft', 'pending', 'in_progress', 'completed', 'cancelled'])->default('draft');

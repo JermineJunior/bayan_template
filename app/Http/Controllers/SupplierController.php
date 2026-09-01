@@ -55,6 +55,10 @@ class SupplierController extends Controller
         return view('suppliers.show', [
             'supplier' => $supplier,
             'invoices' => $supplier->invoices()->with('payments')->latest('invoice_date')->get(),
+            'payments' => $supplier->payments()
+                ->with(['invoice', 'recordedBy'])
+                ->latest('paid_at')
+                ->get(),
         ]);
     }
 

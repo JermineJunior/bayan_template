@@ -6,15 +6,17 @@
 
 - المركبة المطلوب صيانتها.
 - السبب، الورشة، التاريخ، قراءة العداد.
-- التكاليف (أجرة العمالة `labor_cost`، تكلفة القطع `spare_cost`، الإجمالي `total_cost`).
+- التكاليف (أجرة العمالة `labor_cost`، والإجمالي `total_cost` = أجرة العمالة).
 - النوع (`periodic` دورية / `preventive` وقائية / `emergency` طارئة).
 - الحالة (`draft` / `pending` / `in_progress` / `completed` / `cancelled`).
 
 **رابط مهم:** من داخل أمر الصيانة تُنشأ **فواتير الصرف** (القطع التي خرجت من
 المخزن لهذه الصيانة) — انظر [invoices.md](invoices.md).
 
-> قيمة محسوبة: `spare_cost` هنا هو حقل يدوي في النظام الحالي، بينما فواتير
-> الصرف هي الطريقة الموثقة لصرف القطع. راجع [invoices.md](invoices.md) للتفاصيل.
+> ملاحظة: تكلفة القطع ليست حقلاً في أمر الصيانة؛ بل تظهر عبر **فواتير الصرف**
+> المرتبطة به. مصروف الصيانة يُسجَّل عند إنشاء الفاتورة بقيمة
+> `labor_cost + إجمالي الفاتورة` — راجع [invoices.md](invoices.md) و
+> [expenses.md](expenses.md).
 
 ---
 
@@ -34,7 +36,7 @@
 - `date`, `start_date`, `end_date` — التواريخ.
 - `odometer_reading` — قراءة العداد.
 - `reason`, `workshop`, `technical`, `note`.
-- `labor_cost`, `spare_cost`, `total_cost` — التكاليف.
+- `labor_cost`, `total_cost` — التكاليف (الإجمالي = أجرة العمالة).
 - `type`, `status`.
 - `created_by` — المستخدم الذي أنشأ الأمر.
 
@@ -133,3 +135,5 @@ $maintenance->update(['status' => 'completed']); // المركبة تصبح acti
   `syncVehicleStatus`).
 - **فواتير الصرف (Invoices):** تُنشأ من داخل أمر الصيانة لصرف القطع. راجع
   [invoices.md](invoices.md).
+- **المصروفات (Expenses):** عند إنشاء الفاتورة يُسجَّل مصروف صيانة تلقائي
+  بقيمة `labor_cost + إجمالي الفاتورة`. راجع [expenses.md](expenses.md).
